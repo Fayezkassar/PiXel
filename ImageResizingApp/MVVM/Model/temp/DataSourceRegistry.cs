@@ -1,4 +1,5 @@
 
+using ImageResizingApp.MVVM.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ public class DataSourceRegistry {
     public DataSourceRegistry() {
     }
 
-    private static sealed DataSourceRegistry instance;
+    private static readonly DataSourceRegistry instance;
 
-    private HashSet<DataSource> dataSources;
+    private HashSet<IDataSource> dataSources;
 
 
 
@@ -51,7 +52,7 @@ public class DataSourceRegistry {
     /// </summary>
     public void addDataSource(String key, IDataSource dataSource) {
         // TODO implement here
-        return null;
+        //return null;
     }
 
 }

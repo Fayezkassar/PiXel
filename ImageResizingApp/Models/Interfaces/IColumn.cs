@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ImageResizingApp.MVVM.Model
+namespace ImageResizingApp.Models.Interfaces
 {
     public interface IColumn
     {

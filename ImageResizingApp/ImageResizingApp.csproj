@@ -7,14 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Fonts\" />
-    <Folder Include="Images\" />
-    <Folder Include="MVVM\View\" />
-    <Folder Include="Theme\" />
+    <Compile Remove="Fonts\**" />
+    <Compile Remove="Images\**" />
+    <EmbeddedResource Remove="Fonts\**" />
+    <EmbeddedResource Remove="Images\**" />
+    <None Remove="Fonts\**" />
+    <None Remove="Images\**" />
+    <Page Remove="Fonts\**" />
+    <Page Remove="Images\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
+    <PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
   </ItemGroup>
 
 </Project>

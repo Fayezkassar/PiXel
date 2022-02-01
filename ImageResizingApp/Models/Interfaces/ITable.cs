@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ImageResizingApp.MVVM.Model
+namespace ImageResizingApp.Models.Interfaces
 {
     public interface ITable
     {

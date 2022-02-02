@@ -17,6 +17,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button Style="{StaticResource MainButton}" Content="Get Started" Grid.Column="1" Grid.Row="1"/>
+        <Button Style="{StaticResource MainButton}" Command="{Binding GetStartedCommand}" Content="Get Started" Grid.Column="1" Grid.Row="1"/>
     </Grid>
 </UserControl>

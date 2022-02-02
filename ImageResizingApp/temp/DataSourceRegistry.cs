@@ -1,57 +1,41 @@
 
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
+using ImageResizingApp.Models.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-//public class DataSourceRegistry {
+public class DataSourceRegistry
+{
 
-//    public DataSourceRegistry() {
-//    }
+    public DataSourceRegistry()
+    {
+    }
 
-//    private static readonly DataSourceRegistry instance;
+    private static readonly DataSourceRegistry instance;
 
-//    private HashSet<IDataSource> dataSources;
+    private IEnumerable<IDataSource> dataSources;
 
+    public static DataSourceRegistry getInstance()
+    {
+        return instance;
+    }
 
+    public IEnumerable<String> getDataSourceNames()
+    {
+        /* TO IMPLEMENT*/
+        return null;
+    }
 
-//    private void Registry() {
-//        // TODO implement here
-//    }
+    public IDataSource getDataSourceFor(String name)
+    {
+        /* TO IMPLEMENT*/
+        return null;
+    }
 
-//    /// <summary>
-//    /// @return
-//    /// </summary>
-//    public static DataSourceRegistry getInstance() {
-//        // TODO implement here
-//        return null;
-//    }
+    public void addDataSource(IDataSource dataSource)
+    {
+        /* TO IMPLEMENT*/
+    }
 
-//    /// <summary>
-//    /// @return
-//    /// </summary>
-//    public HashSet<String> getDataSourceNames() {
-//        // TODO implement here
-//        return null;
-//    }
-
-//    /// <summary>
-//    /// @param name 
-//    /// @return
-//    /// </summary>
-//    public IDataSource getDataSourceFor(String name) {
-//        // TODO implement here
-//        return null;
-//    }
-
-//    /// <summary>
-//    /// @param key 
-//    /// @param dataSource 
-//    /// @return
-//    /// </summary>
-//    public void addDataSource(String key, IDataSource dataSource) {
-//        // TODO implement here
-//        //return null;
-//    }
-
-//}
+}

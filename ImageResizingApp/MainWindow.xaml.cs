@@ -23,10 +23,15 @@ namespace ImageResizingApp
         public MainWindow()
         {
             InitializeComponent();
-            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+           /* this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;*/
         }
 
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        private void GetStartedView_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        /*private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             this.DragMove();
         }
@@ -51,6 +56,6 @@ namespace ImageResizingApp
         private void Minimize_Click(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
-        }
+        }*/
     }
 }

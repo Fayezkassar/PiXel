@@ -8,24 +8,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ImageResizingApp.Views
+namespace ImageResizingApp.Views.Windows
 {
     /// <summary>
-    /// Interaction logic for GetStartedView.xaml
+    /// Interaction logic for ConnectDataSourceWindow.xaml
     /// </summary>
-    public partial class GetStartedView : UserControl
+    public partial class ConnectDataSourceWindow : Window
     {
-        public GetStartedView()
+        public ConnectDataSourceWindow()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

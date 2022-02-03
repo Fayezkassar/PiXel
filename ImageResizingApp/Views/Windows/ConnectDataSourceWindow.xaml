@@ -1,0 +1,33 @@
+﻿<Window 
+        x:Class="ImageResizingApp.Views.Windows.ConnectDataSourceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageResizingApp.Views.Windows"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="Connect to Data Source"
+        MinHeight="200"
+        MinWidth="300"
+        SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" 
+        FocusManager.FocusedElement="{Binding ElementName=dataSourceNameTextBox}"
+        Background="{StaticResource MaterialDesignPaper}"
+        TextElement.Foreground="{StaticResource MaterialDesignBody}">
+    <Grid>
+        <StackPanel Margin="25">
+            <TextBox
+                    Name="dataSourceNameTextBox"
+                    materialDesign:HintAssist.Hint="Data Source Name"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+            <TextBox
+                    materialDesign:HintAssist.Hint="Data Source Type"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+        </StackPanel>
+
+
+    </Grid >
+</Window>

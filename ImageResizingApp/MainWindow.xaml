@@ -6,11 +6,10 @@
         xmlns:views="clr-namespace:ImageResizingApp.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" 
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        ResizeMode="NoResize"
-        Title="Welcome to the Image Resizer"
+        TextElement.Foreground="{StaticResource MaterialDesignBody}"
+        Title="Image Resizer"
         Height="500" Width="820"
-        Background="{DynamicResource MaterialDesignPaper}">
+        Background="{StaticResource MaterialDesignPaper}">
     <Grid>
         <views:GetStartedView DataContext="{Binding CurrentViewModel}"></views:GetStartedView>
     </Grid>

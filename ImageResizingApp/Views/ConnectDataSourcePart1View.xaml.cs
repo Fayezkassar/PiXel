@@ -14,18 +14,13 @@ using System.Windows.Shapes;
 namespace ImageResizingApp.Views
 {
     /// <summary>
-    /// Interaction logic for GetStartedView.xaml
+    /// Interaction logic for ConnectDataSourcePart1View.xaml
     /// </summary>
-    public partial class GetStartedView : UserControl
+    public partial class ConnectDataSourcePart1View : UserControl
     {
-        public GetStartedView()
+        public ConnectDataSourcePart1View()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

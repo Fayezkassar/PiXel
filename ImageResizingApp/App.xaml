@@ -8,7 +8,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:CustomColorTheme BaseTheme="Dark" PrimaryColor="#FF28468A" SecondaryColor="#FFBEC364" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="Themes\GlobalTheme.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="Themes\ButtonTheme.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="Themes\WindowTheme.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

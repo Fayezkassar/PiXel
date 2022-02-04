@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImageResizingApp.Views.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,39 +24,17 @@ namespace ImageResizingApp
         public MainWindow()
         {
             InitializeComponent();
+            this.OpenConnectToDataSourceDialog();
            /* this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;*/
         }
 
-        private void GetStartedView_Loaded(object sender, RoutedEventArgs e)
+        private void OpenConnectToDataSourceDialog()
         {
+            ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();
+            connectDialog.ShowInTaskbar = false;
+            //connectDialog.Owner = this;
+            connectDialog.ShowDialog();
 
         }
-
-        /*private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            this.DragMove();
-        }
-
-        private void closeApp(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void Maximize_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Normal)
-            {
-                this.WindowState = WindowState.Maximized;
-            }
-            else if (this.WindowState == WindowState.Maximized)
-            {
-                this.WindowState = WindowState.Normal;
-            }
-        }
-
-        private void Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
-        }*/
     }
 }

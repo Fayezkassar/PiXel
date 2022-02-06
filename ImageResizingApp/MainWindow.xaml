@@ -10,10 +10,7 @@
         Style="{StaticResource MaterialDesignWindow}"
         Height="500" Width="820">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="51*"/>
-            <ColumnDefinition Width="113*"/>
-        </Grid.ColumnDefinitions>
+        <views:TableView></views:TableView>
     </Grid>
 
 </Window>

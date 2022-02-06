@@ -24,7 +24,7 @@ namespace ImageResizingApp
         public MainWindow()
         {
             InitializeComponent();
-            this.OpenConnectToDataSourceDialog();
+            //this.OpenConnectToDataSourceDialog();
            /* this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;*/
         }
 

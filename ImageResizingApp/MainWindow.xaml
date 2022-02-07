@@ -4,11 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:ImageResizingApp.Views"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" 
         Title="Image Resizer"
+        WindowState="Maximized"
         Style="{StaticResource MaterialDesignWindow}"
-        Height="500" Width="820">
+        >
     <Grid>
         <views:TableView></views:TableView>
     </Grid>

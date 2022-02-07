@@ -9,7 +9,6 @@ namespace ImageResizingApp.ViewModels
         public ViewModelBase CurrentViewModel { get; }
         public MainWindowViewModel()
         {
-            CurrentViewModel = new GetStartedViewModel();
         }
     }
 }

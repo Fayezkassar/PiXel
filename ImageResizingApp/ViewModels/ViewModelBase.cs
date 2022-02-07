@@ -5,8 +5,12 @@ using System.Text;
 
 namespace ImageResizingApp.ViewModels
 {
-    public class ViewModelBase : ObservableObject
+    public class ViewModelBase : ObservableValidator
     {
+        public void Validate()
+        {
+            ValidateAllProperties();
+        }
         public virtual void Dispose() { }
     }
 }

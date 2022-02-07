@@ -5,15 +5,15 @@ namespace ImageResizingApp.Models.Interfaces
 {
     public interface IDataSource
     {
-        public String Name { get; set; }
+        public string Name { get; set; }
 
-        public List<String> ConnectionParameters { get; set; }
+        public List<string> ConnectionParameters { get; set; }
 
         public List<ITable> Tables { get; set; }
 
-        public bool open(Dictionary<String,String> connectionParametersMap);
+        public bool Open(Dictionary<string,string> connectionParametersMap);
 
-        public bool close();
-        public IDataSource clone();
+        public bool Close();
+        public IDataSource Clone();
     }
 }

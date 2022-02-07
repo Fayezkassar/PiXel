@@ -1,4 +1,7 @@
-﻿using ImageResizingApp.Views.Windows;
+﻿using ImageResizingApp.Models.Interfaces;
+using ImageResizingApp.Models.Oracle;
+using ImageResizingApp.ViewModels;
+using ImageResizingApp.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,20 +24,22 @@ namespace ImageResizingApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly DataSourceRegistry _dataSourceRegistry;
+        public MainWindow(DataSourceRegistry dataSourceRegistry)
         {
             InitializeComponent();
-            this.OpenConnectToDataSourceDialog();
-           /* this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;*/
+            _dataSourceRegistry = dataSourceRegistry;
+            OpenConnectToDataSourceDialog();
+        
         }
 
         private void OpenConnectToDataSourceDialog()
         {
             ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();
-            connectDialog.ShowInTaskbar = false;
+            //connectDialog.ShowInTaskbar = false;
             //connectDialog.Owner = this;
+            connectDialog.DataContext = new ConnectDataSourceWindowViewModel(_dataSourceRegistry);
             connectDialog.ShowDialog();
-
         }
     }
 }

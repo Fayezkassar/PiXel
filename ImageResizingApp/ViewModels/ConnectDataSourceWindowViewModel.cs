@@ -10,8 +10,11 @@ namespace ImageResizingApp.ViewModels
     {
         ICommand NextCommand { get; }
 
-        public ConnectDataSourceWindowViewModel()
+        public ViewModelBase CurrentViewModel { get; }
+
+        public ConnectDataSourceWindowViewModel(DataSourceRegistry dataSourceRegistry)
         {
+            CurrentViewModel = new ConnectDataSourcePart1ViewModel(dataSourceRegistry);
             NextCommand = new RelayCommand(onNext, canContinue);
         }
 

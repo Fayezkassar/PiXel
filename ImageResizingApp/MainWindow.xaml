@@ -7,8 +7,9 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" 
         Title="Image Resizer"
+        WindowState="Maximized"
         Style="{StaticResource MaterialDesignWindow}"
-        Height="500" Width="820">
+        >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="51*"/>

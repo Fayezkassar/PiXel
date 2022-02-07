@@ -12,30 +12,28 @@ public class DataSourceRegistry
     {
     }
 
-    private static readonly DataSourceRegistry instance;
+    //private static DataSourceRegistry _instance;
 
-    private IEnumerable<IDataSource> dataSources;
+    private Dictionary<string,IDataSource> _dataSources = new Dictionary<string,IDataSource>();
 
-    public static DataSourceRegistry getInstance()
+    //public static DataSourceRegistry GetInstance()
+    //{
+    //    if(_instance == null)
+    //    {
+    //        _instance = new DataSourceRegistry();
+    //    }
+    //    return _instance;
+    //}
+
+    public List<string> GetDataSourceNames()
     {
-        return instance;
+
+        return this._dataSources.Keys.ToList();
     }
 
-    public IEnumerable<String> getDataSourceNames()
+    public void AddDataSource(string key, IDataSource dataSource)
     {
-        /* TO IMPLEMENT*/
-        return null;
-    }
-
-    public IDataSource getDataSourceFor(String name)
-    {
-        /* TO IMPLEMENT*/
-        return null;
-    }
-
-    public void addDataSource(IDataSource dataSource)
-    {
-        /* TO IMPLEMENT*/
+        this._dataSources.Add(key, dataSource);
     }
 
 }

@@ -25,7 +25,7 @@ public class DataSourceRegistry
     //    return _instance;
     //}
 
-    public List<string> GetDataSourceNames()
+    public List<string> GetKeys()
     {
 
         return this._dataSources.Keys.ToList();

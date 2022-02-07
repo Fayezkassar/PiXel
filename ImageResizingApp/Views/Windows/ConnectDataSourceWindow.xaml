@@ -7,7 +7,6 @@
         xmlns:local="clr-namespace:ImageResizingApp.Views.Windows"
         xmlns:views="clr-namespace:ImageResizingApp.Views"
         xmlns:vms="clr-namespace:ImageResizingApp.ViewModels"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Title="Connect to Data Source"
         MinHeight="300"
@@ -26,11 +25,13 @@
             <DataTemplate DataType="{x:Type vms:ConnectDataSourcePart1ViewModel}">
                 <views:ConnectDataSourcePart1View></views:ConnectDataSourcePart1View>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:ConnectDataSourcePart2ViewModel}">
+                <views:ConnectDataSourcePart2View></views:ConnectDataSourcePart2View>
+            </DataTemplate>
         </Grid.Resources>
-
-        <ContentControl  Grid.Row="0" Content="{Binding CurrentViewModel}" />
+        <ContentControl  Grid.Row="0" Content="{Binding CurrentViewModel}"></ContentControl>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="1" >
-            <Button Name="previousButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0">Previous</Button>
+            <Button Name="previousButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" Command="{Binding PreviousCommand}">Previous</Button>
             <Button Name="nextButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding NextCommand}">Next</Button>
             <Button x:Name="cancelButton" Style="{StaticResource MaterialDesignOutlinedButton}" IsCancel="True" Content="Cancel"/>
         </StackPanel>

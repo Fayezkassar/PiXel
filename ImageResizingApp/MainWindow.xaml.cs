@@ -1,6 +1,4 @@
-﻿using ImageResizingApp.Models.Interfaces;
-using ImageResizingApp.Models.Oracle;
-using ImageResizingApp.ViewModels;
+﻿using ImageResizingApp.ViewModels;
 using ImageResizingApp.Views.Windows;
 using System;
 using System.Collections.Generic;

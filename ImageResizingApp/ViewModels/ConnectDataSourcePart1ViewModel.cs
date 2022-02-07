@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace ImageResizingApp.ViewModels
@@ -8,9 +9,10 @@ namespace ImageResizingApp.ViewModels
     {
         private DataSourceRegistry _dataSourceRegistry;
 
-        public List<string> DataSourceNames;
-
         private string _dataSourceName;
+
+        [Required]
+        [DisplayAttribute(Name = "Data Source Name")]
         public string DataSourceName
         {
             get
@@ -19,18 +21,35 @@ namespace ImageResizingApp.ViewModels
             }
             set
             {
-                _dataSourceName = value;
-                OnPropertyChanged();
+                SetProperty(ref _dataSourceName, value, true);
             }
+        }
+
+        private string _selectedDataSourceType;
+
+        [Required]
+        [DisplayAttribute(Name = "Data Source Type")]
+        public string SelectedDataSourceType {
+            get
+            {
+                return _selectedDataSourceType;
+            }
+            set 
+            {
+                SetProperty(ref _selectedDataSourceType, value, true);
+            }
+        }
+
+        public List<string> DataSourceTypes
+        {
+            get
+            {
+                return _dataSourceRegistry.GetKeys();
+            }  
         }
         public ConnectDataSourcePart1ViewModel(DataSourceRegistry dataSourceRegistry)
         {
             _dataSourceRegistry = dataSourceRegistry;
-            setDataSourceNamesFromRegistry();
-        }
-        private void setDataSourceNamesFromRegistry()
-        {
-            DataSourceNames = _dataSourceRegistry.GetDataSourceNames();
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using ImageResizingApp.ViewModels;
 using ImageResizingApp.Views.Windows;
+using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,8 +29,8 @@ namespace ImageResizingApp
         {
             InitializeComponent();
             _dataSourceRegistry = dataSourceRegistry;
-            OpenConnectToDataSourceDialog();
-        
+            //OpenConnectToDataSourceDialog();
+
         }
 
         private void OpenConnectToDataSourceDialog()

@@ -1,35 +1,68 @@
 ﻿using ImageResizingApp.Models.Interfaces;
+using ImageResizingApp.Stores;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Security;
 
 namespace ImageResizingApp.ViewModels
 {
     public class ConnectDataSourcePart2ViewModel : ViewModelBase
     {
-        private IDataSource _dataSource;
-        public IDataSource DataSource
-        {
-            get
-            {
-                return _dataSource;
-            }
-            set
-            {
-                SetProperty(ref _dataSource, value, false);
-            }
-        }
+        private readonly DataSourceRegistry _dataSourceRegistry;
+        private readonly DataSourceStore _dataSourceStore;
 
-        private DataSourceRegistry _dataSourceRegistry;
-        public ConnectDataSourcePart2ViewModel(DataSourceRegistry dataSourceRegistry)
+        private readonly ObservableCollection<ConnectionParameterViewModel> _connectionParameters;
+        public IEnumerable<ConnectionParameterViewModel> ConnectionParameters => _connectionParameters;
+        
+        public IDataSource _dataSource { get; set; }
+
+        public string Password { get; set; }
+
+        public ConnectDataSourcePart2ViewModel(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
+            _connectionParameters = new ObservableCollection<ConnectionParameterViewModel>();
             _dataSourceRegistry = dataSourceRegistry;
+            _dataSourceStore = dataSourceStore;
         }
 
-        public void SetDataSourceFromKey(string key)
+        public void SetDataSourceWithNameFromKey(string key, string name)
         {
-            DataSource = _dataSourceRegistry.getDataSourceFromKey(key);
+            _dataSource = _dataSourceRegistry.getDataSourceFromKey(key);
+            _dataSource.Name = name;
+        }
+
+        public void UpdateConnectionParameters()
+        {
+            _connectionParameters.Clear();
+            foreach (string param in _dataSource?.ConnectionParameters)
+            {
+                _connectionParameters.Add(new ConnectionParameterViewModel(param));
+            }
+        }
+        public bool ConnectAndStoreDataSource()
+        {
+            Dictionary<string, string> connectionParametersMap = new Dictionary<string, string>();
+            foreach (string paramName in _dataSource.ConnectionParameters)
+            {
+                ConnectionParameterViewModel param = ConnectionParameters.First(e => e.DisplayName == paramName);
+                if (param == null) return false;
+                if (param.IsPassword)
+                {
+                    connectionParametersMap.Add(paramName, Password.ToString());
+                }
+                else
+                {
+                    connectionParametersMap.Add(paramName, param.Value);
+                }
+            }
+
+            return _dataSourceStore.TryDataSourceConnection(_dataSource, connectionParametersMap);
+
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.Interfaces
 {
@@ -7,6 +8,6 @@ namespace ImageResizingApp.Models.Interfaces
     {
         public string Name { get; set; }
 
-        public List<IColumn> Columns { get; set; }
+        public Task<IEnumerable<IColumn>> getColumns();
     }
 }

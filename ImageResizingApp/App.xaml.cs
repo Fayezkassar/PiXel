@@ -1,11 +1,8 @@
 ﻿using ImageResizingApp.HostBuilders;
 using ImageResizingApp.Models.Interfaces;
 using ImageResizingApp.Models.Oracle;
-<<<<<<< HEAD
 using ImageResizingApp.Models.PostgreSQL;
-=======
 using ImageResizingApp.Stores;
->>>>>>> FYP-21
 using ImageResizingApp.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,16 +38,11 @@ namespace ImageResizingApp
         {
             _host.Start();
 
-<<<<<<< HEAD
-            _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("SQL Server", new SQLServerDataSource());
-            _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());
-=======
             List<string> connectionParameters = new List<string>();
             connectionParameters.Add("Username");
             connectionParameters.Add("Password");
             connectionParameters.Add("InitialCatalog");
-            _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("SQL Server", new SQLServerDataSource(connectionParameters));
->>>>>>> FYP-21
+            _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("SQL Server", new SQLServerDataSource());
             _host.Services.GetRequiredService<MainWindow>().Show();
 
             base.OnStartup(e);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.PostgreSQL
 {
@@ -13,6 +14,8 @@ namespace ImageResizingApp.Models.PostgreSQL
         public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public List<string> ConnectionParameters { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public List<ITable> Tables { get; set; }
+
+        IEnumerable<string> IDataSource.ConnectionParameters => throw new NotImplementedException();
 
         public IDataSource Clone()
         {
@@ -58,6 +61,11 @@ namespace ImageResizingApp.Models.PostgreSQL
                         select kvp.Key + "=" + kvp.Value;
 
             return string.Join(";", items);
+        }
+
+        public Task<IEnumerable<ITable>> getTables()
+        {
+            throw new NotImplementedException();
         }
     }
 }

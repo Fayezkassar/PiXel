@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.Interfaces
 {
     public interface ITable
     {
-        public String Name { get; set; }
+        public string Name { get; set; }
 
-        public List<IColumn> Columns { get; set; }
+        public Task<IEnumerable<IColumn>> getColumns();
     }
 }

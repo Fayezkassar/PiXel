@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ImageResizingApp.Stores;
+using ImageResizingApp.ViewModels;
+using ImageResizingApp.Views.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,37 +23,24 @@ namespace ImageResizingApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly DataSourceRegistry _dataSourceRegistry;
+        private readonly DataSourceStore _dataSourceStore;
+        public MainWindow(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
             InitializeComponent();
-            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            _dataSourceStore = dataSourceStore;
+            _dataSourceRegistry = dataSourceRegistry;
+            OpenConnectToDataSourceDialog();
+        
         }
 
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        private void OpenConnectToDataSourceDialog()
         {
-            this.DragMove();
-        }
-
-        private void closeApp(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void Maximize_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Normal)
-            {
-                this.WindowState = WindowState.Maximized;
-            }
-            else if (this.WindowState == WindowState.Maximized)
-            {
-                this.WindowState = WindowState.Normal;
-            }
-        }
-
-        private void Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
+            ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();
+            //connectDialog.ShowInTaskbar = false;
+            //connectDialog.Owner = this;
+            connectDialog.DataContext = new ConnectDataSourceWindowViewModel(_dataSourceRegistry, _dataSourceStore);
+            connectDialog.ShowDialog();
         }
     }
 }

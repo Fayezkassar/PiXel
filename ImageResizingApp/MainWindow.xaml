@@ -4,15 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:ImageResizingApp.Views"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" 
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        ResizeMode="NoResize"
-        Title="Welcome to the Image Resizer"
-        Height="500" Width="820"
-        Background="{DynamicResource MaterialDesignPaper}">
+        Title="Image Resizer"
+        WindowState="Maximized"
+        Style="{StaticResource MaterialDesignWindow}"
+        >
     <Grid>
-        <views:GetStartedView DataContext="{Binding CurrentViewModel}"></views:GetStartedView>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="51*"/>
+            <ColumnDefinition Width="113*"/>
+        </Grid.ColumnDefinitions>
     </Grid>
 
 </Window>

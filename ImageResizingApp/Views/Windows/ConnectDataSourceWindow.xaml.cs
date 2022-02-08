@@ -21,5 +21,8 @@ namespace ImageResizingApp.Views.Windows
         {
             InitializeComponent();
         }
+
+        private void closeButton_Click(object sender, RoutedEventArgs e) =>
+            Close();
     }
 }

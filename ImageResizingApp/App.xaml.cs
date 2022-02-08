@@ -1,6 +1,7 @@
 ﻿using ImageResizingApp.HostBuilders;
 using ImageResizingApp.Models.Interfaces;
 using ImageResizingApp.Models.Oracle;
+using ImageResizingApp.Stores;
 using ImageResizingApp.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,6 +26,7 @@ namespace ImageResizingApp
 
             {
                 services.AddSingleton(new DataSourceRegistry());
+                services.AddSingleton(new DataSourceStore());
                 services.AddSingleton(s => new MainWindow(s.GetRequiredService<DataSourceRegistry>())
                 {
                     DataContext = s.GetRequiredService<MainWindowViewModel>()
@@ -35,13 +37,18 @@ namespace ImageResizingApp
         {
             _host.Start();
 
-            _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("SQL Server", new SQLServerDataSource());
+            List<string> connectionParameters = new List<string>();
+            connectionParameters.Add("Username");
+            connectionParameters.Add("Password");
+            connectionParameters.Add("InitialCatalog");
+            _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("SQL Server", new SQLServerDataSource(connectionParameters));
             _host.Services.GetRequiredService<MainWindow>().Show();
 
             base.OnStartup(e);
         }
         protected override void OnExit(ExitEventArgs e)
         {
+
             _host.Dispose();
 
             base.OnExit(e);

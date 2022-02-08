@@ -1,4 +1,5 @@
 
+using ImageResizingApp.Exceptions;
 using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ public class DataSourceRegistry
 
     //private static DataSourceRegistry _instance;
 
-    private Dictionary<string,IDataSource> _dataSources = new Dictionary<string,IDataSource>();
+    private Dictionary<string, IDataSource> _dataSources = new Dictionary<string, IDataSource>();
 
     //public static DataSourceRegistry GetInstance()
     //{
@@ -34,6 +35,20 @@ public class DataSourceRegistry
     public void AddDataSource(string key, IDataSource dataSource)
     {
         this._dataSources.Add(key, dataSource);
+    }
+
+    public IDataSource getDataSourceFromKey(string key)
+    {
+        IDataSource dataSource;
+        if (this._dataSources.TryGetValue(key, out dataSource))
+        {
+            return dataSource.Clone();
+        }
+        else
+        {
+            throw new DataSourceNotFoundException(key);
+        }
+
     }
 
 }

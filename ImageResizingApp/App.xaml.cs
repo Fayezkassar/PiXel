@@ -1,6 +1,7 @@
 ﻿using ImageResizingApp.HostBuilders;
 using ImageResizingApp.Models.Interfaces;
 using ImageResizingApp.Models.Oracle;
+using ImageResizingApp.Models.PostgreSQL;
 using ImageResizingApp.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,6 +37,7 @@ namespace ImageResizingApp
             _host.Start();
 
             _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("SQL Server", new SQLServerDataSource());
+            _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());
             _host.Services.GetRequiredService<MainWindow>().Show();
 
             base.OnStartup(e);

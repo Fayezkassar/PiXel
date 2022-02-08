@@ -8,6 +8,10 @@ namespace ImageResizingApp.ViewModels
     public class ConnectDataSourcePart1ViewModel : ViewModelBase
     {
         private DataSourceRegistry _dataSourceRegistry;
+        public ConnectDataSourcePart1ViewModel(DataSourceRegistry dataSourceRegistry)
+        {
+            _dataSourceRegistry = dataSourceRegistry;
+        }
 
         private string _dataSourceName;
 
@@ -29,12 +33,13 @@ namespace ImageResizingApp.ViewModels
 
         [Required]
         [DisplayAttribute(Name = "Data Source Type")]
-        public string SelectedDataSourceType {
+        public string SelectedDataSourceType
+        {
             get
             {
                 return _selectedDataSourceType;
             }
-            set 
+            set
             {
                 SetProperty(ref _selectedDataSourceType, value, true);
             }
@@ -45,11 +50,7 @@ namespace ImageResizingApp.ViewModels
             get
             {
                 return _dataSourceRegistry.GetKeys();
-            }  
-        }
-        public ConnectDataSourcePart1ViewModel(DataSourceRegistry dataSourceRegistry)
-        {
-            _dataSourceRegistry = dataSourceRegistry;
+            }
         }
     }
 }

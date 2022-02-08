@@ -28,7 +28,7 @@ namespace ImageResizingApp
             {
                 services.AddSingleton(new DataSourceRegistry());
                 services.AddSingleton(new DataSourceStore());
-                services.AddSingleton(s => new MainWindow(s.GetRequiredService<DataSourceRegistry>())
+                services.AddSingleton(s => new MainWindow(s.GetRequiredService<DataSourceRegistry>(), s.GetRequiredService<DataSourceStore>())
                 {
                     DataContext = s.GetRequiredService<MainWindowViewModel>()
                 });

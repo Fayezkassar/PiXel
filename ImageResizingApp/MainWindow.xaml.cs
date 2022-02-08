@@ -1,4 +1,5 @@
-﻿using ImageResizingApp.ViewModels;
+﻿using ImageResizingApp.Stores;
+using ImageResizingApp.ViewModels;
 using ImageResizingApp.Views.Windows;
 using Npgsql;
 using System;
@@ -25,9 +26,11 @@ namespace ImageResizingApp
     public partial class MainWindow : Window
     {
         private readonly DataSourceRegistry _dataSourceRegistry;
-        public MainWindow(DataSourceRegistry dataSourceRegistry)
+        private readonly DataSourceStore _dataSourceStore;
+        public MainWindow(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
             InitializeComponent();
+            _dataSourceStore = dataSourceStore;
             _dataSourceRegistry = dataSourceRegistry;
             //OpenConnectToDataSourceDialog();
 
@@ -38,7 +41,7 @@ namespace ImageResizingApp
             ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();
             //connectDialog.ShowInTaskbar = false;
             //connectDialog.Owner = this;
-            connectDialog.DataContext = new ConnectDataSourceWindowViewModel(_dataSourceRegistry);
+            connectDialog.DataContext = new ConnectDataSourceWindowViewModel(_dataSourceRegistry, _dataSourceStore);
             connectDialog.ShowDialog();
         }
     }

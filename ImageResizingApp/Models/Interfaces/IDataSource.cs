@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.Interfaces
 {
@@ -7,9 +8,9 @@ namespace ImageResizingApp.Models.Interfaces
     {
         public string Name { get; set; }
 
-        public List<string> ConnectionParameters { get; set; }
+        public IEnumerable<string> ConnectionParameters { get; }
 
-        public List<ITable> Tables { get; set; }
+        public Task<IEnumerable<ITable>> getTables();
 
         public bool Open(Dictionary<string,string> connectionParametersMap);
 

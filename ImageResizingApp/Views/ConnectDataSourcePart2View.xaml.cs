@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ImageResizingApp.Stores;
+using ImageResizingApp.ViewModels;
+using ImageResizingApp.Views.Windows;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -20,7 +23,13 @@ namespace ImageResizingApp.Views
     {
         public ConnectDataSourcePart2View()
         {
+            
             InitializeComponent();
+        }
+
+        void PasswordChangedHandler(Object sender, RoutedEventArgs args)
+        {
+            ((ConnectDataSourcePart2ViewModel)DataContext).Password = ((PasswordBox)sender).Password;
         }
     }
 }

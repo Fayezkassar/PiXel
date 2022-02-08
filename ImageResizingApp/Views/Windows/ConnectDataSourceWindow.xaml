@@ -27,7 +27,7 @@
                 <views:ConnectDataSourcePart1View></views:ConnectDataSourcePart1View>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vms:ConnectDataSourcePart2ViewModel}">
-                <views:ConnectDataSourcePart2View></views:ConnectDataSourcePart2View>
+                <views:ConnectDataSourcePart2View ></views:ConnectDataSourcePart2View>
             </DataTemplate>
         </Grid.Resources>
         <ContentControl  Grid.Row="0" Content="{Binding CurrentViewModel}"></ContentControl>

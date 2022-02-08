@@ -26,21 +26,21 @@ public class DataSourceRegistry
     //    return _instance;
     //}
 
-    public List<string> GetKeys()
+    public IEnumerable<string> GetKeys()
     {
 
-        return this._dataSources.Keys.ToList();
+        return _dataSources.Keys;
     }
 
     public void AddDataSource(string key, IDataSource dataSource)
     {
-        this._dataSources.Add(key, dataSource);
+        _dataSources.Add(key, dataSource);
     }
 
     public IDataSource getDataSourceFromKey(string key)
     {
         IDataSource dataSource;
-        if (this._dataSources.TryGetValue(key, out dataSource))
+        if (_dataSources.TryGetValue(key, out dataSource))
         {
             return dataSource.Clone();
         }

@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using ImageResizingApp.Stores;
+using ImageResizingApp.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -26,25 +29,23 @@ namespace ImageResizingApp.ViewModels
         public ConnectDataSourcePart2ViewModel _part2ViewModel { get; }
 
         private string _continueButtonContent = "Next";
-
         public string ContinueButtonContent
         {
             get { return _continueButtonContent; }
             set { SetProperty(ref _continueButtonContent, value, false); }
         }
 
-
-        public ConnectDataSourceWindowViewModel(DataSourceRegistry dataSourceRegistry)
+        public ConnectDataSourceWindowViewModel(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
             _part1ViewModel = new ConnectDataSourcePart1ViewModel(dataSourceRegistry);
-            _part2ViewModel = new ConnectDataSourcePart2ViewModel(dataSourceRegistry);
+            _part2ViewModel = new ConnectDataSourcePart2ViewModel(dataSourceRegistry, dataSourceStore);
             CurrentViewModel = _part1ViewModel;
 
-            ContinueCommand = new RelayCommand<Window>(onContinue, canContinue);
-            PreviousCommand = new RelayCommand(onPrevious, canGoBack);
+            ContinueCommand = new RelayCommand<Window>(OnContinue, CanContinue);
+            PreviousCommand = new RelayCommand(OnPrevious, CanGoBack);
         }
 
-        private void onContinue(Window connectWindow)
+        private void OnContinue(Window connectWindow)
         {
             CurrentViewModel.Validate();
             if (!CurrentViewModel.HasErrors)
@@ -52,27 +53,37 @@ namespace ImageResizingApp.ViewModels
                 if (CurrentViewModel == _part1ViewModel)
                 {
                     ContinueButtonContent = "Finish";
-                    setDataSourceForPart2();
+                    SetPart2Fields();
                     CurrentViewModel = _part2ViewModel;
                     PreviousCommand.NotifyCanExecuteChanged();
 
                 }
+                else
                 {
-                    connectWindow.Close();
-                    //_part2ViewModel.DataSource.Open();
+                    foreach (ConnectionParameterViewModel param in _part2ViewModel.ConnectionParameters)
+                    {
+                        param.Validate();
+                        if (param.HasErrors) return;
+                    }
+                    if (_part2ViewModel.ConnectAndStoreDataSource())
+                    {
+                        //dialogService: Dispose() the view model
+                        connectWindow.Close();
+                    }
                 }
             }
         }
-        private bool canContinue(Window connectWindow) => true;
-        private void onPrevious() {
+        private bool CanContinue(Window connectWindow) => true;
+        private void OnPrevious() {
             ContinueButtonContent = "Next";
             CurrentViewModel = _part1ViewModel; 
-    }
-        private bool canGoBack() => _part2ViewModel == CurrentViewModel;
-        private void setDataSourceForPart2()
+        }
+        private bool CanGoBack() => CurrentViewModel == _part2ViewModel;
+
+        private void SetPart2Fields()
         {
-            _part2ViewModel.SetDataSourceFromKey(_part1ViewModel.SelectedDataSourceType);
-            _part2ViewModel.DataSource.Name = _part1ViewModel.DataSourceName;
+            _part2ViewModel.SetDataSourceWithNameFromKey(_part1ViewModel.SelectedDataSourceType, _part1ViewModel.DataSourceName);
+            _part2ViewModel.UpdateConnectionParameters();
         }
     }
 }

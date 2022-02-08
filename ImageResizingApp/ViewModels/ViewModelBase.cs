@@ -11,6 +11,7 @@ namespace ImageResizingApp.ViewModels
         {
             ValidateAllProperties();
         }
+
         public virtual void Dispose() { }
     }
 }

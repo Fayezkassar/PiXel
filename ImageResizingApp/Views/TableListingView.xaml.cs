@@ -18,9 +18,9 @@ namespace ImageResizingApp.Views
     /// <summary>
     /// Interaction logic for TableView.xaml
     /// </summary>
-    public partial class TableView : UserControl
+    public partial class TableListingView : UserControl
     {
-        public TableView()
+        public TableListingView()
         {
             InitializeComponent();
         }

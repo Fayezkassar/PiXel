@@ -11,7 +11,7 @@ namespace ImageResizingApp.ViewModels
 
         public MainWindowViewModel(DataSourceStore dataSourceStore)
         {
-            CurrentViewModel = new TablesViewModel(dataSourceStore);
+            CurrentViewModel = new TableListingViewModel(dataSourceStore);
         }
     }
 }

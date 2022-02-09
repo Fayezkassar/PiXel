@@ -4,22 +4,24 @@ using ImageResizingApp.Models.PostgreSQL;
 using ImageResizingApp.Stores;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 
 namespace ImageResizingApp.ViewModels
 {
-    public class TablesViewModel : ViewModelBase
+    public class TableListingViewModel : ViewModelBase
     {
         private readonly DataSourceStore _dataSourceStore;
 
-        public BindableCollection<ITable> tables { get; set; }
-       
+        private readonly ObservableCollection<ITable> _tables;
+        public IEnumerable<ITable> Tables => _tables;
 
-        public TablesViewModel(DataSourceStore dataSourceStore) 
+
+        public TableListingViewModel(DataSourceStore dataSourceStore) 
         {
             _dataSourceStore = dataSourceStore;
 
-            tables = new BindableCollection<ITable>(_dataSourceStore.getTables());
+            _tables = new ObservableCollection<ITable>(_dataSourceStore.getTables());
         }
 
 

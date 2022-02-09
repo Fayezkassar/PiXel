@@ -10,7 +10,7 @@
         Style="{StaticResource MaterialDesignWindow}"
         >
     <Grid>
-        <views:TableView DataContext="{Binding CurrentViewModel}" />
+        <views:TableListingView DataContext="{Binding CurrentViewModel}" />
     </Grid>
 
 </Window>

@@ -8,6 +8,7 @@ namespace ImageResizingApp.Models.Oracle
     public class SQLServerColumn : IColumn
     {
         public string Name { get; set; }
+
         public ColumnType ColumnType { get; set; }
     }
     }

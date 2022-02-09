@@ -8,18 +8,18 @@ using System.Text;
 
 namespace ImageResizingApp.ViewModels
 {
-    internal class TablesViewModel : ViewModelBase
+    public class TablesViewModel : ViewModelBase
     {
         private readonly DataSourceStore _dataSourceStore;
 
-        public BindableCollection<ITable> lvDataBinding { get; set; }
+        public BindableCollection<ITable> tables { get; set; }
        
 
         public TablesViewModel(DataSourceStore dataSourceStore) 
         {
             _dataSourceStore = dataSourceStore;
 
-            lvDataBinding = new BindableCollection<ITable>(_dataSourceStore.getTables());
+            tables = new BindableCollection<ITable>(_dataSourceStore.getTables());
         }
 
 

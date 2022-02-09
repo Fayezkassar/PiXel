@@ -9,9 +9,8 @@ namespace ImageResizingApp.Models.PostgreSQL
     public class PostgreSQLTable : ITable
     {
         public string Name { get ; set; }
-        public List<IColumn> Columns { get; set; }
 
-        public Task<IEnumerable<IColumn>> getColumns()
+        public IEnumerable<IColumn> getColumns()
         {
             throw new NotImplementedException();
         }

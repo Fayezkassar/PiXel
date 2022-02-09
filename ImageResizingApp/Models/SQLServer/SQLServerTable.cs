@@ -9,9 +9,15 @@ namespace ImageResizingApp.Models.Oracle
     public class SQLServerTable : ITable
     {
         public string Name { get; set; }
-        public async Task<IEnumerable<IColumn>> getColumns()
+
+        public IEnumerable<IColumn> getColumns()
         {
             throw new NotImplementedException();
+        }
+
+        public SQLServerTable(string name)
+        {
+            Name = name;
         }
     }
 }

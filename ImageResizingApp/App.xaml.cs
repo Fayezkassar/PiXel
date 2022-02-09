@@ -26,11 +26,11 @@ namespace ImageResizingApp
                 .ConfigureServices(services =>
 
             {
-                services.AddSingleton(new DataSourceRegistry());
-                services.AddSingleton(new DataSourceStore());
+                services.AddSingleton<DataSourceRegistry>();
+                services.AddSingleton<DataSourceStore>();
                 services.AddSingleton(s => new MainWindow(s.GetRequiredService<DataSourceRegistry>(), s.GetRequiredService<DataSourceStore>())
                 {
-                    DataContext = new MainWindowViewModel(s.GetRequiredService<DataSourceStore>())
+                    DataContext = s.GetRequiredService<MainWindowViewModel>()
                 });
             }).Build();
         }
@@ -47,6 +47,7 @@ namespace ImageResizingApp
         protected override void OnExit(ExitEventArgs e)
         {
 
+            _host.Services.GetRequiredService<DataSourceStore>().CloseDataSourceConnectionIfAny();
             _host.Dispose();
 
             base.OnExit(e);

@@ -35,6 +35,8 @@ namespace ImageResizingApp.ViewModels
             set { SetProperty(ref _continueButtonContent, value, false); }
         }
 
+        private string _selectedDataSourceType { get; set; }
+
         public ConnectDataSourceWindowViewModel(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
             _part1ViewModel = new ConnectDataSourcePart1ViewModel(dataSourceRegistry);
@@ -53,7 +55,13 @@ namespace ImageResizingApp.ViewModels
                 if (CurrentViewModel == _part1ViewModel)
                 {
                     ContinueButtonContent = "Finish";
-                    SetPart2Fields();
+                    if(_selectedDataSourceType != _part1ViewModel.SelectedDataSourceType)
+                    {
+                        _selectedDataSourceType = _part1ViewModel.SelectedDataSourceType;
+                        _part2ViewModel.SetDataSourceFromKey(_part1ViewModel.SelectedDataSourceType);
+                        _part2ViewModel.UpdateConnectionParameters();
+                    }
+                    _part2ViewModel.SetDataSourceName(_part1ViewModel.DataSourceName);
                     CurrentViewModel = _part2ViewModel;
                     PreviousCommand.NotifyCanExecuteChanged();
 
@@ -79,11 +87,5 @@ namespace ImageResizingApp.ViewModels
             CurrentViewModel = _part1ViewModel; 
         }
         private bool CanGoBack() => CurrentViewModel == _part2ViewModel;
-
-        private void SetPart2Fields()
-        {
-            _part2ViewModel.SetDataSourceWithNameFromKey(_part1ViewModel.SelectedDataSourceType, _part1ViewModel.DataSourceName);
-            _part2ViewModel.UpdateConnectionParameters();
-        }
     }
 }

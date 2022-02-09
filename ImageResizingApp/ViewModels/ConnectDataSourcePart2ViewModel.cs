@@ -30,9 +30,14 @@ namespace ImageResizingApp.ViewModels
             _dataSourceStore = dataSourceStore;
         }
 
-        public void SetDataSourceWithNameFromKey(string key, string name)
+        public void SetDataSourceFromKey(string key)
         {
             _dataSource = _dataSourceRegistry.getDataSourceFromKey(key);
+            
+        }
+
+        public void SetDataSourceName(string name)
+        {
             _dataSource.Name = name;
         }
 
@@ -61,7 +66,7 @@ namespace ImageResizingApp.ViewModels
                 }
             }
 
-            return _dataSourceStore.TryDataSourceConnection(_dataSource, connectionParametersMap);
+            return _dataSourceStore.OpenDataSourceConnection(_dataSource, connectionParametersMap);
 
         }
     }

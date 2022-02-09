@@ -11,13 +11,13 @@ namespace ImageResizingApp.Models.Oracle
     public class SQLServerDataSource : IDataSource
     {
         public string Name { get; set; }
-        public IEnumerable<string> ConnectionParameters { get; }
-        public List<ITable> Tables { get; set ; }
 
-        public async Task<IEnumerable<ITable>> getTables()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<string> ConnectionParameters { get; }
+
+        private SqlConnection _connection;
+
+        public IEnumerable<ITable> Tables { get; set; }
+
         public SQLServerDataSource()
         {
             List<string> connectionParameters = new List<string>();
@@ -34,7 +34,16 @@ namespace ImageResizingApp.Models.Oracle
 
         public bool Close()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _connection.Close();
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool Open(Dictionary<string, string> connectionParametersMap)
@@ -47,8 +56,21 @@ namespace ImageResizingApp.Models.Oracle
                 builder.UserID = connectionParametersMap.GetValueOrDefault("Username");
                 builder.Password = connectionParametersMap.GetValueOrDefault("Password");
                 builder.InitialCatalog = connectionParametersMap.GetValueOrDefault("Initial Catalog");
-                SqlConnection connection = new SqlConnection(builder.ConnectionString);
-                connection.Open();
+                _connection = new SqlConnection(builder.ConnectionString);
+                _connection.Open();
+                string sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+                List<ITable> tables = new List<ITable>();
+                using (SqlCommand command = new SqlCommand(sql, _connection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            tables.Add(new SQLServerTable(reader.GetString(0)));
+                        }
+                    }
+                }
+                Tables = tables;
                 return true;
             }
             catch

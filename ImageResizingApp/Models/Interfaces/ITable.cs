@@ -8,6 +8,6 @@ namespace ImageResizingApp.Models.Interfaces
     {
         public string Name { get; set; }
 
-        public Task<IEnumerable<IColumn>> getColumns();
+        public IEnumerable<IColumn> getColumns();
     }
 }

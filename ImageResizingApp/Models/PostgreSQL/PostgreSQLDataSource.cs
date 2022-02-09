@@ -12,8 +12,10 @@ namespace ImageResizingApp.Models.PostgreSQL
     public class PostgreSQLDataSource : IDataSource
     {
         public string Name { get; set; }
+
+        public IEnumerable<ITable> Tables { get; set; }
+
         public IEnumerable<string> ConnectionParameters { get; }
-        public List<ITable> Tables { get; set; }
 
         private NpgsqlConnection _connection;
 
@@ -35,7 +37,16 @@ namespace ImageResizingApp.Models.PostgreSQL
 
         public bool Close()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _connection.Close();
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool Open(Dictionary<string, string> connectionParametersMap)
@@ -47,7 +58,7 @@ namespace ImageResizingApp.Models.PostgreSQL
                 _connection = new NpgsqlConnection(cs);
                 _connection.Open();
 
-                var sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES ";
+                string sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES ";
 
                 using var cmd = new NpgsqlCommand(sql, _connection);
 
@@ -55,15 +66,18 @@ namespace ImageResizingApp.Models.PostgreSQL
 
                 Trace.WriteLine($"{rdr.GetName(0),-4}");
 
-                Tables = new List<ITable>();
+                List<ITable> tables = new List<ITable>();
 
                 while (rdr.Read())
                 {
-                    Tables.Add(new PostgreSQLTable()
+                    tables.Add(new PostgreSQLTable()
                     {
                         Name = rdr.GetString(0),
                     });
+
                 }
+
+                Tables = tables;
 
                 return true;
             }
@@ -79,11 +93,6 @@ namespace ImageResizingApp.Models.PostgreSQL
                         select kvp.Key + "=" + kvp.Value;
 
             return string.Join(";", items);
-        }
-
-        public Task<IEnumerable<ITable>> getTables()
-        {
-            throw new NotImplementedException();
         }
     }
 }

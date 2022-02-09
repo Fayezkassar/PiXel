@@ -7,6 +7,7 @@ namespace ImageResizingApp.Models.Interfaces
     public interface IColumn
     {
         public string Name { get; set; }
+
         public ColumnType ColumnType { get; set; }
 
     }

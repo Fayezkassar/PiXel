@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ImageResizingApp.Views" xmlns:system="clr-namespace:System;assembly=System.Runtime"
+              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -11,22 +11,22 @@
             <RowDefinition Height="70"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Margin="10 20 0 0" FontSize="18" Text="Pick a table column to resize"></TextBlock>
+        <TextBlock Margin="10 20 0 0" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="Pick a table column to resize"></TextBlock>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="400"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"  Margin="0, 40, 0 0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding Tables}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Style="{StaticResource MaterialDesignFlatLightBgButton}" Content="{Binding Name}" Margin="10,5,0,0" />
+                            <Button HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignFlatLightBgButton}" Content="{Binding Name}" Margin="10,0,5,5" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <TabControl Margin="10" BorderBrush="Gainsboro" Grid.Column="1">
+            <TabControl Grid.Column="1">
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
                         <Setter Property="Template">
@@ -52,15 +52,9 @@
                         </Setter>
                     </Style>
                 </TabControl.Resources>
-                <TabItem Header="Stats">
-                    <Label Content="Stats goes here..."  />
-                </TabItem>
-                <TabItem Header="Columns">
-                    <Label Content="Columns goes here..."  />
-                </TabItem>
-                <TabItem Header="Data">
-                    <Label Content="Data goes here..." />
-                </TabItem>
+                <TabItem Header="Stats"/>
+                <TabItem Header="Columns" />
+                <TabItem Header="Data" />
             </TabControl>
         </Grid>
     </Grid>

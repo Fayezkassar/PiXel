@@ -7,8 +7,7 @@
         mc:Ignorable="d" 
         Title="Image Resizer"
         WindowState="Maximized"
-        Style="{StaticResource MaterialDesignWindow}"
-        >
+        Style="{StaticResource MaterialDesignWindow}">
     <Grid>
         <views:TableListingView DataContext="{Binding CurrentViewModel}" />
     </Grid>

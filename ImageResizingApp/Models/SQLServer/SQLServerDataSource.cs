@@ -53,9 +53,9 @@ namespace ImageResizingApp.Models.Oracle
                 SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
 
                 builder.DataSource = Name;
+                builder.InitialCatalog = connectionParametersMap.GetValueOrDefault("Initial Catalog");
                 builder.UserID = connectionParametersMap.GetValueOrDefault("Username");
                 builder.Password = connectionParametersMap.GetValueOrDefault("Password");
-                builder.InitialCatalog = connectionParametersMap.GetValueOrDefault("Initial Catalog");
                 _connection = new SqlConnection(builder.ConnectionString);
                 _connection.Open();
                 string sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME";

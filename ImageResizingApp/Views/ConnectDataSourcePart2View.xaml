@@ -28,6 +28,9 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ContentControl Content="{Binding}">
+                            <Validation.ErrorTemplate>
+                                <ControlTemplate />
+                            </Validation.ErrorTemplate>
                             <ContentControl.Style>
                                 <Style TargetType="ContentControl">
                                     <Style.Triggers>

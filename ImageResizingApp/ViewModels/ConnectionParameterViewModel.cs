@@ -10,6 +10,8 @@ namespace ImageResizingApp.ViewModels
         public string DisplayName { get; }
 
         private string _value;
+        [Required]
+        [DisplayAttribute(Name ="above")]
         public string Value
         {
             get

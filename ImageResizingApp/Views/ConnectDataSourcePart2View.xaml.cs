@@ -29,7 +29,7 @@ namespace ImageResizingApp.Views
 
         void PasswordChangedHandler(Object sender, RoutedEventArgs args)
         {
-            ((ConnectDataSourcePart2ViewModel)DataContext).Password = ((PasswordBox)sender).Password;
+            ((ConnectDataSourcePart2ViewModel)DataContext).SetPassword(((PasswordBox)sender).Password);
         }
     }
 }

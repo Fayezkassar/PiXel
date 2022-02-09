@@ -15,13 +15,11 @@ namespace ImageResizingApp.ViewModels
     {
         private readonly DataSourceRegistry _dataSourceRegistry;
         private readonly DataSourceStore _dataSourceStore;
-
+       
         private readonly ObservableCollection<ConnectionParameterViewModel> _connectionParameters;
         public IEnumerable<ConnectionParameterViewModel> ConnectionParameters => _connectionParameters;
         
         public IDataSource _dataSource { get; set; }
-
-        public string Password { get; set; }
 
         public ConnectDataSourcePart2ViewModel(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
@@ -56,18 +54,14 @@ namespace ImageResizingApp.ViewModels
             {
                 ConnectionParameterViewModel param = ConnectionParameters.First(e => e.DisplayName == paramName);
                 if (param == null) return false;
-                if (param.IsPassword)
-                {
-                    connectionParametersMap.Add(paramName, Password.ToString());
-                }
-                else
-                {
-                    connectionParametersMap.Add(paramName, param.Value);
-                }
+                connectionParametersMap.Add(paramName, param.Value);
             }
 
             return _dataSourceStore.OpenDataSourceConnection(_dataSource, connectionParametersMap);
-
+        }
+        public void SetPassword(string password)
+        {
+            ConnectionParameters.First(e=>e.IsPassword).Value = password;
         }
     }
 }

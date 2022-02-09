@@ -68,11 +68,13 @@ namespace ImageResizingApp.ViewModels
                 }
                 else
                 {
+                    bool errors = false;
                     foreach (ConnectionParameterViewModel param in _part2ViewModel.ConnectionParameters)
                     {
                         param.Validate();
-                        if (param.HasErrors) return;
+                        if (param.HasErrors) errors = true;
                     }
+                    if (errors) return;
                     if (_part2ViewModel.ConnectAndStoreDataSource())
                     {
                         //dialogService: Dispose() the view model

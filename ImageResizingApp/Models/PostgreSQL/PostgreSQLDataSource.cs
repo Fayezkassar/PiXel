@@ -22,10 +22,10 @@ namespace ImageResizingApp.Models.PostgreSQL
         public PostgreSQLDataSource()
         {
             List<string> connectionParameters = new List<string>();
+            connectionParameters.Add("Database");
             connectionParameters.Add("Host");
             connectionParameters.Add("Username");
             connectionParameters.Add("Password");
-            connectionParameters.Add("Database");
             ConnectionParameters = connectionParameters;
 
         }

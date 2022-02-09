@@ -30,7 +30,11 @@
                 <views:ConnectDataSourcePart2View ></views:ConnectDataSourcePart2View>
             </DataTemplate>
         </Grid.Resources>
-        <ContentControl  Grid.Row="0" Content="{Binding CurrentViewModel}"></ContentControl>
+        <ContentControl  Grid.Row="0" Content="{Binding CurrentViewModel}">
+            <Validation.ErrorTemplate>
+                <ControlTemplate />
+            </Validation.ErrorTemplate>
+        </ContentControl>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="1" >
             <Button Name="previousButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" Command="{Binding PreviousCommand}">Previous</Button>
             <Button Name="nextButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding ContinueCommand}" CommandParameter="{Binding ElementName=ConnectWindow}" Content="{Binding ContinueButtonContent}"></Button>

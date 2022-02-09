@@ -1,6 +1,4 @@
-﻿using Caliburn.Micro;
-using ImageResizingApp.Models.Interfaces;
-using ImageResizingApp.Models.PostgreSQL;
+﻿using ImageResizingApp.Models.Interfaces;
 using ImageResizingApp.Stores;
 using System;
 using System.Collections.Generic;
@@ -14,8 +12,8 @@ namespace ImageResizingApp.ViewModels
         private readonly DataSourceStore _dataSourceStore;
 
         private readonly ObservableCollection<ITable> _tables;
-        public IEnumerable<ITable> Tables => _tables;
 
+        public IEnumerable<ITable> Tables => _tables;
 
         public TableListingViewModel(DataSourceStore dataSourceStore) 
         {

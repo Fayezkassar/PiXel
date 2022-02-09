@@ -10,6 +10,8 @@ namespace ImageResizingApp.Models.Interfaces
 
         public IEnumerable<string> ConnectionParameters { get; }
 
+        public List<ITable> Tables { get; set; }
+
         public Task<IEnumerable<ITable>> getTables();
 
         public bool Open(Dictionary<string,string> connectionParametersMap);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImageResizingApp.Stores;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,6 +9,9 @@ namespace ImageResizingApp.ViewModels
     {
         public ViewModelBase CurrentViewModel { get; }
 
-        public MainWindowViewModel() { }
+        public MainWindowViewModel(DataSourceStore dataSourceStore)
+        {
+            CurrentViewModel = new TablesViewModel(dataSourceStore);
+        }
     }
 }

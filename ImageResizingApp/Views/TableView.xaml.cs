@@ -23,27 +23,6 @@ namespace ImageResizingApp.Views
         public TableView()
         {
             InitializeComponent();
-
-            PostgreSQLDataSource dataSource = new PostgreSQLDataSource();
-
-            Dictionary<string, string> connectionParametersMap = new Dictionary<string, string>();
-            connectionParametersMap.Add("Host", "localhost:5432");
-            connectionParametersMap.Add("Username", "postgres");
-            connectionParametersMap.Add("Password", "mypass");
-            connectionParametersMap.Add("Database", "impact");
-            if (dataSource.Open(connectionParametersMap))
-            {
-                List<string> items = new List<string>();
-
-
-                foreach (PostgreSQLTable table in dataSource.Tables)
-                {
-                    items.Add(table.Name);
-                }
-
-                lvDataBinding.ItemsSource = items;
-            }
-
         }
     }
 }

@@ -12,6 +12,8 @@ namespace ImageResizingApp.Models.Oracle
     {
         public string Name { get; set; }
         public IEnumerable<string> ConnectionParameters { get; }
+        public List<ITable> Tables { get; set ; }
+
         public async Task<IEnumerable<ITable>> getTables()
         {
             throw new NotImplementedException();

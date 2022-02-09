@@ -32,8 +32,7 @@ namespace ImageResizingApp
             InitializeComponent();
             _dataSourceStore = dataSourceStore;
             _dataSourceRegistry = dataSourceRegistry;
-            //OpenConnectToDataSourceDialog();
-
+            OpenConnectToDataSourceDialog();
         }
 
         private void OpenConnectToDataSourceDialog()

@@ -16,5 +16,10 @@ namespace ImageResizingApp.Stores
             if (connected) _dataSource = dataSource;
             return connected;
         }
+
+        public List<ITable> getTables()
+        {
+            return _dataSource.Tables;
+        }
     }
 }

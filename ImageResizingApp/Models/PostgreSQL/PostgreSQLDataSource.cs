@@ -11,15 +11,26 @@ namespace ImageResizingApp.Models.PostgreSQL
 {
     public class PostgreSQLDataSource : IDataSource
     {
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public List<string> ConnectionParameters { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Name { get; set; }
+        public IEnumerable<string> ConnectionParameters { get; }
         public List<ITable> Tables { get; set; }
 
-        IEnumerable<string> IDataSource.ConnectionParameters => throw new NotImplementedException();
+        private NpgsqlConnection _connection;
+
+        public PostgreSQLDataSource()
+        {
+            List<string> connectionParameters = new List<string>();
+            connectionParameters.Add("Host");
+            connectionParameters.Add("Username");
+            connectionParameters.Add("Password");
+            connectionParameters.Add("Database");
+            ConnectionParameters = connectionParameters;
+
+        }
 
         public IDataSource Clone()
         {
-            throw new NotImplementedException();
+            return (IDataSource)this.MemberwiseClone();
         }
 
         public bool Close()
@@ -29,30 +40,37 @@ namespace ImageResizingApp.Models.PostgreSQL
 
         public bool Open(Dictionary<string, string> connectionParametersMap)
         {
-            string cs = ToConnectionString(connectionParametersMap);
-
-            using var con = new NpgsqlConnection(cs);
-            con.Open();
-
-            var sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES ";
-
-            using var cmd = new NpgsqlCommand(sql, con);
-
-            using NpgsqlDataReader rdr = cmd.ExecuteReader();
-
-            Trace.WriteLine($"{rdr.GetName(0),-4}");
-
-            Tables = new List<ITable>();
-
-            while (rdr.Read())
+            try
             {
-                Tables.Add(new PostgreSQLTable()
-                {
-                    Name = rdr.GetString(0),
-                });
-            }
+                string cs = ToConnectionString(connectionParametersMap);
 
-            return true;
+                _connection = new NpgsqlConnection(cs);
+                _connection.Open();
+
+                var sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES ";
+
+                using var cmd = new NpgsqlCommand(sql, _connection);
+
+                using NpgsqlDataReader rdr = cmd.ExecuteReader();
+
+                Trace.WriteLine($"{rdr.GetName(0),-4}");
+
+                Tables = new List<ITable>();
+
+                while (rdr.Read())
+                {
+                    Tables.Add(new PostgreSQLTable()
+                    {
+                        Name = rdr.GetString(0),
+                    });
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public static string ToConnectionString(Dictionary<string, string> connectionParametersMap)

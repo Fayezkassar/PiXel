@@ -30,7 +30,7 @@ namespace ImageResizingApp
                 services.AddSingleton(new DataSourceStore());
                 services.AddSingleton(s => new MainWindow(s.GetRequiredService<DataSourceRegistry>(), s.GetRequiredService<DataSourceStore>())
                 {
-                    DataContext = s.GetRequiredService<MainWindowViewModel>()
+                    DataContext = new MainWindowViewModel(s.GetRequiredService<DataSourceStore>())
                 });
             }).Build();
         }
@@ -38,11 +38,8 @@ namespace ImageResizingApp
         {
             _host.Start();
 
-            List<string> connectionParameters = new List<string>();
-            connectionParameters.Add("Username");
-            connectionParameters.Add("Password");
-            connectionParameters.Add("InitialCatalog");
             _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("SQL Server", new SQLServerDataSource());
+            _host.Services.GetRequiredService<DataSourceRegistry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());
             _host.Services.GetRequiredService<MainWindow>().Show();
 
             base.OnStartup(e);

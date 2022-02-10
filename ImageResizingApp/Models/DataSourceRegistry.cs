@@ -23,14 +23,7 @@ public class DataSourceRegistry
     public IDataSource getDataSourceFromKey(string key)
     {
         IDataSource dataSource;
-        if (_dataSources.TryGetValue(key, out dataSource))
-        {
-            return dataSource.Clone();
-        }
-        else
-        {
-            throw new DataSourceNotFoundException(key);
-        }
-
+        _dataSources.TryGetValue(key, out dataSource);
+        return dataSource?.Clone();
     }
 }

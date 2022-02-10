@@ -23,7 +23,6 @@ namespace ImageResizingApp.Views
     {
         public ConnectDataSourcePart2View()
         {
-            
             InitializeComponent();
         }
 

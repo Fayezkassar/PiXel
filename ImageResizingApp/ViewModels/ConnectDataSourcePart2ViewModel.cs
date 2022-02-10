@@ -3,11 +3,9 @@ using ImageResizingApp.Stores;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using System.Security;
 
 namespace ImageResizingApp.ViewModels
 {
@@ -31,7 +29,6 @@ namespace ImageResizingApp.ViewModels
         public void SetDataSourceFromKey(string key)
         {
             _dataSource = _dataSourceRegistry.getDataSourceFromKey(key);
-            
         }
 
         public void SetDataSourceName(string name)
@@ -42,7 +39,7 @@ namespace ImageResizingApp.ViewModels
         public void UpdateConnectionParameters()
         {
             _connectionParameters.Clear();
-            foreach (string param in _dataSource?.ConnectionParameters)
+            foreach (string param in _dataSource.ConnectionParameters)
             {
                 _connectionParameters.Add(new ConnectionParameterViewModel(param));
             }

@@ -25,8 +25,8 @@ namespace ImageResizingApp.ViewModels
             }
         }
 
-        public ConnectDataSourcePart1ViewModel _part1ViewModel { get; }
-        public ConnectDataSourcePart2ViewModel _part2ViewModel { get; }
+        private ConnectDataSourcePart1ViewModel _part1ViewModel { get; }
+        private ConnectDataSourcePart2ViewModel _part2ViewModel { get; }
 
         private string _continueButtonContent = "Next";
         public string ContinueButtonContent
@@ -64,17 +64,10 @@ namespace ImageResizingApp.ViewModels
                     _part2ViewModel.SetDataSourceName(_part1ViewModel.DataSourceName);
                     CurrentViewModel = _part2ViewModel;
                     PreviousCommand.NotifyCanExecuteChanged();
-
                 }
                 else
                 {
-                    bool errors = false;
-                    foreach (ConnectionParameterViewModel param in _part2ViewModel.ConnectionParameters)
-                    {
-                        param.Validate();
-                        if (param.HasErrors) errors = true;
-                    }
-                    if (errors) return;
+                    if (!ValidatePart2ConnectionParameters()) return;
                     if (_part2ViewModel.ConnectAndStoreDataSource())
                     {
                         //dialogService: Dispose() the view model
@@ -86,8 +79,19 @@ namespace ImageResizingApp.ViewModels
         private bool CanContinue(Window connectWindow) => true;
         private void OnPrevious() {
             ContinueButtonContent = "Next";
-            CurrentViewModel = _part1ViewModel; 
+            CurrentViewModel = _part1ViewModel;
+            _part2ViewModel.SetPassword("");
         }
         private bool CanGoBack() => CurrentViewModel == _part2ViewModel;
+
+        private bool ValidatePart2ConnectionParameters()
+        {
+            foreach (ConnectionParameterViewModel param in _part2ViewModel.ConnectionParameters)
+            {
+                param.Validate();
+                if (param.HasErrors) return false;
+            }
+            return true;
+        }
     }
 }

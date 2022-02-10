@@ -25,7 +25,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <TabControl Grid.Column="1" Style="{StaticResource MaterialDesignNavigatilRailTabControl}"  TabStripPlacement="Top">
+            <TabControl Grid.Column="1" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" TabStripPlacement="Top">
                 <TabItem Header="Stats"/>
                 <TabItem Header="Columns" />
                 <TabItem Header="Data" />

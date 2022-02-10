@@ -21,9 +21,6 @@ namespace ImageResizingApp.ViewModels
 
             _tables = new ObservableCollection<ITable>(_dataSourceStore.getTables());
         }
-
-
-    
     }
        
 }

@@ -8,27 +8,10 @@ using System.Text;
 
 public class DataSourceRegistry
 {
-
-    public DataSourceRegistry()
-    {
-    }
-
-    //private static DataSourceRegistry _instance;
-
     private Dictionary<string, IDataSource> _dataSources = new Dictionary<string, IDataSource>();
-
-    //public static DataSourceRegistry GetInstance()
-    //{
-    //    if(_instance == null)
-    //    {
-    //        _instance = new DataSourceRegistry();
-    //    }
-    //    return _instance;
-    //}
 
     public IEnumerable<string> GetKeys()
     {
-
         return _dataSources.Keys;
     }
 
@@ -50,5 +33,4 @@ public class DataSourceRegistry
         }
 
     }
-
 }

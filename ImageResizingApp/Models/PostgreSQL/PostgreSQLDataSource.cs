@@ -58,7 +58,7 @@ namespace ImageResizingApp.Models.PostgreSQL
                 _connection = new NpgsqlConnection(cs);
                 _connection.Open();
 
-                string sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES ";
+                string sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name";
 
                 using var cmd = new NpgsqlCommand(sql, _connection);
 

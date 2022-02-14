@@ -18,6 +18,9 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public OracleDataSource()
         {
             List<string> connectionParameters = new List<string>();
+            connectionParameters.Add("Host");
+            connectionParameters.Add("Port");
+            connectionParameters.Add("Database");
             connectionParameters.Add("Username");
             connectionParameters.Add("Password");
             ConnectionParameters = connectionParameters;
@@ -36,8 +39,10 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public bool Open(Dictionary<string, string> connectionParametersMap)
         {
-            string oradb = "Data Source=localhost:1521/hdfTest;" 
-                + "User Id=SYS as SYSDBA;password=Testtest123;";
+            string oradb = "Data Source=(DESCRIPTION =" 
+                + "(ADDRESS = (PROTOCOL = TCP)(HOST = "+ connectionParametersMap.GetValueOrDefault("Host") + ")(PORT = "+ connectionParametersMap.GetValueOrDefault("Port") + "))" 
+                + "(CONNECT_DATA =" + "(SERVER = DEDICATED)" + "(SERVICE_NAME = "+ connectionParametersMap.GetValueOrDefault("Database") + ")));" 
+                + "User Id="+ connectionParametersMap.GetValueOrDefault("Username") + ";Password=" + connectionParametersMap.GetValueOrDefault("Password") + ";";
 
             _connection = new OracleConnection(oradb);
             _connection.Open();

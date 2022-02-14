@@ -1,13 +1,10 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using Npgsql;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ImageResizingApp.Models.PostgreSQL
+namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
     public class PostgreSQLDataSource : IDataSource
     {
@@ -32,7 +29,7 @@ namespace ImageResizingApp.Models.PostgreSQL
 
         public IDataSource Clone()
         {
-            return (IDataSource)this.MemberwiseClone();
+            return (IDataSource)MemberwiseClone();
         }
 
         public bool Close()

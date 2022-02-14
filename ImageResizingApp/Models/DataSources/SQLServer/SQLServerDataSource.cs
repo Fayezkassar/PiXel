@@ -1,12 +1,8 @@
-﻿using ImageResizingApp.Exceptions;
-using ImageResizingApp.Models.Interfaces;
-using System;
+﻿using ImageResizingApp.Models.Interfaces;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ImageResizingApp.Models.Oracle
+namespace ImageResizingApp.Models.DataSources.SQLServer
 {
     public class SQLServerDataSource : IDataSource
     {
@@ -29,7 +25,7 @@ namespace ImageResizingApp.Models.Oracle
         }
         public IDataSource Clone()
         {
-            return (IDataSource)this.MemberwiseClone();
+            return (IDataSource)MemberwiseClone();
         }
 
         public bool Close()

@@ -1,10 +1,8 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ImageResizingApp.Models.Oracle
+namespace ImageResizingApp.Models.DataSources.SQLServer
 {
     public class SQLServerTable : ITable
     {

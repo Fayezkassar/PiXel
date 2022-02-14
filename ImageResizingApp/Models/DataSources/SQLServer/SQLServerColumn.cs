@@ -1,9 +1,6 @@
 ﻿using ImageResizingApp.Models.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ImageResizingApp.Models.Oracle
+namespace ImageResizingApp.Models.DataSources.SQLServer
 {
     public class SQLServerColumn : IColumn
     {
@@ -11,4 +8,4 @@ namespace ImageResizingApp.Models.Oracle
 
         public ColumnType ColumnType { get; set; }
     }
-    }
+}

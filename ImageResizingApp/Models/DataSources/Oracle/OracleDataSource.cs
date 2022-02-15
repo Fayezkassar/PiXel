@@ -34,7 +34,16 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public bool Close()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _connection.Close();
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool Open(Dictionary<string, string> connectionParametersMap)

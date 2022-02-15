@@ -46,7 +46,21 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
             _connection = new OracleConnection(oradb);
             _connection.Open();
-            string test = "Connected to Oracle" + _connection.ServerVersion;
+
+            OracleCommand cmd = new OracleCommand("select table_name from user_tables", _connection);
+            OracleDataReader dr = cmd.ExecuteReader();
+
+            List<ITable> tables = new List<ITable>();
+
+            while (dr.Read())
+            {
+                tables.Add(new OracleTable()
+                {
+                    Name = dr.GetString(0)
+                });
+            }
+
+            Tables = tables;
 
             return true;
 

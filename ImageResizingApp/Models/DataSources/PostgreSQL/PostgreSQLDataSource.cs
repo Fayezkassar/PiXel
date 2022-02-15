@@ -61,8 +61,6 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
                 using NpgsqlDataReader rdr = cmd.ExecuteReader();
 
-                Trace.WriteLine($"{rdr.GetName(0),-4}");
-
                 List<ITable> tables = new List<ITable>();
 
                 while (rdr.Read())

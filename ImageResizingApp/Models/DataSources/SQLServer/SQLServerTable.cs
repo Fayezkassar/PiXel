@@ -1,18 +1,21 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ImageResizingApp.Models.PostgreSQL
+namespace ImageResizingApp.Models.DataSources.SQLServer
 {
-    public class PostgreSQLTable : ITable
+    public class SQLServerTable : ITable
     {
-        public string Name { get ; set; }
+        public string Name { get; set; }
 
         public IEnumerable<IColumn> getColumns()
         {
             throw new NotImplementedException();
+        }
+
+        public SQLServerTable(string name)
+        {
+            Name = name;
         }
     }
 }

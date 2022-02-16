@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ImageResizingApp.Models.PostgreSQL
+namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
     public class PostgresSQLColumn : IColumn
     {

@@ -2,22 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace ImageResizingApp.Models.Oracle
+namespace ImageResizingApp.Models.DataSources.Oracle
 {
-    public class SQLServerTable : ITable
+    internal class OracleTable : ITable
     {
         public string Name { get; set; }
 
         public IEnumerable<IColumn> getColumns()
         {
             throw new NotImplementedException();
-        }
-
-        public SQLServerTable(string name)
-        {
-            Name = name;
         }
     }
 }

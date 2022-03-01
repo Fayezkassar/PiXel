@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
+using ImageResizingApp.Models;
 
 namespace ImageResizingApp.Stores
 {
@@ -20,6 +22,18 @@ namespace ImageResizingApp.Stores
         public IEnumerable<ITable> getTables()
         {
             return _dataSource?.Tables ?? new List<ITable>();
+        }
+
+        public TableStats GetStatsByTableName(string tableName)
+        {
+            ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
+            return table.GetStats();
+        }
+
+        public IEnumerable<IColumn> GetColumnsStatsByTable(string tableName)
+        {
+            ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
+            return table.getColumns();
         }
 
         public void CloseDataSourceConnectionIfAny()

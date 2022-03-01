@@ -8,6 +8,8 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
     {
         public string Name { get; set; }
 
+        public string SchemaName { get; set; }
+
         public IEnumerable<IColumn> getColumns()
         {
             throw new NotImplementedException();
@@ -16,6 +18,11 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public SQLServerTable(string name)
         {
             Name = name;
+        }
+
+        public TableStats GetStats()
+        {
+            throw new NotImplementedException();
         }
     }
 }

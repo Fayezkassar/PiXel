@@ -55,7 +55,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
                 _connection = new NpgsqlConnection(cs);
                 _connection.Open();
 
-                string sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name";
+                string sql = "SELECT table_name, table_schema FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name";
 
                 using var cmd = new NpgsqlCommand(sql, _connection);
 
@@ -65,11 +65,11 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
                 while (rdr.Read())
                 {
-                    tables.Add(new PostgreSQLTable()
+                    tables.Add(new PostgreSQLTable(_connection)
                     {
                         Name = rdr.GetString(0),
+                        SchemaName = rdr.GetString(1),
                     });
-
                 }
 
                 Tables = tables;

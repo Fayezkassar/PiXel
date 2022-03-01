@@ -48,9 +48,9 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public bool Open(Dictionary<string, string> connectionParametersMap)
         {
-            string oradb = "Data Source=(DESCRIPTION =" 
-                + "(ADDRESS = (PROTOCOL = TCP)(HOST = "+ connectionParametersMap.GetValueOrDefault("Host") + ")(PORT = "+ connectionParametersMap.GetValueOrDefault("Port") + "))" 
-                + "(CONNECT_DATA =" + "(SERVER = DEDICATED)" + "(SERVICE_NAME = "+ connectionParametersMap.GetValueOrDefault("Database") + ")));" 
+            string oradb = "Data Source=(DESCRIPTION ="
+                + "(ADDRESS = (PROTOCOL = TCP)(HOST = " + connectionParametersMap.GetValueOrDefault("Host") + ")(PORT = " + connectionParametersMap.GetValueOrDefault("Port") + "))"
+                + "(CONNECT_DATA =" + "(SERVER = DEDICATED)" + "(SERVICE_NAME = " + connectionParametersMap.GetValueOrDefault("Database") + ")));"
                 + "User Id="+ connectionParametersMap.GetValueOrDefault("Username") + ";Password=" + connectionParametersMap.GetValueOrDefault("Password") + ";";
 
             _connection = new OracleConnection(oradb);
@@ -63,7 +63,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
             while (dr.Read())
             {
-                tables.Add(new OracleTable()
+                tables.Add(new OracleTable(_connection)
                 {
                     Name = dr.GetString(0)
                 });

@@ -9,5 +9,6 @@ namespace ImageResizingApp.Models.Interfaces
         public string Name { get; set; }
 
         public IEnumerable<IColumn> getColumns();
+        public TableStats GetStats();
     }
 }

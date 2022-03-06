@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using ImageResizingApp.Models;
+using System.Data;
 
 namespace ImageResizingApp.Stores
 {
@@ -27,18 +28,24 @@ namespace ImageResizingApp.Stores
         public TableStats GetStatsByTableName(string tableName)
         {
             ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table.GetStats();
+            return table?.GetStats();
         }
 
         public IEnumerable<IColumn> GetColumnsStatsByTable(string tableName)
         {
             ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table.getColumns();
+            return table?.getColumns();
         }
 
         public void CloseDataSourceConnectionIfAny()
         {
             if(_dataSource != null) _dataSource.Close();
+        }
+
+        internal DataTable GetDataByTableName(string tableName)
+        {
+            ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
+            return table?.getData();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
 {
@@ -21,6 +22,11 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         }
 
         public TableStats GetStats()
+        {
+            throw new NotImplementedException();
+        }
+
+        public DataTable getData()
         {
             throw new NotImplementedException();
         }

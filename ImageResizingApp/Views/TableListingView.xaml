@@ -23,7 +23,7 @@
                             <Button HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignPaperDarkButton}" 
                                     Content="{Binding Name}" 
                                     Margin="10,0,5,5"
-                                    Command="{Binding DataContext.TableCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    Command="{Binding DataContext.TableSelectedCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                     CommandParameter="{Binding Name}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -51,7 +51,11 @@
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
-                <TabItem Header="Data" />
+                <TabItem Header="Data">
+                    <DataGrid ItemsSource="{Binding Path=Data}">
+                        
+                    </DataGrid>
+                </TabItem>
             </TabControl>
         </Grid>
     </Grid>

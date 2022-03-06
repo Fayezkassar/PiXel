@@ -2,6 +2,7 @@
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
@@ -43,6 +44,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         {
             TableStats tableStats = new TableStats();
 
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!       ONE QUERY ONLY            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
             OracleCommand cmd = new OracleCommand("select BYTES from user_segments where segment_name = '" + Name + "'", _connection);
             decimal tableSize = (decimal)cmd.ExecuteScalar();
             tableStats.TableSize = SizeSuffix(tableSize);
@@ -51,7 +54,10 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             decimal recordNumber = (decimal)cmd1.ExecuteScalar();
             tableStats.RecordsNumber = recordNumber.ToString();
 
-            tableStats.RecordSize = SizeSuffix(tableSize/recordNumber);
+            if (recordNumber > 0)
+            {
+                tableStats.RecordSize = SizeSuffix(tableSize / recordNumber);
+            }
 
             return tableStats;
         }
@@ -67,6 +73,18 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 i++;
             }
             return string.Format("{0:n" + decimalPlaces + "} {1}", value, SizeSuffixes[i]);
+        }
+
+        public DataTable getData()
+        {
+            string sql = "select * from " + Name;
+
+            OracleCommand cmd = new OracleCommand(sql, _connection);
+
+            DataTable dt = new DataTable();
+            OracleDataAdapter dataAdapter = new OracleDataAdapter(cmd);
+            dataAdapter.Fill(dt);
+            return dt;
         }
     }
 }

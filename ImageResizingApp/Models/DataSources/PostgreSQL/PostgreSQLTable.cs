@@ -2,6 +2,7 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
@@ -20,9 +21,9 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         public IEnumerable<IColumn> getColumns()
         {
-            string sql = "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where \"table_name\" = '"+ Name + "' AND \"table_schema\" = '" + SchemaName + "'";
+            string sql = "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where \"table_name\" = '" + Name + "' AND \"table_schema\" = '" + SchemaName + "'";
 
-            using var cmd = new NpgsqlCommand(sql, _connection);
+            NpgsqlCommand cmd = new NpgsqlCommand(sql, _connection);
 
             using NpgsqlDataReader rdr = cmd.ExecuteReader();
 
@@ -38,7 +39,8 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             }
 
             rdr.Close();
-
+            
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!                         IMPORTANT NO QUERY IN A LOOP                !!!!!!!!!!!!!!!!!!!!!!!!!
             coulmns.ForEach(x =>
             {
                 NpgsqlCommand cmd1 = new NpgsqlCommand("select pg_size_pretty(sum(pg_column_size(\"" + x.Name + "\"))) as total_size from "+ SchemaName +".\"" + Name + "\"", _connection);
@@ -60,10 +62,23 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             }
             rdr.Close();
             NpgsqlCommand cmd = new NpgsqlCommand("select COUNT(*) FROM \"" + Name + "\"", _connection);
+
             long rowsNum = (long)cmd.ExecuteScalar();
             tableStats.RecordsNumber = rowsNum.ToString();
 
             return tableStats;
+        }
+
+        public DataTable getData()
+        {
+            string sql = "select * from " + SchemaName +".\"" + Name +"\"";
+
+            NpgsqlCommand cmd = new NpgsqlCommand(sql, _connection);
+
+            DataTable dt = new DataTable();
+            var dataAdapter = new NpgsqlDataAdapter(cmd);
+            dataAdapter.Fill(dt);
+            return dt;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using ImageResizingApp.Models.Interfaces;
+using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
@@ -8,9 +10,86 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
     {
         public string Name { get; set; }
 
-        public IEnumerable<IColumn> getColumns()
+        public string SchemaName { get; set; }
+
+        public NpgsqlConnection _connection { get; set; }
+
+        public PostgreSQLTable(NpgsqlConnection connection)
         {
-            throw new NotImplementedException();
+            _connection = connection;
+        }
+
+        public IEnumerable<IColumn> GetColumns()
+        {
+            List<IColumn> columns = new List<IColumn>();
+            try
+            {
+                string sql = "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where \"table_name\" = '" + Name + "' and \"table_schema\" = '" + SchemaName + "'";
+
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, _connection);
+
+                using NpgsqlDataReader rdr = cmd.ExecuteReader();
+
+
+                while (rdr.Read())
+                {
+                    columns.Add(new PostgresSQLColumn()
+                    {
+                        Name = rdr.GetString(0),
+                        ColumnType = rdr.GetString(1),
+                    });
+                }
+                rdr.Close();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return columns;
+        }
+
+
+        public TableStats GetStats()
+        {
+            TableStats tableStats = new TableStats();
+            try
+            {
+                using NpgsqlDataReader rdr = new NpgsqlCommand("select pg_size_pretty(pg_total_relation_size('\"" + Name + "\"'))", _connection).ExecuteReader();
+                while (rdr.Read())
+                {
+                    tableStats.TableSize = rdr.GetString(0);
+                }
+                rdr.Close();
+                NpgsqlCommand cmd = new NpgsqlCommand("select COUNT(*) FROM \"" + Name + "\"", _connection);
+
+                long rowsNum = (long)cmd.ExecuteScalar();
+                tableStats.RecordsNumber = rowsNum.ToString();
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return tableStats;
+        }
+
+        public DataTable GetData()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                string sql = "SELECT * FROM " + SchemaName + ".\"" + Name + "\"";
+
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, _connection);
+                var dataAdapter = new NpgsqlDataAdapter(cmd);
+                dataAdapter.Fill(dt);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return dt;
         }
     }
 }

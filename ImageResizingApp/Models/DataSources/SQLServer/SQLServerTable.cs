@@ -1,6 +1,7 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
 {
@@ -8,7 +9,9 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
     {
         public string Name { get; set; }
 
-        public IEnumerable<IColumn> getColumns()
+        public string SchemaName { get; set; }
+
+        public IEnumerable<IColumn> GetColumns()
         {
             throw new NotImplementedException();
         }
@@ -16,6 +19,16 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public SQLServerTable(string name)
         {
             Name = name;
+        }
+
+        public TableStats GetStats()
+        {
+            throw new NotImplementedException();
+        }
+
+        public DataTable GetData()
+        {
+            throw new NotImplementedException();
         }
     }
 }

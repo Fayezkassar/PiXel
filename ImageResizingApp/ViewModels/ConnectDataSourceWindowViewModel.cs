@@ -1,12 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using ImageResizingApp.Stores;
-using ImageResizingApp.Views.Windows;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace ImageResizingApp.ViewModels
 {

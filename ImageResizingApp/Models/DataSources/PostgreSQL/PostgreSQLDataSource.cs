@@ -50,12 +50,10 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
         {
             try
             {
-                string cs = ToConnectionString(connectionParametersMap);
-
-                _connection = new NpgsqlConnection(cs);
+                SetConnection(connectionParametersMap);
                 _connection.Open();
 
-                string sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name";
+                string sql = "SELECT table_name, table_schema FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name";
 
                 using var cmd = new NpgsqlCommand(sql, _connection);
 
@@ -65,11 +63,11 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
                 while (rdr.Read())
                 {
-                    tables.Add(new PostgreSQLTable()
+                    tables.Add(new PostgreSQLTable(_connection)
                     {
                         Name = rdr.GetString(0),
+                        SchemaName = rdr.GetString(1),
                     });
-
                 }
 
                 Tables = tables;
@@ -82,12 +80,12 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             }
         }
 
-        public static string ToConnectionString(Dictionary<string, string> connectionParametersMap)
+        private void SetConnection(Dictionary<string, string> connectionParametersMap)
         {
             var items = from kvp in connectionParametersMap
                         select kvp.Key + "=" + kvp.Value;
 
-            return string.Join(";", items);
+            _connection = new NpgsqlConnection(string.Join(";", items));
         }
     }
 }

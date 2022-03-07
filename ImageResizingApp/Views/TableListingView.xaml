@@ -20,15 +20,37 @@
                 <ItemsControl ItemsSource="{Binding Tables}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignPaperDarkButton}" Content="{Binding Name}" Margin="10,0,5,5" />
+                            <Button HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignPaperDarkButton}" 
+                                    Content="{Binding Name}" 
+                                    Margin="10,0,5,5"
+                                    Command="{Binding DataContext.TableSelectedCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding Name}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
             <TabControl Grid.Column="1" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" TabStripPlacement="Top">
-                <TabItem Header="Stats"/>
-                <TabItem Header="Columns" />
-                <TabItem Header="Data" />
+                <TabItem Header="Stats">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="50"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text='{Binding Path=TableStats.TableSize, StringFormat="Table Approx Size: {0}"}' />
+                        <TextBlock Grid.Row="1" Text='{Binding Path=TableStats.RecordsNumber, StringFormat="Number of Records: {0}"}' />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Columns">
+                    <DataGrid VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="COLUMN NAME" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="COLUMN TYPE" Binding="{Binding ColumnType}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="Data">
+                    <DataGrid ItemsSource="{Binding Path=Data}" IsReadOnly="True"/>
+                </TabItem>
             </TabControl>
         </Grid>
     </Grid>

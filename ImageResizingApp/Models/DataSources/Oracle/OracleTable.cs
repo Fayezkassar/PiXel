@@ -48,7 +48,13 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                 // !!!!!!!!!!!!!!!!!!!!!!!!!!       ONE QUERY ONLY            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-                OracleCommand cmd = new OracleCommand("select BYTES from user_segments where segment_name = '" + Name + "'", _connection);
+                string sql = "SELECT SUM(S.BYTES)"
+                                + " FROM USER_SEGMENTS S"
+                                + " WHERE S.SEGMENT_NAME = '" + Name + "'"
+                                + " OR S.SEGMENT_NAME IN("
+                                + " ( SELECT L.SEGMENT_NAME FROM USER_LOBS L WHERE L.TABLE_NAME = '" + Name +"'))";
+
+                OracleCommand cmd = new OracleCommand(sql, _connection);
                 decimal tableSize = (decimal)cmd.ExecuteScalar();
                 tableStats.TableSize = SizeSuffix(tableSize);
 
@@ -85,7 +91,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         {
             try
             {
-                string sql = "select * from " + Name + "limit 100";
+                string sql = "select * from " + Name + " WHERE ROWNUM <=100";
 
                 OracleCommand cmd = new OracleCommand(sql, _connection);
 

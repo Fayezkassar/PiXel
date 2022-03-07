@@ -47,14 +47,12 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Coumns Name" Binding="{Binding Name}"/>
                             <DataGridTextColumn Header="Column Type" Binding="{Binding ColumnType}"/>
-                            <DataGridTextColumn Header="Total size" Binding="{Binding TotalSize}"/>
+                            <DataGridTextColumn Header="TOTAL SIZE" Binding="{Binding TotalSize}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
                 <TabItem Header="Data">
-                    <DataGrid ItemsSource="{Binding Path=Data}">
-                        
-                    </DataGrid>
+                    <DataGrid ItemsSource="{Binding Path=Data}" IsReadOnly="True"/>
                 </TabItem>
             </TabControl>
         </Grid>

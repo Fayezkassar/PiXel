@@ -55,16 +55,17 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             TableStats tableStats = new TableStats();
             try
             {
-                using NpgsqlDataReader rdr = new NpgsqlCommand("select pg_size_pretty(pg_total_relation_size('\"" + Name + "\"'))", _connection).ExecuteReader();
-                while (rdr.Read())
-                {
-                    tableStats.TableSize = rdr.GetString(0);
-                }
-                rdr.Close();
+               // using NpgsqlDataReader rdr = new NpgsqlCommand("select pg_size_pretty(pg_total_relation_size('\"" + Name + "\"'))", _connection).ExecuteReader();
+                //while (rdr.Read())
+                //{
+                //    tableStats.TableSize = rdr.GetString(0);
+                //}
+                //rdr.Close();
                 NpgsqlCommand cmd = new NpgsqlCommand("select COUNT(*) FROM \"" + Name + "\"", _connection);
 
                 long rowsNum = (long)cmd.ExecuteScalar();
                 tableStats.RecordsNumber = rowsNum.ToString();
+                tableStats.TableSize = "NOT IMPLEMENTED";
             }catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);

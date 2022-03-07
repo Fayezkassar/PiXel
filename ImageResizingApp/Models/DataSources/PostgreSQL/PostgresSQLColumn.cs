@@ -11,6 +11,5 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         public string ColumnType { get; set; }
 
-        public string TotalSize { get; set; }
     }
 }

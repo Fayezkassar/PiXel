@@ -1,4 +1,5 @@
-﻿using ImageResizingApp.Models.Interfaces;
+﻿using ImageResizingApp.Helpers;
+using ImageResizingApp.Models.Interfaces;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
@@ -18,36 +19,38 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             _connection = connection;
         }
 
-        public IEnumerable<IColumn> getColumns()
+        public IEnumerable<IColumn> GetColumns()
         {
-            string sql = "SELECT COLUMN_NAME, DATA_TYPE FROM USER_TAB_COLUMNS WHERE table_name = '" + Name + "'";
-
-            using var cmd = new OracleCommand(sql, _connection);
-
-            using OracleDataReader rdr = cmd.ExecuteReader();
-
-            List<IColumn> coulmns = new List<IColumn>();
-
-            while (rdr.Read())
+            List<IColumn> columns = new List<IColumn>();
+            try
             {
-                coulmns.Add(new OracleColumn()
-                {
-                    Name = rdr.GetString(0),
-                    ColumnType = rdr.GetString(1),
-                });
-            }
+                string sql = "SELECT COLUMN_NAME, DATA_TYPE FROM USER_TAB_COLUMNS WHERE TABLE_NAME = '" + Name + "'";
 
-            return coulmns;
+                using var cmd = new OracleCommand(sql, _connection);
+
+                using OracleDataReader rdr = cmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    columns.Add(new OracleColumn()
+                    {
+                        Name = rdr.GetString(0),
+                        ColumnType = rdr.GetString(1),
+                    });
+                }
+
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return columns;
         }
 
         public TableStats GetStats()
         {
+            TableStats tableStats = new TableStats();
             try
             {
-                TableStats tableStats = new TableStats();
-
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!       ONE QUERY ONLY            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
                 string sql = "SELECT SUM(S.BYTES)"
                                 + " FROM USER_SEGMENTS S"
                                 + " WHERE S.SEGMENT_NAME = '" + Name + "'"
@@ -56,55 +59,41 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                 OracleCommand cmd = new OracleCommand(sql, _connection);
                 decimal tableSize = (decimal)cmd.ExecuteScalar();
-                tableStats.TableSize = SizeSuffix(tableSize);
+                tableStats.TableSize = Utilities.GetFormatedSize(tableSize);
 
-                OracleCommand cmd1 = new OracleCommand("select COUNT(*) FROM " + Name, _connection);
+                OracleCommand cmd1 = new OracleCommand("SELECT COUNT(*) FROM " + Name, _connection);
                 decimal recordNumber = (decimal)cmd1.ExecuteScalar();
                 tableStats.RecordsNumber = recordNumber.ToString();
 
                 if (recordNumber > 0)
                 {
-                    tableStats.RecordSize = SizeSuffix(tableSize / recordNumber);
+                    tableStats.RecordSize = Utilities.GetFormatedSize(tableSize / recordNumber);
                 }
 
-                return tableStats;
-            } catch
+            } catch(Exception ex)
             {
-                return null;
+                Console.WriteLine(ex.Message);
             }
+            return tableStats;
         }
 
-        static readonly string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-
-        static string SizeSuffix(decimal value, int decimalPlaces = 1)
+        public DataTable GetData()
         {
-            int i = 0;
-            while (Math.Round(value, decimalPlaces) >= 1000)
-            {
-                value /= 1024;
-                i++;
-            }
-            return string.Format("{0:n" + decimalPlaces + "} {1}", value, SizeSuffixes[i]);
-        }
-
-        public DataTable getData()
-        {
+            DataTable dataTable = new DataTable();
             try
             {
-                string sql = "select * from " + Name + " WHERE ROWNUM <=100";
+                string sql = "SELECT * FROM " + Name + " WHERE ROWNUM <= 100";
 
                 OracleCommand cmd = new OracleCommand(sql, _connection);
 
-                DataTable dt = new DataTable();
                 OracleDataAdapter dataAdapter = new OracleDataAdapter(cmd);
-                dataAdapter.Fill(dt);
-                return dt;
+                dataAdapter.Fill(dataTable);
             }
-            catch
+            catch(Exception ex)
             {
-                return null;
+                Console.WriteLine(ex.Message);
             }
-            
+            return dataTable;
         }
     }
 }

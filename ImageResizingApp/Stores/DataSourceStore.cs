@@ -34,7 +34,7 @@ namespace ImageResizingApp.Stores
         public IEnumerable<IColumn> GetColumnsStatsByTable(string tableName)
         {
             ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.getColumns();
+            return table?.GetColumns();
         }
 
         public void CloseDataSourceConnectionIfAny()
@@ -45,7 +45,7 @@ namespace ImageResizingApp.Stores
         internal DataTable GetDataByTableName(string tableName)
         {
             ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.getData();
+            return table?.GetData();
         }
     }
 }

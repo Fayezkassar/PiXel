@@ -8,8 +8,8 @@ namespace ImageResizingApp.Models.Interfaces
     public interface ITable
     {
         public string Name { get; set; }
-        public IEnumerable<IColumn> getColumns();
+        public IEnumerable<IColumn> GetColumns();
         public TableStats GetStats();
-        public DataTable getData();
+        public DataTable GetData();
     }
 }

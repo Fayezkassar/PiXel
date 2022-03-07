@@ -35,19 +35,16 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50"/>
                             <RowDefinition Height="50"/>
-                            <RowDefinition Height="50"/>
                         </Grid.RowDefinitions>
                         <TextBlock Text='{Binding Path=TableStats.TableSize, StringFormat="Table Approx Size: {0}"}' />
                         <TextBlock Grid.Row="1" Text='{Binding Path=TableStats.RecordsNumber, StringFormat="Number of Records: {0}"}' />
-                        <TextBlock Grid.Row="2" Text='{Binding Path=TableStats.RecordSize, StringFormat="Record Approx Size: {0}"}' />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Columns">
-                    <DataGrid VerticalAlignment="Top" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+                    <DataGrid VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Coumns Name" Binding="{Binding Name}"/>
-                            <DataGridTextColumn Header="Column Type" Binding="{Binding ColumnType}"/>
-                            <DataGridTextColumn Header="TOTAL SIZE" Binding="{Binding TotalSize}"/>
+                            <DataGridTextColumn Header="COLUMN NAME" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="COLUMN TYPE" Binding="{Binding ColumnType}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>

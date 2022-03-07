@@ -19,65 +19,76 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             _connection = connection;
         }
 
-        public IEnumerable<IColumn> getColumns()
+        public IEnumerable<IColumn> GetColumns()
         {
-            string sql = "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where \"table_name\" = '" + Name + "' AND \"table_schema\" = '" + SchemaName + "'";
-
-            NpgsqlCommand cmd = new NpgsqlCommand(sql, _connection);
-
-            using NpgsqlDataReader rdr = cmd.ExecuteReader();
-
-            List<IColumn> coulmns = new List<IColumn>();
-
-            while (rdr.Read())
+            List<IColumn> columns = new List<IColumn>();
+            try
             {
-                coulmns.Add(new PostgresSQLColumn()
+                string sql = "select column_name, data_type from INFORMATION_SCHEMA.COLUMNS where \"table_name\" = '" + Name + "' and \"table_schema\" = '" + SchemaName + "'";
+
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, _connection);
+
+                using NpgsqlDataReader rdr = cmd.ExecuteReader();
+
+
+                while (rdr.Read())
                 {
-                    Name = rdr.GetString(0),
-                    ColumnType = rdr.GetString(1),
-                });
+                    columns.Add(new PostgresSQLColumn()
+                    {
+                        Name = rdr.GetString(0),
+                        ColumnType = rdr.GetString(1),
+                    });
+                }
+                rdr.Close();
+
             }
-
-            rdr.Close();
-            
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!                         IMPORTANT NO QUERY IN A LOOP                !!!!!!!!!!!!!!!!!!!!!!!!!
-            coulmns.ForEach(x =>
+            catch (Exception ex)
             {
-                NpgsqlCommand cmd1 = new NpgsqlCommand("select pg_size_pretty(sum(pg_column_size(\"" + x.Name + "\"))) as total_size from "+ SchemaName +".\"" + Name + "\"", _connection);
-                object totalSize = cmd1.ExecuteScalar();
-                x.TotalSize = (totalSize != null && totalSize != DBNull.Value) ? (string)totalSize : "0 bytes";
-            });
-
-            return coulmns;
+                Console.WriteLine(ex.Message);
+            }
+            return columns;
         }
+
 
         public TableStats GetStats()
         {
             TableStats tableStats = new TableStats();
-
-            using NpgsqlDataReader rdr = new NpgsqlCommand("select pg_size_pretty(pg_total_relation_size('\"" + Name + "\"'))", _connection).ExecuteReader();
-            while (rdr.Read())
+            try
             {
-                tableStats.TableSize = rdr.GetString(0);
-            }
-            rdr.Close();
-            NpgsqlCommand cmd = new NpgsqlCommand("select COUNT(*) FROM \"" + Name + "\"", _connection);
+                using NpgsqlDataReader rdr = new NpgsqlCommand("select pg_size_pretty(pg_total_relation_size('\"" + Name + "\"'))", _connection).ExecuteReader();
+                while (rdr.Read())
+                {
+                    tableStats.TableSize = rdr.GetString(0);
+                }
+                rdr.Close();
+                NpgsqlCommand cmd = new NpgsqlCommand("select COUNT(*) FROM \"" + Name + "\"", _connection);
 
-            long rowsNum = (long)cmd.ExecuteScalar();
-            tableStats.RecordsNumber = rowsNum.ToString();
+                long rowsNum = (long)cmd.ExecuteScalar();
+                tableStats.RecordsNumber = rowsNum.ToString();
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
             return tableStats;
         }
 
-        public DataTable getData()
+        public DataTable GetData()
         {
-            string sql = "select * from " + SchemaName +".\"" + Name +"\"";
-
-            NpgsqlCommand cmd = new NpgsqlCommand(sql, _connection);
-
             DataTable dt = new DataTable();
-            var dataAdapter = new NpgsqlDataAdapter(cmd);
-            dataAdapter.Fill(dt);
+            try
+            {
+                string sql = "SELECT * FROM " + SchemaName + ".\"" + Name + "\"";
+
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, _connection);
+                var dataAdapter = new NpgsqlDataAdapter(cmd);
+                dataAdapter.Fill(dt);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
             return dt;
         }
     }

@@ -11,7 +11,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
 
         public string SchemaName { get; set; }
 
-        public IEnumerable<IColumn> getColumns()
+        public IEnumerable<IColumn> GetColumns()
         {
             throw new NotImplementedException();
         }
@@ -26,7 +26,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             throw new NotImplementedException();
         }
 
-        public DataTable getData()
+        public DataTable GetData()
         {
             throw new NotImplementedException();
         }

@@ -8,6 +8,5 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public string ColumnType { get; set; }
 
-        public string TotalSize { get; set; }
     }
 }

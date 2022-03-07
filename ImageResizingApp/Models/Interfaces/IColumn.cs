@@ -10,7 +10,6 @@ namespace ImageResizingApp.Models.Interfaces
 
         public string ColumnType { get; set; }
 
-        public string TotalSize { get; set; }
 
     }
 }

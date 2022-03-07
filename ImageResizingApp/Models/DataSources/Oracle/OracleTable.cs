@@ -42,24 +42,30 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public TableStats GetStats()
         {
-            TableStats tableStats = new TableStats();
-
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!       ONE QUERY ONLY            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-            OracleCommand cmd = new OracleCommand("select BYTES from user_segments where segment_name = '" + Name + "'", _connection);
-            decimal tableSize = (decimal)cmd.ExecuteScalar();
-            tableStats.TableSize = SizeSuffix(tableSize);
-
-            OracleCommand cmd1 = new OracleCommand("select COUNT(*) FROM " + Name, _connection);
-            decimal recordNumber = (decimal)cmd1.ExecuteScalar();
-            tableStats.RecordsNumber = recordNumber.ToString();
-
-            if (recordNumber > 0)
+            try
             {
-                tableStats.RecordSize = SizeSuffix(tableSize / recordNumber);
-            }
+                TableStats tableStats = new TableStats();
 
-            return tableStats;
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!       ONE QUERY ONLY            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                OracleCommand cmd = new OracleCommand("select BYTES from user_segments where segment_name = '" + Name + "'", _connection);
+                decimal tableSize = (decimal)cmd.ExecuteScalar();
+                tableStats.TableSize = SizeSuffix(tableSize);
+
+                OracleCommand cmd1 = new OracleCommand("select COUNT(*) FROM " + Name, _connection);
+                decimal recordNumber = (decimal)cmd1.ExecuteScalar();
+                tableStats.RecordsNumber = recordNumber.ToString();
+
+                if (recordNumber > 0)
+                {
+                    tableStats.RecordSize = SizeSuffix(tableSize / recordNumber);
+                }
+
+                return tableStats;
+            } catch
+            {
+                return null;
+            }
         }
 
         static readonly string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
@@ -77,14 +83,22 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public DataTable getData()
         {
-            string sql = "select * from " + Name;
+            try
+            {
+                string sql = "select * from " + Name + "limit 100";
 
-            OracleCommand cmd = new OracleCommand(sql, _connection);
+                OracleCommand cmd = new OracleCommand(sql, _connection);
 
-            DataTable dt = new DataTable();
-            OracleDataAdapter dataAdapter = new OracleDataAdapter(cmd);
-            dataAdapter.Fill(dt);
-            return dt;
+                DataTable dt = new DataTable();
+                OracleDataAdapter dataAdapter = new OracleDataAdapter(cmd);
+                dataAdapter.Fill(dt);
+                return dt;
+            }
+            catch
+            {
+                return null;
+            }
+            
         }
     }
 }

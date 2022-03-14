@@ -8,5 +8,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public string ColumnType { get; set; }
 
+        public bool Resizable { get; set; }
+
     }
 }

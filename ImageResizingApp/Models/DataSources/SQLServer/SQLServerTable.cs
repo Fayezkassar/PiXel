@@ -8,8 +8,9 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
     public class SQLServerTable : ITable
     {
         public string Name { get; set; }
-
-        public string SchemaName { get; set; }
+        public string TableSize { get; set; }
+        public string RecordsNumber { get; set; }
+        public string RecordSize { get; set; }
 
         public IEnumerable<IColumn> GetColumns()
         {
@@ -21,7 +22,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             Name = name;
         }
 
-        public TableStats GetStats()
+        public void SetStats()
         {
             throw new NotImplementedException();
         }

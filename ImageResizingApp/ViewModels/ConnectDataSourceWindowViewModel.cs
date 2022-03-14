@@ -80,12 +80,13 @@ namespace ImageResizingApp.ViewModels
 
         private bool ValidatePart2ConnectionParameters()
         {
+            bool valid = true;
             foreach (ConnectionParameterViewModel param in _part2ViewModel.ConnectionParameters)
             {
                 param.Validate();
-                if (param.HasErrors) return false;
+                if (param.HasErrors) valid=false;
             }
-            return true;
+            return valid;
         }
     }
 }

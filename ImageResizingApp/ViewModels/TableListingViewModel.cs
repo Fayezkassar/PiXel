@@ -2,6 +2,7 @@
 using ImageResizingApp.Models;
 using ImageResizingApp.Models.Interfaces;
 using ImageResizingApp.Stores;
+using ImageResizingApp.Views.Windows;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -14,7 +15,7 @@ namespace ImageResizingApp.ViewModels
     {
         private readonly DataSourceStore _dataSourceStore;
 
-        private readonly ObservableCollection<ITable> _tables;
+        private ObservableCollection<ITable> _tables;
         public IEnumerable<ITable> Tables => _tables;
 
         private ObservableCollection<IColumn> _columns;
@@ -33,31 +34,51 @@ namespace ImageResizingApp.ViewModels
             set => SetProperty(ref _data, value, false);
         }
 
-        private TableStats _tableStats;
+        private ITable _selectedTable;
 
-        public TableStats TableStats
+        public ITable SelectedTable
         {
-            get { return _tableStats; }
-            set { SetProperty(ref _tableStats, value, false); }
+            get { return _selectedTable; }
+            set { SetProperty(ref _selectedTable, value, false); }
         }
 
+        public RelayCommand<IColumn> ResizeColumnCommand { get; }
         public RelayCommand<string> TableSelectedCommand { get; }
         public TableListingViewModel(DataSourceStore dataSourceStore) 
         {
             _dataSourceStore = dataSourceStore;
-
-            _tables = new ObservableCollection<ITable>(_dataSourceStore.getTables());
-
-            TableSelectedCommand = new RelayCommand<string>(TableClicked);
-
+            _tables = new ObservableCollection<ITable>(_dataSourceStore.GetTables());
+            _dataSourceStore.CurrentDataSourceChanged += UpdateTables;
+            TableSelectedCommand = new RelayCommand<string>(OnTableClicked);
+            ResizeColumnCommand = new RelayCommand<IColumn>(OnResizeColumn);
         }
 
-        private void TableClicked(string tableName)
+        public void UpdateTables()
         {
-            TableStats = _dataSourceStore.GetStatsByTableName(tableName);
-            Columns = _dataSourceStore.GetColumnsStatsByTable(tableName);
+            _tables.Clear();
+            IEnumerable<ITable> tables = _dataSourceStore.GetTables();
+
+            foreach (ITable table in tables)
+            {
+                _tables.Add(table);
+            }
+        }
+
+        private void OnTableClicked(string tableName)
+        {
+            SelectedTable = _dataSourceStore.GetUpdatedTableByName(tableName);
+            Columns = _dataSourceStore.GetColumnsByTableName(tableName);
             Data = _dataSourceStore.GetDataByTableName(tableName);
         }
+
+        private void OnResizeColumn(IColumn column)
+        {
+            ResizeConfigurationWindow window = new ResizeConfigurationWindow();
+            window.DataContext = new ResizeConfigurationWindowViewModel();
+            window.Show();
+        }
+
+        private bool CanResizeColumn(IColumn column) => column.Resizable;
     }
        
 }

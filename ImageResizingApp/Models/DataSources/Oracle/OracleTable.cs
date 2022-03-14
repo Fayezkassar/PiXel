@@ -11,7 +11,9 @@ namespace ImageResizingApp.Models.DataSources.Oracle
     internal class OracleTable : ITable
     {
         public string Name { get; set; }
-
+        public string TableSize { get; set; }
+        public string RecordsNumber { get; set; }
+        public string RecordSize { get; set; }
         public OracleConnection _connection { get; set; }
 
         public OracleTable(OracleConnection connection)
@@ -36,6 +38,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     {
                         Name = rdr.GetString(0),
                         ColumnType = rdr.GetString(1),
+                        Resizable = rdr.GetString(1) == "BLOB"
                     });
                 }
 
@@ -46,9 +49,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             return columns;
         }
 
-        public TableStats GetStats()
+        public void SetStats()
         {
-            TableStats tableStats = new TableStats();
             try
             {
                 string sql = "SELECT SUM(S.BYTES)"
@@ -59,22 +61,21 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                 OracleCommand cmd = new OracleCommand(sql, _connection);
                 decimal tableSize = (decimal)cmd.ExecuteScalar();
-                tableStats.TableSize = Utilities.GetFormatedSize(tableSize);
+                TableSize = Utilities.GetFormatedSize(tableSize);
 
                 OracleCommand cmd1 = new OracleCommand("SELECT COUNT(*) FROM " + Name, _connection);
                 decimal recordNumber = (decimal)cmd1.ExecuteScalar();
-                tableStats.RecordsNumber = recordNumber.ToString();
+                RecordsNumber = recordNumber.ToString();
 
                 if (recordNumber > 0)
                 {
-                    tableStats.RecordSize = Utilities.GetFormatedSize(tableSize / recordNumber);
+                    RecordSize = Utilities.GetFormatedSize(tableSize / recordNumber);
                 }
 
             } catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-            return tableStats;
         }
 
         public DataTable GetData()

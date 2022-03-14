@@ -37,11 +37,14 @@ namespace ImageResizingApp
 
         private void OpenConnectToDataSourceDialog()
         {
-            ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();
-            //connectDialog.ShowInTaskbar = false;
-            //connectDialog.Owner = this;
+            ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();;
             connectDialog.DataContext = new ConnectDataSourceWindowViewModel(_dataSourceRegistry, _dataSourceStore);
             connectDialog.ShowDialog();
+        }
+
+        private void menuConnect_Click(object sender, RoutedEventArgs e)
+        {
+            OpenConnectToDataSourceDialog();
         }
     }
 }

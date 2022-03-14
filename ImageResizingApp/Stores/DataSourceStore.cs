@@ -13,38 +13,57 @@ namespace ImageResizingApp.Stores
     {
         private IDataSource _dataSource;
 
+        public IDataSource DataSource
+        {
+            get => _dataSource;
+            set
+            {
+                _dataSource?.Close();
+                _dataSource = value;
+                OnCurrentDataSourceChanged();
+            }
+        }
+
+        public event Action CurrentDataSourceChanged;
+
+        private void OnCurrentDataSourceChanged()
+        {
+            CurrentDataSourceChanged?.Invoke();
+        }
+
         public bool OpenDataSourceConnection(IDataSource dataSource, Dictionary<string, string> connectionParametersMap)
         {
             bool connected = dataSource.Open(connectionParametersMap);
-            if (connected) _dataSource = dataSource;
+            if (connected) DataSource = dataSource;
             return connected;
         }
 
-        public IEnumerable<ITable> getTables()
+        public IEnumerable<ITable> GetTables()
         {
-            return _dataSource?.Tables ?? new List<ITable>();
+            return DataSource?.Tables ?? new List<ITable>();
         }
 
-        public TableStats GetStatsByTableName(string tableName)
+        public ITable GetUpdatedTableByName(string tableName)
         {
-            ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.GetStats();
+            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
+            table?.SetStats();
+            return table;
         }
 
-        public IEnumerable<IColumn> GetColumnsStatsByTable(string tableName)
+        public IEnumerable<IColumn> GetColumnsByTableName(string tableName)
         {
-            ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
+            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
             return table?.GetColumns();
         }
 
         public void CloseDataSourceConnectionIfAny()
         {
-            if(_dataSource != null) _dataSource.Close();
+            DataSource?.Close();
         }
 
         internal DataTable GetDataByTableName(string tableName)
         {
-            ITable table = _dataSource?.Tables?.First(t => t.Name.Equals(tableName));
+            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
             return table?.GetData();
         }
     }

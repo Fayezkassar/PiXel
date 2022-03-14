@@ -11,5 +11,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         public string ColumnType { get; set; }
 
+        public bool Resizable { get; set; }
+
     }
 }

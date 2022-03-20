@@ -11,7 +11,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public string TableSize { get; set; }
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
-
+        public IEnumerable<string> PrimaryKeys { get; set; }
         public IEnumerable<IColumn> GetColumns()
         {
             throw new NotImplementedException();

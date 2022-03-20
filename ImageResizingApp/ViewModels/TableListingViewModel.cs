@@ -50,7 +50,7 @@ namespace ImageResizingApp.ViewModels
             _tables = new ObservableCollection<ITable>(_dataSourceStore.GetTables());
             _dataSourceStore.CurrentDataSourceChanged += UpdateTables;
             TableSelectedCommand = new RelayCommand<string>(OnTableClicked);
-            ResizeColumnCommand = new RelayCommand<IColumn>(OnResizeColumn);
+            ResizeColumnCommand = new RelayCommand<IColumn>(OnResizeColumn, CanResizeColumn);
         }
 
         public void UpdateTables()
@@ -74,11 +74,15 @@ namespace ImageResizingApp.ViewModels
         private void OnResizeColumn(IColumn column)
         {
             ResizeConfigurationWindow window = new ResizeConfigurationWindow();
-            window.DataContext = new ResizeConfigurationWindowViewModel();
-            window.Show();
+            window.DataContext = new ResizeConfigurationWindowViewModel(column);
+            window.ShowDialog();
         }
 
-        private bool CanResizeColumn(IColumn column) => column.Resizable;
+        private bool CanResizeColumn(IColumn column)
+        {
+            if (column != null) return column.Resizable;
+            return true;
+        }
     }
        
 }

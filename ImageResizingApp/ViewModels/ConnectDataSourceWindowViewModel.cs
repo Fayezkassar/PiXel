@@ -37,7 +37,7 @@ namespace ImageResizingApp.ViewModels
             _part2ViewModel = new ConnectDataSourcePart2ViewModel(dataSourceRegistry, dataSourceStore);
             CurrentViewModel = _part1ViewModel;
 
-            ContinueCommand = new RelayCommand<Window>(OnContinue, CanContinue);
+            ContinueCommand = new RelayCommand<Window>(OnContinue);
             PreviousCommand = new RelayCommand(OnPrevious, CanGoBack);
         }
 
@@ -70,7 +70,6 @@ namespace ImageResizingApp.ViewModels
                 }
             }
         }
-        private bool CanContinue(Window connectWindow) => true;
         private void OnPrevious() {
             ContinueButtonContent = "Next";
             CurrentViewModel = _part1ViewModel;

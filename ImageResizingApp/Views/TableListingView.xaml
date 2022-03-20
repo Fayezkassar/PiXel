@@ -36,14 +36,18 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Columns">
-                <DataGrid VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+                <DataGrid x:Name="columnGrid" VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="COLUMN NAME" Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="COLUMN TYPE" Binding="{Binding ColumnType}"/>
                         <DataGridTemplateColumn Header="">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Command="{Binding DataContext.ResizeColumnCommand,RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="View"/>
+                                    <Button 
+                                            CommandParameter="{Binding }" 
+                                            Style="{StaticResource MainButtonStyle}" 
+                                            Command="{Binding DataContext.ResizeColumnCommand, IsAsync=True,RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            Content="Resize"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

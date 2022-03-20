@@ -38,7 +38,7 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="1" >
             <Button Name="previousButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" Command="{Binding PreviousCommand}">Previous</Button>
             <Button Name="nextButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding ContinueCommand}" CommandParameter="{Binding ElementName=ConnectWindow}" Content="{Binding ContinueButtonContent}"></Button>
-            <Button x:Name="cancelButton" Style="{StaticResource MainCancelButtonStyle}" IsCancel="True" Content="Cancel"/>
+            <Button Name="cancelButton" Style="{StaticResource MainCancelButtonStyle}" IsCancel="True" Content="Cancel"/>
         </StackPanel>
     </Grid >
 </Window>

@@ -25,25 +25,20 @@
             </ItemsControl>
         </ScrollViewer>
         <TabControl Grid.Column="1" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" TabStripPlacement="Top">
-            <TabItem Header="Stats">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text='{Binding Path=SelectedTable.TableSize, StringFormat="Table Approx Size: {0}"}' />
-                    <TextBlock Grid.Row="1" Text='{Binding Path=SelectedTable.RecordsNumber, StringFormat="Number of Records: {0}"}' />
-                </Grid>
-            </TabItem>
             <TabItem Header="Columns">
-                <DataGrid VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+                <DataGrid x:Name="columnGrid" VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="COLUMN NAME" Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="COLUMN TYPE" Binding="{Binding ColumnType}"/>
                         <DataGridTemplateColumn Header="">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Command="{Binding DataContext.ResizeColumnCommand,RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="View" Visibility="{Binding Resizable, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <Button 
+                                            CommandParameter="{Binding }" 
+                                            Style="{StaticResource MainButtonStyle}" 
+                                            Command="{Binding DataContext.ResizeColumnCommand, IsAsync=True,RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            Content="Resize"
+                                            Visibility="{Binding Resizable, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -83,6 +78,16 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Stats">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text='{Binding Path=SelectedTable.TableSize, StringFormat="Table Approx Size: {0}"}' />
+                    <TextBlock Grid.Row="1" Text='{Binding Path=SelectedTable.RecordsNumber, StringFormat="Number of Records: {0}"}' />
                 </Grid>
             </TabItem>
         </TabControl>

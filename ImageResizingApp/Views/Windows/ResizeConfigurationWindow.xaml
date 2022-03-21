@@ -5,8 +5,33 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageResizingApp.Views.Windows"
         mc:Ignorable="d"
-        Title="Resize Configuration" Height="450" Width="800">
+        xmlns:views="clr-namespace:ImageResizingApp.Views"
+        xmlns:vms="clr-namespace:ImageResizingApp.ViewModels"
+        Title="Resizing Configuration" Height="450" Width="800"
+        ResizeMode="NoResize"
+        Name="ConfigureResizeWindow"
+        Style="{StaticResource MaterialDesignWindow}"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type vms:ResizeConfigurationPart1ViewModel}">
+                <views:ResizeConfigurationPart1View></views:ResizeConfigurationPart1View>
+            </DataTemplate>
+        </Grid.Resources>
+        <ContentControl  Grid.Row="0" Content="{Binding CurrentViewModel}">
+            <Validation.ErrorTemplate>
+                <ControlTemplate />
+            </Validation.ErrorTemplate>
+        </ContentControl>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="1" >
+            <Button Name="previousButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" Command="{Binding PreviousCommand}">Previous</Button>
+            <Button Name="nextButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding ConfirmCommand}" CommandParameter="{Binding ElementName=ConnectWindow}" Content="{Binding ConfirmButtonContent}"></Button>
+            <Button Name="cancelButton" Style="{StaticResource MainCancelButtonStyle}" IsCancel="True" Content="Cancel"/>
+        </StackPanel>
     </Grid>
 </Window>

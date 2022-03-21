@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.Interfaces
 {
@@ -11,8 +9,11 @@ namespace ImageResizingApp.Models.Interfaces
         public string TableSize { get; set; }
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
+        public IEnumerable<string> PrimaryKeys { get; set; }
         public IEnumerable<IColumn> GetColumns();
         public void SetStats();
         public DataTable GetData(int start, int itemCount);
+        public void SetPrimaryKeys();
+
     }
 }

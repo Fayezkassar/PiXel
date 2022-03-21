@@ -11,7 +11,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public string TableSize { get; set; }
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
-
+        public IEnumerable<string> PrimaryKeys { get; set; }
         public IEnumerable<IColumn> GetColumns()
         {
             throw new NotImplementedException();
@@ -28,6 +28,11 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         }
 
         public DataTable GetData(int start, int itemCount)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetPrimaryKeys()
         {
             throw new NotImplementedException();
         }

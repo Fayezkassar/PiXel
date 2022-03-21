@@ -13,5 +13,11 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         public bool Resizable { get; set; }
 
+        public ITable Table { get; set; }
+
+        public bool Resize(int? from, int? to, int? minSize, int? maxSize)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

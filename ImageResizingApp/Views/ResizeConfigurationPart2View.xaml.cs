@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,16 +8,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ImageResizingApp.Views.Windows
+namespace ImageResizingApp.Views
 {
     /// <summary>
-    /// Interaction logic for ConnectDataSourceWindow.xaml
+    /// Interaction logic for ResizeConfigurationPart2View.xaml
     /// </summary>
-    public partial class ConnectDataSourceWindow : Window
+    public partial class ResizeConfigurationPart2View : UserControl
     {
-        public ConnectDataSourceWindow()
+        public ResizeConfigurationPart2View()
         {
             InitializeComponent();
         }

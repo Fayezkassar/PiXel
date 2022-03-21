@@ -25,9 +25,9 @@ namespace ImageResizingApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly DataSourceRegistry _dataSourceRegistry;
+        private readonly Registry _dataSourceRegistry;
         private readonly DataSourceStore _dataSourceStore;
-        public MainWindow(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
+        public MainWindow(Registry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
             InitializeComponent();
             _dataSourceStore = dataSourceStore;
@@ -37,7 +37,7 @@ namespace ImageResizingApp
 
         private void OpenConnectToDataSourceDialog()
         {
-            ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();;
+            ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();
             connectDialog.DataContext = new ConnectDataSourceWindowViewModel(_dataSourceRegistry, _dataSourceStore);
             connectDialog.ShowDialog();
         }

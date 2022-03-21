@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="ImageResizingApp.Views.ResizeConfigurationPart1View"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:ImageResizingApp.Views"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <Setter Property="Width" Value="100"></Setter>
+            <Setter Property="Margin" Value="10 0 20 20"></Setter>
+            <Setter Property="VerticalAlignment" Value="Top"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBox    Grid.Row="0" Grid.Column="0"
+                    Name="fromTextBox"
+                    PreviewTextInput="NumberValidationTextBox"
+                    materialDesign:HintAssist.Hint="From"
+                    Text="{Binding From, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
+                </TextBox>
+        <TextBox    Grid.Row="0" Grid.Column="1"     
+                    PreviewTextInput="NumberValidationTextBox"
+                    materialDesign:HintAssist.Hint="To"
+                    Text="{Binding To, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
+            </TextBox>
+        <TextBox    Grid.Row="1" Grid.Column="0"      
+                    PreviewTextInput="NumberValidationTextBox"
+                    materialDesign:HintAssist.Hint="Min Size"
+                    Text="{Binding MinSize, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
+            </TextBox>
+        <TextBox    Grid.Row="1" Grid.Column="1"    
+                    PreviewTextInput="NumberValidationTextBox"
+                    materialDesign:HintAssist.Hint="Max Size"
+                    Text="{Binding MaxSize, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
+            </TextBox>
+    </Grid>
+</UserControl>

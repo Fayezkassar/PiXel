@@ -13,7 +13,9 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
         public string TableSize { get; set; }
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
-        public NpgsqlConnection _connection { get; set; }
+        public IEnumerable<string> PrimaryKeys { get; set; }
+
+        private readonly NpgsqlConnection _connection;
 
         public PostgreSQLTable(NpgsqlConnection connection)
         {
@@ -90,6 +92,11 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             }
 
             return dt;
+        }
+
+        public void SetPrimaryKeys()
+        {
+            throw new NotImplementedException();
         }
     }
 }

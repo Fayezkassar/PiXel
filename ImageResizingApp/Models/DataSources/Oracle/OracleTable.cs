@@ -4,9 +4,7 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
+
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -16,8 +14,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public string TableSize { get; set; }
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
-        public OracleConnection _connection { get; set; }
-
+        public IEnumerable<string> PrimaryKeys { get; set; }
+        private readonly OracleConnection _connection;
         public OracleTable(OracleConnection connection)
         {
             _connection = connection;
@@ -36,7 +34,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                 while (rdr.Read())
                 {
-                    columns.Add(new OracleColumn()
+                    columns.Add(new OracleColumn(this, _connection)
                     {
                         Name = rdr.GetString(0),
                         ColumnType = rdr.GetString(1),
@@ -49,6 +47,29 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 Console.WriteLine(ex.Message);
             }
             return columns;
+        }
+
+        public void SetPrimaryKeys() {
+            try
+            {
+                string sql = "SELECT cols.column_name FROM all_constraints cons, all_cons_columns cols WHERE cols.table_name = '" + Name + "' AND cons.constraint_type = 'P' AND cons.constraint_name = cols.constraint_name AND cons.owner = cols.owner ORDER BY cols.table_name, cols.position";
+                OracleCommand cmd = new OracleCommand(sql, _connection);
+                OracleDataReader dr = cmd.ExecuteReader();
+
+                List<string> keys = new List<string>();
+
+                while (dr.Read())
+                {
+                    keys.Add(dr.GetString(0));
+                }
+
+                PrimaryKeys = keys;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public void SetStats()

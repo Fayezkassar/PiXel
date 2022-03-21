@@ -13,6 +13,6 @@ namespace ImageResizingApp.Models.Interfaces
         public string RecordSize { get; set; }
         public IEnumerable<IColumn> GetColumns();
         public void SetStats();
-        public DataTable GetData();
+        public DataTable GetData(int start, int itemCount);
     }
 }

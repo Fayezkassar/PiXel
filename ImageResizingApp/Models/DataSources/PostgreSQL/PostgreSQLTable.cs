@@ -73,7 +73,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         }
 
-        public DataTable GetData()
+        public DataTable GetData(int start, int itemCount)
         {
             DataTable dt = new DataTable();
             try

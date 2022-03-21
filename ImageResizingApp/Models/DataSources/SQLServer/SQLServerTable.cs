@@ -27,7 +27,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             throw new NotImplementedException();
         }
 
-        public DataTable GetData()
+        public DataTable GetData(int start, int itemCount)
         {
             throw new NotImplementedException();
         }

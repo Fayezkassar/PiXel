@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace ImageResizingApp.ViewModels
 {
@@ -43,14 +44,21 @@ namespace ImageResizingApp.ViewModels
         }
 
         public RelayCommand<IColumn> ResizeColumnCommand { get; }
+
+        public RelayCommand<DataRowView> ViewImage { get; }
         public RelayCommand<string> TableSelectedCommand { get; }
-        public TableListingViewModel(DataSourceStore dataSourceStore) 
+        public TableListingViewModel(DataSourceStore dataSourceStore)
         {
             _dataSourceStore = dataSourceStore;
             _tables = new ObservableCollection<ITable>(_dataSourceStore.GetTables());
             _dataSourceStore.CurrentDataSourceChanged += UpdateTables;
             TableSelectedCommand = new RelayCommand<string>(OnTableClicked);
             ResizeColumnCommand = new RelayCommand<IColumn>(OnResizeColumn);
+            ViewImage = new RelayCommand<DataRowView>(OnViewImage);
+            FirstCommand = new RelayCommand(OnFirstCommand);
+            PreviousCommand = new RelayCommand(OnPreviousCommand);
+            NextCommand = new RelayCommand(OnNextCommand);
+            LastCommand = new RelayCommand(OnLastCommand);
         }
 
         public void UpdateTables()
@@ -66,9 +74,11 @@ namespace ImageResizingApp.ViewModels
 
         private void OnTableClicked(string tableName)
         {
-            SelectedTable = _dataSourceStore.GetUpdatedTableByName(tableName);
-            Columns = _dataSourceStore.GetColumnsByTableName(tableName);
-            Data = _dataSourceStore.GetDataByTableName(tableName);
+            currentTable = tableName;
+            SelectedTable = _dataSourceStore.GetUpdatedTableByName(currentTable);
+            TotalItems = int.Parse(SelectedTable.RecordsNumber);
+            Columns = _dataSourceStore.GetColumnsByTableName(currentTable);
+            Data = _dataSourceStore.GetDataByTableName(currentTable, start, itemCount);
         }
 
         private void OnResizeColumn(IColumn column)
@@ -78,7 +88,75 @@ namespace ImageResizingApp.ViewModels
             window.Show();
         }
 
+        private void OnViewImage(DataRowView row)
+        {
+            ResizeConfigurationWindow window = new ResizeConfigurationWindow();
+            window.DataContext = new ResizeConfigurationWindowViewModel();
+            window.Show();
+        }
+
         private bool CanResizeColumn(IColumn column) => column.Resizable;
+
+
+
+        // FOR PAGINATION
+
+        private int start = 0;
+        private string currentTable;
+        private int itemCount = 10;
+        private int totalItems = 0;
+        public RelayCommand FirstCommand { get; }
+        public RelayCommand PreviousCommand { get; }
+        public RelayCommand NextCommand { get; }
+        public RelayCommand LastCommand { get; }
+
+        public int Start { 
+            get { return start; }
+            set => SetProperty(ref start, value, false);
+        }
+
+        public int End { get { return start + itemCount < totalItems ? start + itemCount : totalItems; } }
+
+        public int TotalItems { 
+            get { return totalItems; }
+            set => SetProperty(ref totalItems, value, false);
+        }
+
+        private void OnFirstCommand()
+        {
+            if (start > 0)
+            {
+                Start = 0;
+                Data = _dataSourceStore.GetDataByTableName(currentTable, start, itemCount);
+            }
+        }
+
+        private void OnPreviousCommand()
+        {
+            if (start >= itemCount)
+            {
+                Start -= itemCount;
+                Data = _dataSourceStore.GetDataByTableName(currentTable, start, itemCount);
+            }
+        }
+
+        private void OnNextCommand()
+        {
+            if (start < totalItems - itemCount)
+            {
+                Start += itemCount;
+                Data = _dataSourceStore.GetDataByTableName(currentTable, start, itemCount);
+            }
+        }
+
+        private void OnLastCommand()
+        {
+            if (start < totalItems - itemCount)
+            {
+                Start = totalItems - itemCount;
+                Data = _dataSourceStore.GetDataByTableName(currentTable, start, itemCount);
+            }
+        }
+
     }
-       
 }

@@ -61,10 +61,10 @@ namespace ImageResizingApp.Stores
             DataSource?.Close();
         }
 
-        internal DataTable GetDataByTableName(string tableName)
+        internal DataTable GetDataByTableName(string tableName, int start, int itemCount)
         {
             ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.GetData();
+            return table?.GetData(start, itemCount);
         }
     }
 }

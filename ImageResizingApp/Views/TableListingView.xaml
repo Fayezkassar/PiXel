@@ -43,7 +43,7 @@
                         <DataGridTemplateColumn Header="">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Command="{Binding DataContext.ResizeColumnCommand,RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="View"/>
+                                    <Button Command="{Binding DataContext.ResizeColumnCommand,RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Content="View" Visibility="{Binding Resizable, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -51,7 +51,39 @@
                 </DataGrid>
             </TabItem>
             <TabItem Header="Data">
-                <DataGrid ItemsSource="{Binding Path=Data}" IsReadOnly="True"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Margin="4" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Margin="4,0" Content="&lt;&lt;" Command="{Binding FirstCommand}"/>
+                        <Button Margin="4,0" Content="&lt;" Command="{Binding PreviousCommand}"/>
+                        <StackPanel VerticalAlignment="Center"  Orientation="Horizontal">
+                            <TextBlock Text="{Binding Start}"/>
+                            <TextBlock Text=" to "/>
+                            <TextBlock Text="{Binding End}"/>
+                            <TextBlock Text=" of "/>
+                            <TextBlock Text="{Binding TotalItems}"/>
+                        </StackPanel>
+                        <Button Margin="4,0" Content=">" Command="{Binding NextCommand}"/>
+                        <Button Margin="4,0" Content=">>" Command="{Binding LastCommand}"/>
+                    </StackPanel>
+                    <DataGrid ItemsSource="{Binding Path=Data}" IsReadOnly="True" Grid.Row="0">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="View"
+                                        Command="{Binding DataContext.ViewImage  
+                                ,       RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

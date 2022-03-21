@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -78,17 +80,35 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
         }
 
-        public DataTable GetData()
+        public DataTable GetData(int start, int itemCount)
         {
             DataTable dataTable = new DataTable();
             try
             {
-                string sql = "SELECT * FROM " + Name + " WHERE ROWNUM <= 100";
+                int end  = start + itemCount;
+                string sql = "SELECT * FROM ( select t.*, rownum r from " + Name + " t) where r >= " + start + " and r < " + end;
 
                 OracleCommand cmd = new OracleCommand(sql, _connection);
 
                 OracleDataAdapter dataAdapter = new OracleDataAdapter(cmd);
                 dataAdapter.Fill(dataTable);
+
+                /*dataTable.Columns.Add("blob", typeof(DataGridTemplateColumn));
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    DataGridTemplateColumn buttonColumn = new DataGridTemplateColumn();
+                    DataTemplate buttonTemplate = new DataTemplate();
+                    FrameworkElementFactory buttonFactory = new FrameworkElementFactory(typeof(Button));
+                    buttonTemplate.VisualTree = buttonFactory;
+                    //add handler or you can add binding to command if you want to handle click
+                    //buttonFactory.AddHandler(Button.ClickEvent, new RoutedEventHandler(button1_Click));
+                    //buttonFactory.SetValue(ContentProperty, "Button");
+                    buttonColumn.CellTemplate = buttonTemplate;
+                    row["blob"] = buttonColumn;
+                }
+                */
+
             }
             catch(Exception ex)
             {

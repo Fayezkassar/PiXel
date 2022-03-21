@@ -47,6 +47,7 @@ namespace ImageResizingApp.Stores
         {
             ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
             table?.SetStats();
+            table?.SetPrimaryKeys();
             return table;
         }
 

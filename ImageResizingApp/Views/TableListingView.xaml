@@ -25,16 +25,6 @@
             </ItemsControl>
         </ScrollViewer>
         <TabControl Grid.Column="1" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" TabStripPlacement="Top">
-            <TabItem Header="Stats">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
-                        <RowDefinition Height="50"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text='{Binding Path=SelectedTable.TableSize, StringFormat="Table Approx Size: {0}"}' />
-                    <TextBlock Grid.Row="1" Text='{Binding Path=SelectedTable.RecordsNumber, StringFormat="Number of Records: {0}"}' />
-                </Grid>
-            </TabItem>
             <TabItem Header="Columns">
                 <DataGrid x:Name="columnGrid" VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
                     <DataGrid.Columns>
@@ -56,6 +46,16 @@
             </TabItem>
             <TabItem Header="Data">
                 <DataGrid ItemsSource="{Binding Path=Data}" IsReadOnly="True"/>
+            </TabItem>
+            <TabItem Header="Stats">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text='{Binding Path=SelectedTable.TableSize, StringFormat="Table Approx Size: {0}"}' />
+                    <TextBlock Grid.Row="1" Text='{Binding Path=SelectedTable.RecordsNumber, StringFormat="Number of Records: {0}"}' />
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

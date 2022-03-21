@@ -76,8 +76,9 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     img5.InterpolativeResize(400, 600, PixelInterpolateMethod.Background);
                     img6.InterpolativeResize(400, 600, PixelInterpolateMethod.Average16);
                     img7.AdaptiveResize(400, 600);
-                    img8.Resample(400, 600);
+                    img8.Scale();
                     img9.Scale(400, 600);
+                    img10.LiquidRescale(400, 600);
 
                     img1.Write("C:/Users/Paola/Desktop/Snakeware.spline.png");
                     img2.Write("C:/Users/Paola/Desktop/Snakeware.bilinear.png");
@@ -89,6 +90,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     img7.Write("C:/Users/Paola/Desktop/Snakeware.adaptive.png");
                     img8.Write("C:/Users/Paola/Desktop/Snakeware.resample.png");
                     img9.Write("C:/Users/Paola/Desktop/Snakeware.scale.png");
+                    img9.Write("C:/Users/Paola/Desktop/Snakeware.liquidrescale.png");
                 }
                 return true;
 

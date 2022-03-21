@@ -93,5 +93,10 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
             return dt;
         }
+
+        public void SetPrimaryKeys()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

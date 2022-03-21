@@ -14,7 +14,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
         public IEnumerable<string> PrimaryKeys { get; set; }
-
         private readonly OracleConnection _connection;
         public OracleTable(OracleConnection connection)
         {
@@ -23,7 +22,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public IEnumerable<IColumn> GetColumns()
         {
-            this.SetPrimaryKeys();
             List<IColumn> columns = new List<IColumn>();
             try
             {
@@ -50,7 +48,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             return columns;
         }
 
-        private void SetPrimaryKeys() {
+        public void SetPrimaryKeys() {
             try
             {
                 string sql = "SELECT cols.column_name FROM all_constraints cons, all_cons_columns cols WHERE cols.table_name = '" + Name + "' AND cons.constraint_type = 'P' AND cons.constraint_name = cols.constraint_name AND cons.owner = cols.owner ORDER BY cols.table_name, cols.position";

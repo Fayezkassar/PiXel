@@ -31,5 +31,10 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         {
             throw new NotImplementedException();
         }
+
+        public void SetPrimaryKeys()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

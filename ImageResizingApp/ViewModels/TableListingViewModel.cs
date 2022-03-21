@@ -66,9 +66,9 @@ namespace ImageResizingApp.ViewModels
 
         private void OnTableClicked(string tableName)
         {
-            SelectedTable = _dataSourceStore.GetUpdatedTableByName(tableName);
             Columns = _dataSourceStore.GetColumnsByTableName(tableName);
             Data = _dataSourceStore.GetDataByTableName(tableName);
+            SelectedTable = _dataSourceStore.GetUpdatedTableByName(tableName);
         }
 
         private void OnResizeColumn(IColumn column)

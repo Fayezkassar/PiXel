@@ -7,7 +7,7 @@ namespace ImageResizingApp.ViewModels
 {
     public class ConnectDataSourcePart1ViewModel : ViewModelBase
     {
-        private readonly DataSourceRegistry _dataSourceRegistry;
+        private readonly Registry _dataSourceRegistry;
 
         private string _dataSourceName;
         [Required]
@@ -43,11 +43,11 @@ namespace ImageResizingApp.ViewModels
         {
             get
             {
-                return _dataSourceRegistry.GetKeys();
+                return _dataSourceRegistry.GetDataSourceKeys();
             }
         }
 
-        public ConnectDataSourcePart1ViewModel(DataSourceRegistry dataSourceRegistry)
+        public ConnectDataSourcePart1ViewModel(Registry dataSourceRegistry)
         {
             _dataSourceRegistry = dataSourceRegistry;
         }

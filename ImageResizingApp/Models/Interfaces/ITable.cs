@@ -14,6 +14,7 @@ namespace ImageResizingApp.Models.Interfaces
         public IEnumerable<string> PrimaryKeys { get; set; }
         public IEnumerable<IColumn> GetColumns();
         public void SetStats();
+        public void SetPrimaryKeys();
         public DataTable GetData();
     }
 }

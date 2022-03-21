@@ -31,7 +31,7 @@ namespace ImageResizingApp.ViewModels
 
         private string _selectedDataSourceType { get; set; }
 
-        public ConnectDataSourceWindowViewModel(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
+        public ConnectDataSourceWindowViewModel(Registry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
             _part1ViewModel = new ConnectDataSourcePart1ViewModel(dataSourceRegistry);
             _part2ViewModel = new ConnectDataSourcePart2ViewModel(dataSourceRegistry, dataSourceStore);

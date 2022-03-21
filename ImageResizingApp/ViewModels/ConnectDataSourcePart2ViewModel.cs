@@ -11,7 +11,7 @@ namespace ImageResizingApp.ViewModels
 {
     public class ConnectDataSourcePart2ViewModel : ViewModelBase
     {
-        private readonly DataSourceRegistry _dataSourceRegistry;
+        private readonly Registry _dataSourceRegistry;
         private readonly DataSourceStore _dataSourceStore;
        
         private readonly ObservableCollection<ConnectionParameterViewModel> _connectionParameters;
@@ -19,7 +19,7 @@ namespace ImageResizingApp.ViewModels
         
         public IDataSource _dataSource { get; set; }
 
-        public ConnectDataSourcePart2ViewModel(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
+        public ConnectDataSourcePart2ViewModel(Registry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
             _connectionParameters = new ObservableCollection<ConnectionParameterViewModel>();
             _dataSourceRegistry = dataSourceRegistry;
@@ -28,7 +28,7 @@ namespace ImageResizingApp.ViewModels
 
         public void SetDataSourceFromKey(string key)
         {
-            _dataSource = _dataSourceRegistry.getDataSourceFromKey(key);
+            _dataSource = _dataSourceRegistry.GetDataSourceFromKey(key);
         }
 
         public void SetDataSourceName(string name)

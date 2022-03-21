@@ -34,11 +34,11 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button 
-                                            CommandParameter="{Binding }" 
-                                            Style="{StaticResource MainButtonStyle}" 
-                                            Command="{Binding DataContext.ResizeColumnCommand, IsAsync=True,RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            Content="Resize"
-                                            Visibility="{Binding Resizable, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        CommandParameter="{Binding }" 
+                                        Style="{StaticResource MainButtonStyle}" 
+                                        Command="{Binding DataContext.ResizeColumnCommand, IsAsync=True,RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        Content="Resize"
+                                        Visibility="{Binding Resizable, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

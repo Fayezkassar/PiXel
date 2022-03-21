@@ -76,7 +76,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     img5.InterpolativeResize(400, 600, PixelInterpolateMethod.Background);
                     img6.InterpolativeResize(400, 600, PixelInterpolateMethod.Average16);
                     img7.AdaptiveResize(400, 600);
-                    img8.Scale();
+                    //img8.Scale();
                     img9.Scale(400, 600);
                     img10.LiquidRescale(400, 600);
 

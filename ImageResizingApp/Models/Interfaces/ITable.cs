@@ -12,9 +12,9 @@ namespace ImageResizingApp.Models.Interfaces
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
         public IEnumerable<string> PrimaryKeys { get; set; }
-        public IEnumerable<IColumn> GetColumns();
-        public void SetStats();
-        public void SetPrimaryKeys();
-        public DataTable GetData();
+        public Task<IEnumerable<IColumn>> GetColumnsAsync();
+        public Task SetStatsAsync();
+        public Task SetPrimaryKeysAsync();
+        public Task<DataTable> GetDataAsync();
     }
 }

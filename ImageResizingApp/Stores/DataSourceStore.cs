@@ -43,18 +43,18 @@ namespace ImageResizingApp.Stores
             return DataSource?.Tables ?? new List<ITable>();
         }
 
-        public ITable GetUpdatedTableByName(string tableName)
+        public async Task UpdateTableInfoAsync(ITable table)
         {
-            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            table?.SetStats();
-            table?.SetPrimaryKeys();
-            return table;
+            await table.SetStatsAsync();
+            if (table.PrimaryKeys==null || table.PrimaryKeys.Count() == 0)
+            {
+                await table.SetPrimaryKeysAsync();
+            }
         }
 
-        public IEnumerable<IColumn> GetColumnsByTableName(string tableName)
+        public async Task<IEnumerable<IColumn>> GetTableColumns(ITable table)
         {
-            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.GetColumns();
+            return await table.GetColumnsAsync();
         }
 
         public void CloseDataSourceConnectionIfAny()
@@ -62,10 +62,9 @@ namespace ImageResizingApp.Stores
             DataSource?.Close();
         }
 
-        internal DataTable GetDataByTableName(string tableName)
+        public async Task<DataTable> GetTableDataAsync(ITable table)
         {
-            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.GetData();
+            return await table.GetDataAsync();
         }
     }
 }

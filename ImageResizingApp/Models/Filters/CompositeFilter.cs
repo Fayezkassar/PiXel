@@ -14,13 +14,18 @@ namespace ImageResizingApp.Models.Filters
         public int Height { get; set; }
         public string Name { get; set; }
 
-        private IEnumerable<IFilter> _filters;
+        private List<IFilter> _filters = new List<IFilter>();
         public void Process(MagickImage image)
         {
             foreach(IFilter filter in _filters)
             {
                 filter.Process(image);
             }
+        }
+
+        public void AddFilter(IFilter filter)
+        {
+            _filters.Add(filter);
         }
         public IFilter Clone()
         {

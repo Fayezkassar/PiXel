@@ -31,10 +31,10 @@ namespace ImageResizingApp.ViewModels
 
         private string _selectedDataSourceType { get; set; }
 
-        public ConnectDataSourceWindowViewModel(Registry dataSourceRegistry, DataSourceStore dataSourceStore)
+        public ConnectDataSourceWindowViewModel(Registry registry, DataSourceStore dataSourceStore)
         {
-            _part1ViewModel = new ConnectDataSourcePart1ViewModel(dataSourceRegistry);
-            _part2ViewModel = new ConnectDataSourcePart2ViewModel(dataSourceRegistry, dataSourceStore);
+            _part1ViewModel = new ConnectDataSourcePart1ViewModel(registry);
+            _part2ViewModel = new ConnectDataSourcePart2ViewModel(registry, dataSourceStore);
             CurrentViewModel = _part1ViewModel;
 
             ContinueCommand = new RelayCommand<Window>(OnContinue);
@@ -55,7 +55,7 @@ namespace ImageResizingApp.ViewModels
                         _part2ViewModel.SetDataSourceFromKey(_part1ViewModel.SelectedDataSourceType);
                         _part2ViewModel.UpdateConnectionParameters();
                     }
-                    _part2ViewModel.SetDataSourceName(_part1ViewModel.DataSourceName);
+                    //_part2ViewModel.SetDataSourceName(_part1ViewModel.DataSourceName);
                     CurrentViewModel = _part2ViewModel;
                     PreviousCommand.NotifyCanExecuteChanged();
                 }
@@ -64,7 +64,6 @@ namespace ImageResizingApp.ViewModels
                     if (!ValidatePart2ConnectionParameters()) return;
                     if (_part2ViewModel.ConnectAndStoreDataSource())
                     {
-                        //dialogService: Dispose() the view model
                         connectWindow.Close();
                     }
                 }

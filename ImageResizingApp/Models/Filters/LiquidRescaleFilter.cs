@@ -12,6 +12,10 @@ namespace ImageResizingApp.Models.Filters
         public int Width { get; set; }
         public int Height { get; set; }
         public string Name { get; set; }
+        public LiquidRescaleFilter(string name)
+        {
+            Name = name;
+        }
         public void Process(MagickImage image)
         {
             image.LiquidRescale(Width, Height);

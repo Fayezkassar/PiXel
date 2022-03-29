@@ -3,6 +3,7 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
@@ -95,6 +96,26 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
         }
 
         public void SetPrimaryKeys()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<IColumn>> ITable.GetColumnsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ITable.SetStatsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ITable.SetPrimaryKeysAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DataTable> ITable.GetDataAsync()
         {
             throw new NotImplementedException();
         }

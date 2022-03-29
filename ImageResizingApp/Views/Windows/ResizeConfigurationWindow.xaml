@@ -11,7 +11,6 @@
         ResizeMode="NoResize"
         Name="ConfigureResizeWindow"
         Style="{StaticResource MaterialDesignWindow}"
-        ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
@@ -21,6 +20,9 @@
         <Grid.Resources>
             <DataTemplate DataType="{x:Type vms:ResizeConfigurationPart1ViewModel}">
                 <views:ResizeConfigurationPart1View></views:ResizeConfigurationPart1View>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:ResizeConfigurationPart2ViewModel}">
+                <views:ResizeConfigurationPart2View></views:ResizeConfigurationPart2View>
             </DataTemplate>
         </Grid.Resources>
         <ContentControl  Grid.Row="0" Content="{Binding CurrentViewModel}">

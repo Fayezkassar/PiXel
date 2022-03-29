@@ -15,7 +15,6 @@
         ResizeMode="NoResize"
         Name="ConnectWindow"
         Style="{StaticResource MaterialDesignWindow}"
-        ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>

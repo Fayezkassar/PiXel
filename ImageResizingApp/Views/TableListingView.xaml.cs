@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using ImageResizingApp.Models.Interfaces;
+using ImageResizingApp.ViewModels;
+using System.Windows.Controls;
 
 namespace ImageResizingApp.Views
 {
@@ -10,6 +12,13 @@ namespace ImageResizingApp.Views
         public TableListingView()
         {
             InitializeComponent();
+        }
+
+        private async void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var item = (ListBox)sender;
+            var table = (ITable)item.SelectedItem;
+            await ((TableListingViewModel)DataContext).UpdateTableAsync(table);
         }
     }
 }

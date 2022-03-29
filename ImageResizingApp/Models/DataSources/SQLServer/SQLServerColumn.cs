@@ -12,7 +12,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public string ColumnType { get; set; }
 
         public bool Resizable { get; set; }
-        public bool Resize(int? from, int? to, int? minSize, int? maxSize)
+        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter)
         {
             throw new NotImplementedException();
         }

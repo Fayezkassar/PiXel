@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
 {
@@ -33,6 +34,11 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         }
 
         public void SetPrimaryKeys()
+        {
+            throw new NotImplementedException();
+        }
+
+        public BitmapImage GetBitmapImage(DataRowView row)
         {
             throw new NotImplementedException();
         }

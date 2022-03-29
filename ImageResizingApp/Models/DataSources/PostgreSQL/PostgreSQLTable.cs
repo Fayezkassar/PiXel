@@ -3,6 +3,7 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
@@ -95,6 +96,11 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
         }
 
         public void SetPrimaryKeys()
+        {
+            throw new NotImplementedException();
+        }
+
+        public BitmapImage GetBitmapImage(DataRowView row)
         {
             throw new NotImplementedException();
         }

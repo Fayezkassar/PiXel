@@ -1,14 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using ImageResizingApp.Models;
 using ImageResizingApp.Models.Interfaces;
 using ImageResizingApp.Stores;
 using ImageResizingApp.Views.Windows;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.ViewModels
 {
@@ -90,7 +87,10 @@ namespace ImageResizingApp.ViewModels
 
         private void OnViewImage(DataRowView row)
         {
-            
+            BitmapImage data = _dataSourceStore.GetBitmapImage(currentTable, row);
+            ImageWindow window = new ImageWindow();
+            window.DataContext = new ImageWindowViewModel(data);
+            window.ShowDialog();
         }
 
         private bool CanResizeColumn(IColumn column)

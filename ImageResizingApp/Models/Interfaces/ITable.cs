@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Models.Interfaces
 {
@@ -14,6 +15,6 @@ namespace ImageResizingApp.Models.Interfaces
         public void SetStats();
         public DataTable GetData(int start, int itemCount);
         public void SetPrimaryKeys();
-
+        BitmapImage GetBitmapImage(DataRowView row);
     }
 }

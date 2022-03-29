@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using ImageResizingApp.Models;
 using System.Data;
+using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Stores
 {
@@ -55,6 +56,12 @@ namespace ImageResizingApp.Stores
         {
             ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
             return table?.GetColumns();
+        }
+
+        public BitmapImage GetBitmapImage(string tableName, DataRowView row)
+        {
+            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
+            return table?.GetBitmapImage(row);
         }
 
         public void CloseDataSourceConnectionIfAny()

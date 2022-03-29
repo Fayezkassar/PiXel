@@ -40,7 +40,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 string sqlSelect = "SELECT "+ String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a"  + ( to==null ? "" : (" WHERE ROWNUM<=" + to))+ ")";
                 sqlSelect += " WHERE RNUM>=" + finalFrom;
 
-                sqlSelect += " AND NIDOC=103896";
+                sqlSelect += " AND NIDOC=103896"; // to remove
                 OracleCommand cmd = new OracleCommand(sqlSelect, _connection);
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -69,7 +69,18 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         byte[] bytes = new byte[blobSize];
                         blob.Read(bytes, 0, (int)blobSize);
                         img = new MagickImage(bytes);
-                        img.Write("C:/Users/Paola/Desktop/Initial");
+
+                        if (backupDestination != null && backupDestination.Length > 0)
+                        {
+                            try
+                            {
+                                img.Write(backupDestination + "\\" + string.Join("-", pKs) + ".png"); //to remove
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
 
                         filter.Process(img);
                         byte[] finalBytes = img.ToByteArray();
@@ -82,18 +93,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                             finalPks += key + "=" + pKs[j];
                             ++j;
                         }
-
-                        if(backupDestination!=null && backupDestination.Length > 0)
-                        {
-                            try
-                            {
-                                img.Write(backupDestination + "/" + pKs.ToString());
-                            }
-                            catch
-                            {
-                                continue;
-                            }
-                        }
                         string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
                         OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
                         param.Direction = ParameterDirection.Input;
@@ -103,6 +102,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         updateCommand.CommandText = sqlUpdate;
                         updateCommand.Parameters.Add(param);
                         updateCommand.ExecuteNonQuery();
+                        transaction.Rollback(); //to remove
                         transaction.Commit();
                     }
                     catch (Exception ex)

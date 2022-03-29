@@ -71,7 +71,7 @@ namespace ImageResizingApp.ViewModels
                         {
                             filterCombo.AddFilter(filerViewModel.Filter);
                         }
-                        _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo);
+                        _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination);
                     }
                 }
             }

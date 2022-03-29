@@ -27,7 +27,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             Table = table;
             _connection = connection;
         }
-        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter)
+        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
         {
 
             OracleTransaction transaction = _connection.BeginTransaction();
@@ -83,8 +83,17 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                             ++j;
                         }
 
-
-                        img.Write("C:/Users/Paola/Desktop/Final");
+                        if(backupDestination!=null && backupDestination.Length > 0)
+                        {
+                            try
+                            {
+                                img.Write(backupDestination + "/" + pKs.ToString());
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
                         string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
                         OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
                         param.Direction = ParameterDirection.Input;
@@ -94,7 +103,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         updateCommand.CommandText = sqlUpdate;
                         updateCommand.Parameters.Add(param);
                         updateCommand.ExecuteNonQuery();
-                        transaction.Rollback();
+                        transaction.Commit();
                     }
                     catch (Exception ex)
                     {

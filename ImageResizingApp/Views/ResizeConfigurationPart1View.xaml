@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="ImageResizingApp.Views.ResizeConfigurationPart1View"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:ImageResizingApp.Views"
+             xmlns:helper="clr-namespace:ImageResizingApp.Helpers"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <Style x:Key="NumericTextBox" TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+            <Setter Property="Width" Value="130"></Setter>
+            <Setter Property="VerticalAlignment" Value="Top"></Setter>
+            <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+            <Setter Property="Margin" Value="0 0 100 30"></Setter>
+        </Style>
+    </UserControl.Resources>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBox    Style="{StaticResource NumericTextBox}"
+                    Grid.Row="0" Grid.Column="0"
+                    Name="fromTextBox"
+                    PreviewTextInput="NumberValidationTextBox"
+                    materialDesign:HintAssist.Hint="From"
+                    Text="{Binding From, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
+                </TextBox>
+        <TextBox   
+                    Style="{StaticResource NumericTextBox}"
+                    Grid.Row="0" Grid.Column="1"     
+                    PreviewTextInput="NumberValidationTextBox"
+                    materialDesign:HintAssist.Hint="To"
+                    Text="{Binding To, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
+            </TextBox>
+        <TextBox    
+                    Style="{StaticResource NumericTextBox}"
+                    Grid.Row="1" Grid.Column="0"      
+                    PreviewTextInput="NumberValidationTextBox"
+                    materialDesign:HintAssist.Hint="Min Size (bytes)"
+                    Text="{Binding MinSize, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
+            </TextBox>
+        <TextBox    Style="{StaticResource NumericTextBox}"
+                    Grid.Row="1" Grid.Column="1"    
+                    PreviewTextInput="NumberValidationTextBox"
+                    materialDesign:HintAssist.Hint="Max Size (bytes)"
+                    Text="{Binding MaxSize, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
+            </TextBox>
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="370"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox IsEnabled="False"  Grid.Column="0" VerticalAlignment="Top" Text="{Binding BackupDestination, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Back Up Destination"/>
+            <Button Margin="20 10 0 0" Grid.Column="1" VerticalAlignment="Top" Command="{Binding ChooseDestinationCommand}" Style="{StaticResource MainButtonStyle}" Content="Choose"/>
+        </Grid>
+    </Grid>
+</UserControl>

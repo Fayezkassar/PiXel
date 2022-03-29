@@ -31,13 +31,13 @@ namespace ImageResizingApp.ViewModels
 
         private string _selectedDataSourceType { get; set; }
 
-        public ConnectDataSourceWindowViewModel(DataSourceRegistry dataSourceRegistry, DataSourceStore dataSourceStore)
+        public ConnectDataSourceWindowViewModel(Registry registry, DataSourceStore dataSourceStore)
         {
-            _part1ViewModel = new ConnectDataSourcePart1ViewModel(dataSourceRegistry);
-            _part2ViewModel = new ConnectDataSourcePart2ViewModel(dataSourceRegistry, dataSourceStore);
+            _part1ViewModel = new ConnectDataSourcePart1ViewModel(registry);
+            _part2ViewModel = new ConnectDataSourcePart2ViewModel(registry, dataSourceStore);
             CurrentViewModel = _part1ViewModel;
 
-            ContinueCommand = new RelayCommand<Window>(OnContinue, CanContinue);
+            ContinueCommand = new RelayCommand<Window>(OnContinue);
             PreviousCommand = new RelayCommand(OnPrevious, CanGoBack);
         }
 
@@ -55,7 +55,7 @@ namespace ImageResizingApp.ViewModels
                         _part2ViewModel.SetDataSourceFromKey(_part1ViewModel.SelectedDataSourceType);
                         _part2ViewModel.UpdateConnectionParameters();
                     }
-                    _part2ViewModel.SetDataSourceName(_part1ViewModel.DataSourceName);
+                    //_part2ViewModel.SetDataSourceName(_part1ViewModel.DataSourceName);
                     CurrentViewModel = _part2ViewModel;
                     PreviousCommand.NotifyCanExecuteChanged();
                 }
@@ -64,13 +64,11 @@ namespace ImageResizingApp.ViewModels
                     if (!ValidatePart2ConnectionParameters()) return;
                     if (_part2ViewModel.ConnectAndStoreDataSource())
                     {
-                        //dialogService: Dispose() the view model
                         connectWindow.Close();
                     }
                 }
             }
         }
-        private bool CanContinue(Window connectWindow) => true;
         private void OnPrevious() {
             ContinueButtonContent = "Next";
             CurrentViewModel = _part1ViewModel;
@@ -80,12 +78,13 @@ namespace ImageResizingApp.ViewModels
 
         private bool ValidatePart2ConnectionParameters()
         {
+            bool valid = true;
             foreach (ConnectionParameterViewModel param in _part2ViewModel.ConnectionParameters)
             {
                 param.Validate();
-                if (param.HasErrors) return false;
+                if (param.HasErrors) valid=false;
             }
-            return true;
+            return valid;
         }
     }
 }

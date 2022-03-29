@@ -3,16 +3,20 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
     public class PostgreSQLTable : ITable
     {
         public string Name { get; set; }
-
         public string SchemaName { get; set; }
+        public string TableSize { get; set; }
+        public string RecordsNumber { get; set; }
+        public string RecordSize { get; set; }
+        public IEnumerable<string> PrimaryKeys { get; set; }
 
-        public NpgsqlConnection _connection { get; set; }
+        private readonly NpgsqlConnection _connection;
 
         public PostgreSQLTable(NpgsqlConnection connection)
         {
@@ -50,9 +54,8 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
         }
 
 
-        public TableStats GetStats()
+        public void SetStats()
         {
-            TableStats tableStats = new TableStats();
             try
             {
                // using NpgsqlDataReader rdr = new NpgsqlCommand("select pg_size_pretty(pg_total_relation_size('\"" + Name + "\"'))", _connection).ExecuteReader();
@@ -64,14 +67,13 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
                 NpgsqlCommand cmd = new NpgsqlCommand("select COUNT(*) FROM \"" + Name + "\"", _connection);
 
                 long rowsNum = (long)cmd.ExecuteScalar();
-                tableStats.RecordsNumber = rowsNum.ToString();
-                tableStats.TableSize = "NOT IMPLEMENTED";
+                RecordsNumber = rowsNum.ToString();
+                TableSize = "NOT IMPLEMENTED";
             }catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-            return tableStats;
         }
 
         public DataTable GetData()
@@ -91,6 +93,31 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             }
 
             return dt;
+        }
+
+        public void SetPrimaryKeys()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<IColumn>> ITable.GetColumnsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ITable.SetStatsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ITable.SetPrimaryKeysAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DataTable> ITable.GetDataAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

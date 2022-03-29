@@ -7,22 +7,22 @@ namespace ImageResizingApp.ViewModels
 {
     public class ConnectDataSourcePart1ViewModel : ViewModelBase
     {
-        private readonly DataSourceRegistry _dataSourceRegistry;
+        private readonly Registry _registry;
 
-        private string _dataSourceName;
-        [Required]
-        [DisplayAttribute(Name = "Data Source Name")]
-        public string DataSourceName
-        {
-            get
-            {
-                return _dataSourceName;
-            }
-            set
-            {
-                SetProperty(ref _dataSourceName, value, true);
-            }
-        }
+        //private string _dataSourceName;
+        //[Required]
+        //[DisplayAttribute(Name = "Data Source Name")]
+        //public string DataSourceName
+        //{
+        //    get
+        //    {
+        //        return _dataSourceName;
+        //    }
+        //    set
+        //    {
+        //        SetProperty(ref _dataSourceName, value, true);
+        //    }
+        //}
 
         private string _selectedDataSourceType;
         [Required]
@@ -43,13 +43,13 @@ namespace ImageResizingApp.ViewModels
         {
             get
             {
-                return _dataSourceRegistry.GetKeys();
+                return _registry.GetDataSourceKeys();
             }
         }
 
-        public ConnectDataSourcePart1ViewModel(DataSourceRegistry dataSourceRegistry)
+        public ConnectDataSourcePart1ViewModel(Registry dataSourceRegistry)
         {
-            _dataSourceRegistry = dataSourceRegistry;
+            _registry = dataSourceRegistry;
         }
     }
 }

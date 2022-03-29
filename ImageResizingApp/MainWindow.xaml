@@ -9,7 +9,19 @@
         WindowState="Maximized"
         Style="{StaticResource MaterialDesignWindow}">
     <Grid>
-        <views:TableListingView DataContext="{Binding CurrentViewModel}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Height="30" Header="_File">
+                    <MenuItem Header="_Connect" Click="menuConnect_Click" />
+                </MenuItem>
+            </Menu>
+            <TextBox AcceptsReturn="True" />
+        </DockPanel>
+        <views:TableListingView Grid.Row="1" DataContext="{Binding CurrentViewModel}" />
     </Grid>
 
 </Window>

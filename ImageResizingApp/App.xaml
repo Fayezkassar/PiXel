@@ -6,7 +6,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:CustomColorTheme BaseTheme="Light" PrimaryColor="#FF28468A" SecondaryColor="#FFBEC364" />
+                <materialDesign:CustomColorTheme BaseTheme="Dark" PrimaryColor="#009688" SecondaryColor="#5abfb6" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="Themes\ButtonTheme.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

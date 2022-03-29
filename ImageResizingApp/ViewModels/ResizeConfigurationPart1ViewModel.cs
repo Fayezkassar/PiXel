@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
+using System;
 
 namespace ImageResizingApp.ViewModels
 {
     public class ResizeConfigurationPart1ViewModel: ViewModelBase
     {
+        public RelayCommand ChooseDestinationCommand { get; }
 
         private int? _from;
         public int? From
@@ -58,6 +58,36 @@ namespace ImageResizingApp.ViewModels
             set
             {
                 SetProperty(ref _minSize, value, true);
+            }
+        }
+
+        private string _backupDestination;
+        public string BackupDestination
+        {
+            get
+            {
+                return _backupDestination;
+            }
+            set
+            {
+                SetProperty(ref _backupDestination, value, true);
+            }
+        }
+
+        public ResizeConfigurationPart1ViewModel()
+        {
+            ChooseDestinationCommand = new RelayCommand(OnChooseDestination);
+        }
+
+        public void OnChooseDestination()
+        {
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                if(result == System.Windows.Forms.DialogResult.OK)
+                {
+                    BackupDestination = dialog.SelectedPath;
+                }
             }
         }
     }

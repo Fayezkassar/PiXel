@@ -1,10 +1,8 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using ImageResizingApp.Models;
 using System.Data;
 using System.Windows.Media.Imaging;
 
@@ -44,24 +42,23 @@ namespace ImageResizingApp.Stores
             return DataSource?.Tables ?? new List<ITable>();
         }
 
-        public ITable GetUpdatedTableByName(string tableName)
+        public async Task UpdateTableInfoAsync(ITable table)
         {
-            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            table?.SetStats();
-            table?.SetPrimaryKeys();
-            return table;
+            await table.SetStatsAsync();
+            if (table.PrimaryKeys==null || table.PrimaryKeys.Count() == 0)
+            {
+                await table.SetPrimaryKeysAsync();
+            }
         }
 
-        public IEnumerable<IColumn> GetColumnsByTableName(string tableName)
+        public async Task<IEnumerable<IColumn>> GetTableColumns(ITable table)
         {
-            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.GetColumns();
+            return await table.GetColumnsAsync();
         }
 
-        public BitmapImage GetBitmapImage(string tableName, DataRowView row)
+        public BitmapImage GetBitmapImage(ITable table, DataRowView row)
         {
-            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.GetBitmapImage(row);
+            return table.GetBitmapImage(row);
         }
 
         public void CloseDataSourceConnectionIfAny()
@@ -69,10 +66,10 @@ namespace ImageResizingApp.Stores
             DataSource?.Close();
         }
 
-        internal DataTable GetDataByTableName(string tableName, int start, int itemCount)
+        public async Task<DataTable> GetTableDataAsync(ITable table, int start, int itemCount)
         {
-            ITable table = DataSource?.Tables?.First(t => t.Name.Equals(tableName));
-            return table?.GetData(start, itemCount);
+            return await table.GetDataAsync(start, itemCount);
+
         }
     }
 }

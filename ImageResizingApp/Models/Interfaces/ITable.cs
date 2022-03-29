@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Models.Interfaces
@@ -11,10 +12,12 @@ namespace ImageResizingApp.Models.Interfaces
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
         public IEnumerable<string> PrimaryKeys { get; set; }
-        public IEnumerable<IColumn> GetColumns();
-        public void SetStats();
-        public DataTable GetData(int start, int itemCount);
-        public void SetPrimaryKeys();
         BitmapImage GetBitmapImage(DataRowView row);
+
+        public Task<IEnumerable<IColumn>> GetColumnsAsync();
+        public Task SetStatsAsync();
+        public Task SetPrimaryKeysAsync();
+        public Task<DataTable> GetDataAsync(int start, int itemCOunt);
+
     }
 }

@@ -31,10 +31,10 @@ namespace ImageResizingApp.ViewModels
             _dataSource = _dataSourceRegistry.GetDataSourceFromKey(key);
         }
 
-        public void SetDataSourceName(string name)
-        {
-            _dataSource.Name = name;
-        }
+        //public void SetDataSourceName(string name)
+        //{
+        //    _dataSource.Name = name;
+        //}
 
         public void UpdateConnectionParameters()
         {

@@ -38,10 +38,10 @@ public class Registry
         _filters.Add(key, filter);
     }
 
-    public IFilter getFilterFromKey(string key)
+    public IFilter GetFilterFromKey(string key)
     {
         IFilter filter;
         _filters.TryGetValue(key, out filter);
-        return filter;
+        return filter?.Clone();
     }
 }

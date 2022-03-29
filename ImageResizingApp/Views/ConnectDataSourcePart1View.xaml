@@ -9,12 +9,12 @@
     
     <Grid  FocusManager.FocusedElement="{Binding ElementName=dataSourceNameTextBox}">
         <StackPanel Margin="10">
-            <TextBox Margin="0 0 0 20"
+            <!--<TextBox Margin="0 0 0 20"
                     Name="dataSourceNameTextBox"
                     materialDesign:HintAssist.Hint="Data Source Name"
                     Text="{Binding DataSourceName, UpdateSourceTrigger=PropertyChanged}"
                     Style="{StaticResource MaterialDesignFloatingHintTextBox}">
-            </TextBox>
+            </TextBox>-->
             <ComboBox
                     materialDesign:HintAssist.Hint="Data Source Types"
                     ItemsSource="{Binding DataSourceTypes}"

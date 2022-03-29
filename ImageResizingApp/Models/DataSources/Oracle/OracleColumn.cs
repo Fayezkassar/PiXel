@@ -6,6 +6,7 @@ using Oracle.ManagedDataAccess.Types;
 using ImageMagick;
 using Oracle.ManagedDataAccess.Client;
 using System.Collections.Generic;
+using System.Data;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -23,74 +24,92 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public OracleColumn(ITable table, OracleConnection connection)
         {
-            this.Table = table;
+            Table = table;
             _connection = connection;
         }
-        public bool Resize(int? from, int? to, int? minSize, int? maxSize)
+        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
         {
-            //OracleTransaction transaction;
-            //OracleCommand command = _connection.CreateCommand();
-            //transaction = _connection.BeginTransaction();
-            //command.Transaction = transaction;
+
+            OracleTransaction transaction = _connection.BeginTransaction();
+
+            OracleCommand updateCommand = _connection.CreateCommand();
+            updateCommand.Transaction = transaction;
             try
             {
-                var _from = from ?? 0;
-                string sql = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM " + Table.Name + " WHERE NIDOC=103896";
-                if (to != null)
-                {
-                    sql += " AND ROWNUM<=" + to;
-                }
-                OracleCommand cmd = new OracleCommand(sql, _connection);
+                var finalFrom = from ?? 0;
+                string sqlSelect = "SELECT "+ String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a"  + ( to==null ? "" : (" WHERE ROWNUM<=" + to))+ ")";
+                sqlSelect += " WHERE RNUM>=" + finalFrom;
+
+                sqlSelect += " AND NIDOC=103896"; // to remove
+                OracleCommand cmd = new OracleCommand(sqlSelect, _connection);
                 OracleDataReader dr = cmd.ExecuteReader();
+
                 List<string> pKs = new List<string>();
                 int n = Table.PrimaryKeys.Count();
 
                 while (dr.Read())
                 {
-                    for (int i = 0; i < n; i++)
+                    try
                     {
-                        pKs.Add(dr.GetString(i));
-                    }
-                    OracleBlob blob = dr.GetOracleBlob(n);
-                    byte[] bytes = new byte[blob.Length];
-                    blob.Read(bytes, 0, (int)blob.Length);
-                    MagickImage img = new MagickImage(bytes);
-                    MagickImage img1 = new MagickImage(bytes);
-                    MagickImage img2 = new MagickImage(bytes);
-                    MagickImage img3 = new MagickImage(bytes);
-                    MagickImage img4 = new MagickImage(bytes);
-                    MagickImage img5 = new MagickImage(bytes);
-                    MagickImage img6 = new MagickImage(bytes);
-                    MagickImage img7 = new MagickImage(bytes);
-                    MagickImage img8 = new MagickImage(bytes);
-                    MagickImage img9 = new MagickImage(bytes);
-                    MagickImage img10 = new MagickImage(bytes);
-                    MagickImage img11 = new MagickImage(bytes);
-                    MagickImage img12 = new MagickImage(bytes);
-                    MagickImage img13 = new MagickImage(bytes);
-                    img.Resize(400,600);
-                    img1.InterpolativeResize(400,600, PixelInterpolateMethod.Spline);
-                    img2.InterpolativeResize(400, 600, PixelInterpolateMethod.Bilinear);
-                    img3.InterpolativeResize(400, 600, PixelInterpolateMethod.Nearest);
-                    img4.InterpolativeResize(400, 600, PixelInterpolateMethod.Mesh);
-                    img5.InterpolativeResize(400, 600, PixelInterpolateMethod.Background);
-                    img6.InterpolativeResize(400, 600, PixelInterpolateMethod.Average16);
-                    img7.AdaptiveResize(400, 600);
-                    //img8.Scale();
-                    img9.Scale(400, 600);
-                    img10.LiquidRescale(400, 600);
+                        pKs.Clear();
+                        for (int i = 0; i < n; i++)
+                        {
+                            pKs.Add(dr.GetString(i));
+                        }
 
-                    img1.Write("C:/Users/Paola/Desktop/Snakeware.spline.png");
-                    img2.Write("C:/Users/Paola/Desktop/Snakeware.bilinear.png");
-                    img3.Write("C:/Users/Paola/Desktop/Snakeware.nearest.png");
-                    img4.Write("C:/Users/Paola/Desktop/Snakeware.mesh.png");
-                    img5.Write("C:/Users/Paola/Desktop/Snakeware.background.png");
-                    img6.Write("C:/Users/Paola/Desktop/Snakeware.average16.png");
-                    img.Write("C:/Users/Paola/Desktop/Snakeware.resize.png");
-                    img7.Write("C:/Users/Paola/Desktop/Snakeware.adaptive.png");
-                    img8.Write("C:/Users/Paola/Desktop/Snakeware.resample.png");
-                    img9.Write("C:/Users/Paola/Desktop/Snakeware.scale.png");
-                    img9.Write("C:/Users/Paola/Desktop/Snakeware.liquidrescale.png");
+                        OracleBlob blob = dr.GetOracleBlob(n);
+
+                        long blobSize = blob.Length;
+                        if ((minSize != null && blobSize < minSize) || (maxSize != null && blobSize > maxSize))
+                        {
+                            continue;
+                        }
+
+                        MagickImage img;
+                        byte[] bytes = new byte[blobSize];
+                        blob.Read(bytes, 0, (int)blobSize);
+                        img = new MagickImage(bytes);
+
+                        if (backupDestination != null && backupDestination.Length > 0)
+                        {
+                            try
+                            {
+                                img.Write(backupDestination + "\\" + string.Join("-", pKs) + ".png"); //to remove
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
+
+                        filter.Process(img);
+                        byte[] finalBytes = img.ToByteArray();
+
+                        string finalPks = "";
+                        int j = 0;
+                        foreach (string key in Table.PrimaryKeys)
+                        {
+                            if (j != 0) finalPks += " AND ";
+                            finalPks += key + "=" + pKs[j];
+                            ++j;
+                        }
+                        string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
+                        OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
+                        param.Direction = ParameterDirection.Input;
+                        param.Value = finalBytes;
+
+                        updateCommand.Parameters.Clear();
+                        updateCommand.CommandText = sqlUpdate;
+                        updateCommand.Parameters.Add(param);
+                        updateCommand.ExecuteNonQuery();
+                        transaction.Rollback(); //to remove
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        transaction.Rollback();
+                    }
                 }
                 return true;
 
@@ -98,8 +117,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                //transaction.Rollback();
                 return false;
+            }
+            finally
+            {
+                transaction.Dispose();
             }
         }
     }

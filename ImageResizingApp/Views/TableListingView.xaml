@@ -10,20 +10,8 @@
             <ColumnDefinition Width="400"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Tables}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button HorizontalAlignment="Stretch" Style="{StaticResource MaterialDesignPaperDarkButton}" 
-                                    Content="{Binding Name}" 
-                                    Margin="5"
-                                    Command="{Binding DataContext.TableSelectedCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    CommandParameter="{Binding Name}">
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <ListBox SelectionChanged="ListBox_SelectionChanged" ItemsSource="{Binding Tables}" SelectedItem="{Binding SelectedTable}" Style="{StaticResource MaterialDesignListBox}" DisplayMemberPath="Name" >
+        </ListBox>
         <TabControl Grid.Column="1" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" TabStripPlacement="Top">
             <TabItem Header="Columns">
                 <DataGrid x:Name="columnGrid" VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
@@ -86,8 +74,8 @@
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="50"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Text='{Binding Path=SelectedTable.TableSize, StringFormat="Table Approx Size: {0}"}' />
-                    <TextBlock Grid.Row="1" Text='{Binding Path=SelectedTable.RecordsNumber, StringFormat="Number of Records: {0}"}' />
+                    <TextBlock Margin="5" Text='{Binding TableSize,  StringFormat="Table Approx Size: {0}"}' />
+                    <TextBlock Margin="5" Grid.Row="1" Text='{Binding RecordsNumber, StringFormat="Number of Records: {0}"}' />
                 </Grid>
             </TabItem>
         </TabControl>

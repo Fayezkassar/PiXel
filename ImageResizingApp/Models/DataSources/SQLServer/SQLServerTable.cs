@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
+
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
 {
@@ -38,7 +40,28 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             throw new NotImplementedException();
         }
 
+
         public BitmapImage GetBitmapImage(DataRowView row)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<IEnumerable<IColumn>> ITable.GetColumnsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ITable.SetStatsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task ITable.SetPrimaryKeysAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<DataTable> ITable.GetDataAsync(int start, int itemCount)
         {
             throw new NotImplementedException();
         }

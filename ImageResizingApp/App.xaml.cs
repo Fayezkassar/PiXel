@@ -36,10 +36,10 @@ namespace ImageResizingApp
         protected override void OnStartup(StartupEventArgs e)
         {
             _host.Start();
-            _host.Services.GetRequiredService<Registry>().AddFilter("Scale", new ScaleFilter());
-            _host.Services.GetRequiredService<Registry>().AddFilter("Resize", new ResizeFilter());
-            _host.Services.GetRequiredService<Registry>().AddFilter("Sample", new SampleFilter());
-            _host.Services.GetRequiredService<Registry>().AddFilter("Liquid Rescale", new LiquidRescaleFilter());
+            _host.Services.GetRequiredService<Registry>().AddFilter("Scale", new ScaleFilter("Scale"));
+            _host.Services.GetRequiredService<Registry>().AddFilter("Resize", new ResizeFilter("Resize"));
+            _host.Services.GetRequiredService<Registry>().AddFilter("Sample", new SampleFilter("Sample"));
+            _host.Services.GetRequiredService<Registry>().AddFilter("Liquid Rescale", new LiquidRescaleFilter("Liquid Rescale"));
 
             _host.Services.GetRequiredService<Registry>().AddDataSource("SQL Server", new SQLServerDataSource());
             _host.Services.GetRequiredService<Registry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());

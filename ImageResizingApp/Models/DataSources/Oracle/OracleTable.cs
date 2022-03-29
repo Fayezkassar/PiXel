@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -23,7 +24,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             _connection = connection;
         }
 
-        public IEnumerable<IColumn> GetColumns()
+        public async Task<IEnumerable<IColumn>> GetColumnsAsync()
         {
             List<IColumn> columns = new List<IColumn>();
             try
@@ -34,7 +35,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                 using OracleDataReader rdr = cmd.ExecuteReader();
 
-                while (rdr.Read())
+                while (await rdr.ReadAsync())
                 {
                     columns.Add(new OracleColumn(this, _connection)
                     {
@@ -51,7 +52,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             return columns;
         }
 
-        public void SetPrimaryKeys() {
+        public async Task SetPrimaryKeysAsync() {
             try
             {
                 string sql = "SELECT cols.column_name FROM all_constraints cons, all_cons_columns cols WHERE cols.table_name = '" + Name + "' AND cons.constraint_type = 'P' AND cons.constraint_name = cols.constraint_name AND cons.owner = cols.owner ORDER BY cols.table_name, cols.position";
@@ -60,7 +61,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                 List<string> keys = new List<string>();
 
-                while (dr.Read())
+                while (await dr.ReadAsync())
                 {
                     keys.Add(dr.GetString(0));
                 }
@@ -74,7 +75,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
         }
 
-        public void SetStats()
+        public async Task SetStatsAsync()
         {
             try
             {
@@ -85,11 +86,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                                 + " ( SELECT L.SEGMENT_NAME FROM USER_LOBS L WHERE L.TABLE_NAME = '" + Name +"'))";
 
                 OracleCommand cmd = new OracleCommand(sql, _connection);
-                decimal tableSize = (decimal)cmd.ExecuteScalar();
+                decimal tableSize = (decimal) (await cmd.ExecuteScalarAsync());
                 TableSize = Utilities.GetFormatedSize(tableSize);
 
                 OracleCommand cmd1 = new OracleCommand("SELECT COUNT(*) FROM " + Name, _connection);
-                decimal recordNumber = (decimal)cmd1.ExecuteScalar();
+                decimal recordNumber = (decimal)(await cmd1.ExecuteScalarAsync());
                 RecordsNumber = recordNumber.ToString();
 
                 if (recordNumber > 0)
@@ -103,7 +104,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
         }
 
-        public DataTable GetData(int start, int itemCount)
+        public async Task<DataTable> GetDataAsync(int start, int itemCount)
         {
             DataTable dataTable = new DataTable();
             try
@@ -114,23 +115,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 OracleCommand cmd = new OracleCommand(sql, _connection);
 
                 OracleDataAdapter dataAdapter = new OracleDataAdapter(cmd);
-                dataAdapter.Fill(dataTable);
 
-                /*dataTable.Columns.Add("blob", typeof(DataGridTemplateColumn));
-
-                foreach (DataRow row in dataTable.Rows)
-                {
-                    DataGridTemplateColumn buttonColumn = new DataGridTemplateColumn();
-                    DataTemplate buttonTemplate = new DataTemplate();
-                    FrameworkElementFactory buttonFactory = new FrameworkElementFactory(typeof(Button));
-                    buttonTemplate.VisualTree = buttonFactory;
-                    //add handler or you can add binding to command if you want to handle click
-                    //buttonFactory.AddHandler(Button.ClickEvent, new RoutedEventHandler(button1_Click));
-                    //buttonFactory.SetValue(ContentProperty, "Button");
-                    buttonColumn.CellTemplate = buttonTemplate;
-                    row["blob"] = buttonColumn;
-                }
-                */
+                await Task.Run(() => dataAdapter.Fill(dataTable));
 
             }
             catch(Exception ex)

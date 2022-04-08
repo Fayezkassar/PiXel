@@ -7,8 +7,16 @@
         mc:Ignorable="d"
         Title="ImageWindow" Height="450" Width="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
         <StackPanel >
             <Image Source="{Binding DisplayedImage}" Height="400" Width="400" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="1" >
+            <Button Name="resizeButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding ResizeCommand}" Content="Resize"></Button>
+            <Button Name="cancelButton" Style="{StaticResource MainCancelButtonStyle}" IsCancel="True" Content="Cancel"/>
         </StackPanel>
     </Grid>
 </Window>

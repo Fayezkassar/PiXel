@@ -62,6 +62,19 @@ namespace ImageResizingApp.ViewModels
 
         public RelayCommand<DataRowView> ViewImage { get; }
         public RelayCommand<string> TableSelectedCommand { get; }
+
+        // FOR PAGINATION
+
+        private int start = 0;
+        private ITable currentTable;
+        private int itemCount = 15;
+        private int end = 15;
+        private int totalItems = 0;
+        public RelayCommand FirstCommand { get; }
+        public RelayCommand PreviousCommand { get; }
+        public RelayCommand NextCommand { get; }
+        public RelayCommand LastCommand { get; }
+
         public TableListingViewModel(DataSourceStore dataSourceStore, Registry registry) 
         {
             _registry = registry;
@@ -116,10 +129,10 @@ namespace ImageResizingApp.ViewModels
         public async Task UpdateTableAsync(ITable table)
         {
             currentTable = table;
-            TotalItems = int.Parse(SelectedTable.RecordsNumber);
             await UpdateColumnsAsync(table);
             await UpdateDataAsync(table);
             await UpdateTableInfoAsync(table);
+            TotalItems = int.Parse(SelectedTable.RecordsNumber);
         }
 
         private void OnResizeColumn(IColumn column)
@@ -133,7 +146,7 @@ namespace ImageResizingApp.ViewModels
         {
             BitmapImage data = _dataSourceStore.GetBitmapImage(currentTable, row);
             ImageWindow window = new ImageWindow();
-            window.DataContext = new ImageWindowViewModel(data);
+            window.DataContext = new ImageWindowViewModel(data, _registry);
             window.ShowDialog();
         }
 
@@ -143,25 +156,18 @@ namespace ImageResizingApp.ViewModels
             return true;
         }
 
-
-
         // FOR PAGINATION
 
-        private int start = 0;
-        private ITable currentTable;
-        private int itemCount = 10;
-        private int totalItems = 0;
-        public RelayCommand FirstCommand { get; }
-        public RelayCommand PreviousCommand { get; }
-        public RelayCommand NextCommand { get; }
-        public RelayCommand LastCommand { get; }
 
         public int Start { 
             get { return start; }
             set => SetProperty(ref start, value, false);
         }
 
-        public int End { get { return start + itemCount < totalItems ? start + itemCount : totalItems; } }
+        public int End {
+            get { return end; }
+            set => SetProperty(ref end, value, false);
+        }
 
         public int TotalItems { 
             get { return totalItems; }
@@ -173,6 +179,7 @@ namespace ImageResizingApp.ViewModels
             if (start > 0)
             {
                 Start = 0;
+                End = start + itemCount < totalItems ? start + itemCount : totalItems;
                 await UpdateDataAsync(currentTable);
             }
         }
@@ -182,6 +189,7 @@ namespace ImageResizingApp.ViewModels
             if (start >= itemCount)
             {
                 Start -= itemCount;
+                End = start + itemCount < totalItems ? start + itemCount : totalItems;
                 await UpdateDataAsync(currentTable);
             }
         }
@@ -191,6 +199,7 @@ namespace ImageResizingApp.ViewModels
             if (start < totalItems - itemCount)
             {
                 Start += itemCount;
+                End = start + itemCount < totalItems ? start + itemCount : totalItems;
                 await UpdateDataAsync(currentTable);
             }
         }
@@ -200,6 +209,7 @@ namespace ImageResizingApp.ViewModels
             if (start < totalItems - itemCount)
             {
                 Start = totalItems - itemCount;
+                End = start + itemCount < totalItems ? start + itemCount : totalItems;
                 await UpdateDataAsync(currentTable);
             }
         }

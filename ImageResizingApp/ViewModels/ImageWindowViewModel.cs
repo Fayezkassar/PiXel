@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Text;
-using System.Windows.Media;
+﻿using CommunityToolkit.Mvvm.Input;
+using ImageResizingApp.Models.Interfaces;
+using ImageResizingApp.Views.Windows;
 using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.ViewModels
 {
     public class ImageWindowViewModel : ViewModelBase
     {
-        private readonly DataRowView _row;
-
+        private readonly Registry _registry;
         private BitmapImage _displayedImage;
 
         public BitmapImage DisplayedImage
@@ -25,12 +21,21 @@ namespace ImageResizingApp.ViewModels
                 SetProperty(ref _displayedImage, value, false);
             }
         }
-        public ImageWindowViewModel(BitmapImage image)
+
+        public RelayCommand<IColumn> ResizeImageCommand { get; }
+        public ImageWindowViewModel(BitmapImage image, Registry registry)
         {
             DisplayedImage = image;
-           // byte[] imagebytes = _row.Row["DOC"] as byte[];
-            //DisplayedImage = LoadImage(imagebytes);
+            _registry = registry;
+            ResizeImageCommand = new RelayCommand<IColumn>(OnResizeImage);
         }
-        
+
+        private void OnResizeImage(IColumn column)
+        {
+            ResizeConfigurationWindow window = new ResizeConfigurationWindow();
+            window.DataContext = new ResizeConfigurationWindowViewModel(column, _registry);
+            window.ShowDialog();
+        }
+
     }
 }

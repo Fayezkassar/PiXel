@@ -1,12 +1,9 @@
 ﻿using ImageResizingApp.Helpers;
 using ImageResizingApp.Models.Interfaces;
 using Oracle.ManagedDataAccess.Client;
-using Oracle.ManagedDataAccess.Types;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Windows.Media.Imaging;
 using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
@@ -124,39 +121,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 Console.WriteLine(ex.Message);
             }
             return dataTable;
-        }
-
-        public BitmapImage GetBitmapImage(DataRowView row)
-        {
-            string sql = "SELECT DOC FROM " + Name + " WHERE NIDOC=103896";
-            OracleCommand cmd = new OracleCommand(sql, _connection);
-            OracleDataReader dr = cmd.ExecuteReader();
-            while (dr.Read())
-            {
-                OracleBlob blob = dr.GetOracleBlob(0);
-                byte[] bytes = new byte[blob.Length];
-                blob.Read(bytes, 0, (int)blob.Length);
-                return LoadImage(bytes);
-            }
-            return null;
-        }
-
-        private static BitmapImage LoadImage(byte[] imageData)
-        {
-            if (imageData == null || imageData.Length == 0) return null;
-            var image = new BitmapImage();
-            using (var mem = new MemoryStream(imageData))
-            {
-                mem.Position = 0;
-                image.BeginInit();
-                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.UriSource = null;
-                image.StreamSource = mem;
-                image.EndInit();
-            }
-            image.Freeze();
-            return image;
         }
     }
 }

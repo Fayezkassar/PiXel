@@ -36,7 +36,9 @@ namespace ImageResizingApp.ViewModels
             set { SetProperty(ref _confirmButtonContent, value, false); }
         }
 
-        public ResizeConfigurationWindowViewModel(IColumn column, Registry registry)
+        public int? _rowNumber;
+
+        public ResizeConfigurationWindowViewModel(IColumn column, Registry registry, bool isBatch, int? rowNumber = null)
         {
             _column = column;
             _registry = registry;
@@ -44,8 +46,8 @@ namespace ImageResizingApp.ViewModels
             ConfirmCommand = new RelayCommand<Window>(OnConfirm, CanConfirm);
             PreviousCommand = new RelayCommand(OnPrevious, CanGoBack);
 
-
-            _part1ViewModel = new ResizeConfigurationPart1ViewModel();
+            _rowNumber = rowNumber;
+            _part1ViewModel = new ResizeConfigurationPart1ViewModel(isBatch);
             _part2ViewModel = new ResizeConfigurationPart2ViewModel(registry, ConfirmCommand);
             CurrentViewModel = _part1ViewModel;
         }
@@ -71,7 +73,7 @@ namespace ImageResizingApp.ViewModels
                         {
                             filterCombo.AddFilter(filerViewModel.Filter);
                         }
-                        _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination);
+                        _column.Resize(_rowNumber, _part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination);
                     }
                 }
             }

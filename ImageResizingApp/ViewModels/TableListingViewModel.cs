@@ -5,8 +5,6 @@ using ImageResizingApp.Views.Windows;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Windows.Media.Imaging;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace ImageResizingApp.ViewModels
@@ -138,15 +136,15 @@ namespace ImageResizingApp.ViewModels
         private void OnResizeColumn(IColumn column)
         {
             ResizeConfigurationWindow window = new ResizeConfigurationWindow();
-            window.DataContext = new ResizeConfigurationWindowViewModel(column, _registry);
+            window.DataContext = new ResizeConfigurationWindowViewModel(column, _registry, true);
             window.ShowDialog();
         }
 
         private void OnViewImage(DataRowView row)
         {
-            BitmapImage data = _dataSourceStore.GetBitmapImage(currentTable, row);
+            IColumn column = _columns[0];
             ImageWindow window = new ImageWindow();
-            window.DataContext = new ImageWindowViewModel(data, _registry);
+            window.DataContext = new ImageWindowViewModel(column, row, _registry);
             window.ShowDialog();
         }
 

@@ -1,12 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
-using System;
 
 namespace ImageResizingApp.ViewModels
 {
     public class ResizeConfigurationPart1ViewModel: ViewModelBase
     {
         public RelayCommand ChooseDestinationCommand { get; }
+        public bool IsBatch { get; }
 
         private int? _from;
         public int? From
@@ -74,9 +73,10 @@ namespace ImageResizingApp.ViewModels
             }
         }
 
-        public ResizeConfigurationPart1ViewModel()
+        public ResizeConfigurationPart1ViewModel(bool isBatch)
         {
             ChooseDestinationCommand = new RelayCommand(OnChooseDestination);
+            IsBatch = isBatch;
         }
 
         public void OnChooseDestination()

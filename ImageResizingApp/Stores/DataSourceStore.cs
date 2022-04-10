@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Data;
-using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Stores
 {
@@ -54,11 +53,6 @@ namespace ImageResizingApp.Stores
         public async Task<IEnumerable<IColumn>> GetTableColumns(ITable table)
         {
             return await table.GetColumnsAsync();
-        }
-
-        public BitmapImage GetBitmapImage(ITable table, DataRowView row)
-        {
-            return table.GetBitmapImage(row);
         }
 
         public void CloseDataSourceConnectionIfAny()

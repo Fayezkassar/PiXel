@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ImageMagick;
+using System.Data;
+using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Models.Interfaces
 {
@@ -14,7 +14,9 @@ namespace ImageResizingApp.Models.Interfaces
         
         public bool Resizable { get;set; }
 
-        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination);
+        public bool Resize(int? rowNumber, int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination);
+
+        BitmapImage GetBitmapImage(DataRowView row);
 
     }
 }

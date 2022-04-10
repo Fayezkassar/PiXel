@@ -1,5 +1,8 @@
-﻿using ImageResizingApp.Models.Interfaces;
+﻿using ImageMagick;
+using ImageResizingApp.Models.Interfaces;
 using System;
+using System.Data;
+using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
 {
@@ -12,7 +15,13 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public string ColumnType { get; set; }
 
         public bool Resizable { get; set; }
-        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
+
+        public BitmapImage GetBitmapImage(DataRowView row)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Resize(int? rowNumber, int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
         {
             throw new NotImplementedException();
         }

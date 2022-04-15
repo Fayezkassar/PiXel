@@ -16,7 +16,7 @@
                     Style="{StaticResource MaterialDesignFloatingHintTextBox}">
             </TextBox>-->
             <ComboBox
-                    materialDesign:HintAssist.Hint="Data Source Types"
+                    materialDesign:HintAssist.Hint="Data Source Type"
                     ItemsSource="{Binding DataSourceTypes}"
                     SelectedItem="{Binding SelectedDataSourceType}"
                     Style="{StaticResource MaterialDesignFloatingHintComboBox}">

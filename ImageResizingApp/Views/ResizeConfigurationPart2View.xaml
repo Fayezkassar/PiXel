@@ -24,6 +24,7 @@
                     </Grid.RowDefinitions>
                     <StackPanel Name="Form" Visibility="Visible" Margin="10">
                         <TextBox Margin="0 0 0 20"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                     Text="{Binding Width, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}"
                     PreviewTextInput="NumberValidationTextBox"
                     materialDesign:HintAssist.Hint="Width">
@@ -31,6 +32,7 @@
                         <TextBox
                     Text="{Binding Height, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}"
                     PreviewTextInput="NumberValidationTextBox"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                     materialDesign:HintAssist.Hint="Height">
                         </TextBox>
                         <Frame/>

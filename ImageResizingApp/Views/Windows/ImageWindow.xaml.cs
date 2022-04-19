@@ -15,9 +15,9 @@ namespace ImageResizingApp.Views.Windows
     /// <summary>
     /// Interaction logic for ImageWindow.xaml
     /// </summary>
-    public partial class ImageWindow : Window
+    public partial class ViewImageWindow : Window
     {
-        public ImageWindow()
+        public ViewImageWindow()
         {
             InitializeComponent();
         }

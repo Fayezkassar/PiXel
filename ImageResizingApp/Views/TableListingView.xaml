@@ -4,7 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
+             xmlns:converters="clr-namespace:ImageResizingApp.Converters"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:DataRowViewConverter x:Key="drvc" />
+        <DataTemplate x:Key="blobTemplate">
+            <Button Style="{StaticResource MainButtonStyle}" Content="View" Command="{Binding DataContext.ViewImage,RelativeSource={RelativeSource AncestorType=DataGrid}}"  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridCell}}"/>
+        </DataTemplate>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400"/>
@@ -40,8 +47,8 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <StackPanel Margin="4" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Margin="4,0" Content="&lt;&lt;" Command="{Binding FirstCommand}"/>
-                        <Button Margin="4,0" Content="&lt;" Command="{Binding PreviousCommand}"/>
+                        <Button Margin="4,0" Content="&lt;&lt;" Style="{StaticResource MainButtonStyle}" Command="{Binding FirstCommand}"/>
+                        <Button Margin="4,0" Content="&lt;"  Style="{StaticResource MainButtonStyle}" Command="{Binding PreviousCommand}"/>
                         <StackPanel VerticalAlignment="Center"  Orientation="Horizontal">
                             <TextBlock Text="{Binding Start}"/>
                             <TextBlock Text=" to "/>
@@ -49,22 +56,10 @@
                             <TextBlock Text=" of "/>
                             <TextBlock Text="{Binding TotalItems}"/>
                         </StackPanel>
-                        <Button Margin="4,0" Content=">" Command="{Binding NextCommand}"/>
-                        <Button Margin="4,0" Content=">>" Command="{Binding LastCommand}"/>
+                        <Button Margin="4,0" Content=">" Style="{StaticResource MainButtonStyle}" Command="{Binding NextCommand}"/>
+                        <Button Margin="4,0" Content=">>" Style="{StaticResource MainButtonStyle}" Command="{Binding LastCommand}"/>
                     </StackPanel>
-                    <DataGrid ItemsSource="{Binding Path=Data}" IsReadOnly="True" Grid.Row="0">
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn>
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="View"
-                                        Command="{Binding DataContext.ViewImage  
-                                ,       RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
+                    <DataGrid AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" ItemsSource="{Binding Path=Data}" IsReadOnly="True" Grid.Row="0">
                     </DataGrid>
                 </Grid>
             </TabItem>

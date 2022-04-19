@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Threading.Tasks;
-
+using System.Windows.Controls;
+using System.Linq;
 namespace ImageResizingApp.ViewModels
 {
     public class TableListingViewModel : ViewModelBase
@@ -58,7 +59,7 @@ namespace ImageResizingApp.ViewModels
 
         public RelayCommand<IColumn> ResizeColumnCommand { get; }
 
-        public RelayCommand<DataRowView> ViewImage { get; }
+        public RelayCommand<DataGridCell> ViewImage { get; }
         public RelayCommand<string> TableSelectedCommand { get; }
 
         // FOR PAGINATION
@@ -81,7 +82,7 @@ namespace ImageResizingApp.ViewModels
             _columns = new ObservableCollection<IColumn>();
             _dataSourceStore.CurrentDataSourceChanged += UpdateTables;
             ResizeColumnCommand = new RelayCommand<IColumn>(OnResizeColumn, CanResizeColumn);
-            ViewImage = new RelayCommand<DataRowView>(OnViewImage);
+            ViewImage = new RelayCommand<DataGridCell>(OnViewImage);
             FirstCommand = new RelayCommand(OnFirstCommand);
             PreviousCommand = new RelayCommand(OnPreviousCommand);
             NextCommand = new RelayCommand(OnNextCommand);
@@ -136,15 +137,24 @@ namespace ImageResizingApp.ViewModels
         private void OnResizeColumn(IColumn column)
         {
             ResizeConfigurationWindow window = new ResizeConfigurationWindow();
-            window.DataContext = new ResizeConfigurationWindowViewModel(column, _registry, true);
+            window.DataContext = new ResizeConfigurationWindowViewModel(column, _registry);
             window.ShowDialog();
         }
 
-        private void OnViewImage(DataRowView row)
+        private void OnViewImage(DataGridCell cell)
         {
-            IColumn column = _columns[0];
-            ImageWindow window = new ImageWindow();
-            window.DataContext = new ImageWindowViewModel(column, row, _registry);
+            System.Data.DataRowView drv = cell.DataContext as System.Data.DataRowView;
+            List<string> pks = new List<string>();
+            foreach (string key in SelectedTable.PrimaryKeys)
+            {
+                int index = Data.Columns.IndexOf(key);
+                string value = drv.Row.ItemArray[index].ToString();
+                pks.Add(value);
+            }
+            IColumn column = Columns.FirstOrDefault(x => x.Name == cell.Column.Header.ToString());
+            IImage image= column.GetImagePerPrimaryKeys(pks);
+            Views.Windows.ViewImageWindow window = new Views.Windows.ViewImageWindow();
+            window.DataContext = new ViewImageWindow(image, _registry);
             window.ShowDialog();
         }
 
@@ -155,7 +165,6 @@ namespace ImageResizingApp.ViewModels
         }
 
         // FOR PAGINATION
-
 
         public int Start { 
             get { return start; }

@@ -22,7 +22,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             throw new NotImplementedException();
         }
 
-        public IImage GetImagePerPrimaryKeys(List<string> primaryKeys)
+        public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryKeysValues)
         {
             throw new NotImplementedException();
         }

@@ -8,6 +8,7 @@ using System.Data;
 using System.Text;
 using System.Windows.Media.Imaging;
 using System.Threading.Tasks;
+using ImageMagick;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -16,18 +17,18 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public IColumn Column { get; set; }
 
         private readonly OracleConnection _connection;
-        public List<string> PrimaryValues { get; set; }
+        public IEnumerable<string> PrimaryKeysValues { get; set; }
 
-        public OracleImage(IColumn column, OracleConnection connection, List<string> primaryValues)
+        public OracleImage(IColumn column, OracleConnection connection, IEnumerable<string> primaryValues)
         {
             _connection = connection;
             Column = column;
-            PrimaryValues = primaryValues;
+            PrimaryKeysValues = primaryValues;
         }
         public BitmapImage GetBitmapImage()
         {
-            string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Column.Table.PrimaryKeys, PrimaryValues);
-            string sql = "SELECT "+ Column.Name + " FROM " + Column.Table.Name + " WHERE " + finalPks;
+            string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Column.Table.PrimaryKeys, PrimaryKeysValues);
+            string sql = "SELECT " + Column.Name + " FROM " + Column.Table.Name + " WHERE " + finalPks;
             OracleCommand cmd = new OracleCommand(sql, _connection);
             OracleDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
@@ -41,11 +42,56 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         }
         public bool Resize(IFilter filter, string backupDestination)
         {
-            //if (rowNumber != null)
-            //{
-            //    sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", DOC FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a  WHERE NIDOC=" + rowNumber + ")"; // TO REPLACE NIDOC WITH ROWNNUM MAYBE and DOC WITH NAME PARAM
-            //} else
-            throw new NotImplementedException();
+            bool imageResized = false;
+            OracleTransaction transaction = _connection.BeginTransaction();
+            OracleCommand updateCommand = _connection.CreateCommand();
+            updateCommand.Transaction = transaction;
+
+            string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Column.Table.PrimaryKeys, PrimaryKeysValues);
+            string sqlSelect = "SELECT " + Column.Name + " FROM " + Column.Table.Name + "  WHERE " + finalPks;
+            OracleCommand cmd = new OracleCommand(sqlSelect, _connection);
+            OracleDataReader dr = cmd.ExecuteReader();
+            try
+            {
+                while (dr.Read())
+                {
+                    OracleBlob blob = dr.GetOracleBlob(0);
+                    MagickImage img;
+                    byte[] bytes = new byte[blob.Length];
+                    blob.Read(bytes, 0, (int)blob.Length);
+
+                    img = new MagickImage(bytes);
+
+                    if (backupDestination != null && backupDestination.Length > 0)
+                    {
+                        img.Write(backupDestination + "\\" + string.Join("-", PrimaryKeysValues));
+                    }
+
+                    filter.Process(img);
+                    byte[] finalBytes = img.ToByteArray();
+
+                    string sqlUpdate = "UPDATE " + Column.Table.Name + " SET " + Column.Name + " = :pBlob" + " WHERE " + finalPks;
+                    OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
+                    param.Direction = ParameterDirection.Input;
+                    param.Value = finalBytes;
+
+                    updateCommand.CommandText = sqlUpdate;
+                    updateCommand.Parameters.Add(param);
+                    updateCommand.ExecuteNonQuery();
+                    transaction.Commit();
+                    imageResized = true;
+                }
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
+            finally
+            {
+                transaction.Dispose();
+            }
+
+            return imageResized;
         }
     }
 }

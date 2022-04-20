@@ -152,7 +152,7 @@ namespace ImageResizingApp.ViewModels
                 pks.Add(value);
             }
             IColumn column = Columns.FirstOrDefault(x => x.Name == cell.Column.Header.ToString());
-            IImage image= column.GetImagePerPrimaryKeys(pks);
+            IImage image= column.GetImageWithPrimaryKeysValues(pks);
             Views.Windows.ViewImageWindow window = new Views.Windows.ViewImageWindow();
             window.DataContext = new ViewImageWindow(image, _registry);
             window.ShowDialog();

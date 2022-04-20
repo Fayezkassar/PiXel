@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Media.Imaging;
+using System.Linq;
 
 namespace ImageResizingApp.Helpers
 {
@@ -38,14 +38,14 @@ namespace ImageResizingApp.Helpers
             return image;
         }
 
-        public static string GeneratePrimaryKeyValuePairs(IEnumerable<string> primaryKeys, List<string> values)
+        public static string GeneratePrimaryKeyValuePairs(IEnumerable<string> primaryKeys, IEnumerable<string> values)
         {
             string finalPks = "";
             int j = 0;
             foreach (string key in primaryKeys)
             {
                 if (j != 0) finalPks += " AND ";
-                finalPks += key + "=" + values[j];
+                finalPks += key + "=" + values.ElementAt(j);
                 ++j;
             }
             return finalPks;

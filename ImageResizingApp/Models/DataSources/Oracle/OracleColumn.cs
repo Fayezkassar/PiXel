@@ -106,21 +106,19 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         transaction.Rollback();
                     }
                 }
-                return true;
-
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
             }
             finally
             {
                 transaction.Dispose();
             }
+            return true; //temporary
         }
 
-        public IImage GetImagePerPrimaryKeys(List<string> primaryValues)
+        public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryValues)
         {
             return new OracleImage(this, _connection, primaryValues);
         }

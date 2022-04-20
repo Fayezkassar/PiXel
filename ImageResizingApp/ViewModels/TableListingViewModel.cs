@@ -143,7 +143,7 @@ namespace ImageResizingApp.ViewModels
 
         private void OnViewImage(DataGridCell cell)
         {
-            System.Data.DataRowView drv = cell.DataContext as System.Data.DataRowView;
+            DataRowView drv = cell.DataContext as DataRowView;
             List<string> pks = new List<string>();
             foreach (string key in SelectedTable.PrimaryKeys)
             {
@@ -153,8 +153,8 @@ namespace ImageResizingApp.ViewModels
             }
             IColumn column = Columns.FirstOrDefault(x => x.Name == cell.Column.Header.ToString());
             IImage image= column.GetImageWithPrimaryKeysValues(pks);
-            Views.Windows.ViewImageWindow window = new Views.Windows.ViewImageWindow();
-            window.DataContext = new ViewImageWindow(image, _registry);
+            ViewImageWindow window = new ViewImageWindow();
+            window.DataContext = new ViewImageWindowViewModel(image, _registry);
             window.ShowDialog();
         }
 

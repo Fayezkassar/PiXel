@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.ViewModels
 {
-    public class ViewImageWindow : ViewModelBase
+    public class ViewImageWindowViewModel : ViewModelBase
     {
         private readonly Registry _registry;
 
@@ -26,7 +26,7 @@ namespace ImageResizingApp.ViewModels
         private IImage _image;
 
         public RelayCommand ResizeImageCommand { get; }
-        public ViewImageWindow(IImage image, Registry registry)
+        public ViewImageWindowViewModel(IImage image, Registry registry)
         {
             _image = image;
             DisplayedImage = image.GetBitmapImage();

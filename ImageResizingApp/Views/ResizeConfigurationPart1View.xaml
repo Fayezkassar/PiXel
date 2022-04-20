@@ -32,6 +32,7 @@
                     Name="fromTextBox"
                     PreviewTextInput="NumberValidationTextBox"
                     materialDesign:HintAssist.Hint="From"
+                    Visibility="{Binding IsBatch, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Text="{Binding From, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
                 </TextBox>
         <TextBox   
@@ -39,6 +40,7 @@
                     Grid.Row="0" Grid.Column="1"     
                     PreviewTextInput="NumberValidationTextBox"
                     materialDesign:HintAssist.Hint="To"
+                    Visibility="{Binding IsBatch, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Text="{Binding To, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
             </TextBox>
         <TextBox    
@@ -46,12 +48,14 @@
                     Grid.Row="1" Grid.Column="0"      
                     PreviewTextInput="NumberValidationTextBox"
                     materialDesign:HintAssist.Hint="Min Size (bytes)"
+                    Visibility="{Binding IsBatch, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Text="{Binding MinSize, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
             </TextBox>
         <TextBox    Style="{StaticResource NumericTextBox}"
                     Grid.Row="1" Grid.Column="1"    
                     PreviewTextInput="NumberValidationTextBox"
                     materialDesign:HintAssist.Hint="Max Size (bytes)"
+                    Visibility="{Binding IsBatch, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Text="{Binding MaxSize, UpdateSourceTrigger=PropertyChanged, TargetNullValue={x:Static system:String.Empty}}">
             </TextBox>
         <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">

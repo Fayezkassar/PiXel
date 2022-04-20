@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using System;
 
 namespace ImageResizingApp.Models.Interfaces
 {
@@ -15,6 +15,7 @@ namespace ImageResizingApp.Models.Interfaces
         public Task<IEnumerable<IColumn>> GetColumnsAsync();
         public Task SetStatsAsync();
         public Task SetPrimaryKeysAsync();
-        public Task<DataTable> GetDataAsync();
+        public Task<DataTable> GetDataAsync(int start, int itemCount);
+
     }
 }

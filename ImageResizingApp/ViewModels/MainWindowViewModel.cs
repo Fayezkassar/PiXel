@@ -1,7 +1,4 @@
 ﻿using ImageResizingApp.Stores;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ImageResizingApp.ViewModels
 {

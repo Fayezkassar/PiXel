@@ -101,17 +101,20 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
         }
 
-        public async Task<DataTable> GetDataAsync()
+        public async Task<DataTable> GetDataAsync(int start, int itemCount)
         {
             DataTable dataTable = new DataTable();
             try
             {
-                string sql = "SELECT * FROM " + Name + " WHERE ROWNUM <= 100";
+                int end  = start + itemCount;
+                string sql = "SELECT * FROM ( select t.*, rownum r from " + Name + " t) where r >= " + start + " and r < " + end;
 
                 OracleCommand cmd = new OracleCommand(sql, _connection);
 
                 OracleDataAdapter dataAdapter = new OracleDataAdapter(cmd);
+
                 await Task.Run(() => dataAdapter.Fill(dataTable));
+
             }
             catch(Exception ex)
             {

@@ -1,10 +1,8 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
-using ImageResizingApp.Models;
 using System.Data;
 
 namespace ImageResizingApp.Stores
@@ -62,9 +60,10 @@ namespace ImageResizingApp.Stores
             DataSource?.Close();
         }
 
-        public async Task<DataTable> GetTableDataAsync(ITable table)
+        public async Task<DataTable> GetTableDataAsync(ITable table, int start, int itemCount)
         {
-            return await table.GetDataAsync();
+            return await table.GetDataAsync(start, itemCount);
+
         }
     }
 }

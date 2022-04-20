@@ -3,6 +3,7 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Windows.Media.Imaging;
 using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.DataSources.PostgreSQL
@@ -76,7 +77,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         }
 
-        public DataTable GetData()
+        public DataTable GetData(int start, int itemCount)
         {
             DataTable dt = new DataTable();
             try
@@ -100,7 +101,11 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             throw new NotImplementedException();
         }
 
-        Task<IEnumerable<IColumn>> ITable.GetColumnsAsync()
+        public BitmapImage GetBitmapImage(DataRowView row) { 
+                throw new NotImplementedException();
+        }
+
+    Task<IEnumerable<IColumn>> ITable.GetColumnsAsync()
         {
             throw new NotImplementedException();
         }
@@ -115,7 +120,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             throw new NotImplementedException();
         }
 
-        Task<DataTable> ITable.GetDataAsync()
+        Task<DataTable> ITable.GetDataAsync(int start, int itemCount)
         {
             throw new NotImplementedException();
         }

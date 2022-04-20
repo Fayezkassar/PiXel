@@ -5,6 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <DataTemplate x:Key="blobTemplate">
+            <Button Style="{StaticResource MainButtonStyle}" Content="View" Command="{Binding DataContext.ViewImage,RelativeSource={RelativeSource AncestorType=DataGrid}}"  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridCell}}"/>
+        </DataTemplate>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400"/>
@@ -22,10 +27,11 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button 
-                                            CommandParameter="{Binding}" 
-                                            Style="{StaticResource MainButtonStyle}" 
-                                            Command="{Binding DataContext.ResizeColumnCommand, IsAsync=True,RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            Content="Resize"/>
+                                        CommandParameter="{Binding }" 
+                                        Style="{StaticResource MainButtonStyle}" 
+                                        Command="{Binding DataContext.ResizeColumnCommand, IsAsync=True,RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        Content="Resize"
+                                        Visibility="{Binding Resizable, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -33,7 +39,27 @@
                 </DataGrid>
             </TabItem>
             <TabItem Header="Data">
-                <DataGrid ItemsSource="{Binding Path=Data}" IsReadOnly="True"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Margin="4" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Margin="4,0" Content="&lt;&lt;" Style="{StaticResource MainButtonStyle}" Command="{Binding FirstCommand}"/>
+                        <Button Margin="4,0" Content="&lt;"  Style="{StaticResource MainButtonStyle}" Command="{Binding PreviousCommand}"/>
+                        <StackPanel VerticalAlignment="Center"  Orientation="Horizontal">
+                            <TextBlock Text="{Binding Start}"/>
+                            <TextBlock Text=" to "/>
+                            <TextBlock Text="{Binding End}"/>
+                            <TextBlock Text=" of "/>
+                            <TextBlock Text="{Binding TotalItems}"/>
+                        </StackPanel>
+                        <Button Margin="4,0" Content=">" Style="{StaticResource MainButtonStyle}" Command="{Binding NextCommand}"/>
+                        <Button Margin="4,0" Content=">>" Style="{StaticResource MainButtonStyle}" Command="{Binding LastCommand}"/>
+                    </StackPanel>
+                    <DataGrid AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" ItemsSource="{Binding Path=Data}" IsReadOnly="True" Grid.Row="0">
+                    </DataGrid>
+                </Grid>
             </TabItem>
             <TabItem Header="Stats">
                 <Grid>

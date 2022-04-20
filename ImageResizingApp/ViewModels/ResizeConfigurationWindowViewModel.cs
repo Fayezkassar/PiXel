@@ -11,7 +11,7 @@ namespace ImageResizingApp.ViewModels
 {
     public class ResizeConfigurationWindowViewModel : ViewModelBase
     {
-        private readonly IColumn _column;
+        private readonly IColumn? _column;
         private readonly Registry _registry;
         public RelayCommand<Window> ConfirmCommand { get; }
         public RelayCommand PreviousCommand { get; }
@@ -36,18 +36,31 @@ namespace ImageResizingApp.ViewModels
             set { SetProperty(ref _confirmButtonContent, value, false); }
         }
 
-        public ResizeConfigurationWindowViewModel(IColumn column, Registry registry)
+        private IImage? _image;
+        private bool _isBatch;
+
+        public ResizeConfigurationWindowViewModel(IColumn column, Registry registry) : this(registry, true)
         {
             _column = column;
+        }
+
+        public ResizeConfigurationWindowViewModel(IImage image, Registry registry): this(registry, false)
+        {
+            _image = image;
+        }
+
+        private ResizeConfigurationWindowViewModel(Registry registry, bool isBatch)
+        {
             _registry = registry;
+            _isBatch = isBatch;
 
             ConfirmCommand = new RelayCommand<Window>(OnConfirm, CanConfirm);
             PreviousCommand = new RelayCommand(OnPrevious, CanGoBack);
 
-
-            _part1ViewModel = new ResizeConfigurationPart1ViewModel();
+            _part1ViewModel = new ResizeConfigurationPart1ViewModel(isBatch);
             _part2ViewModel = new ResizeConfigurationPart2ViewModel(registry, ConfirmCommand);
             CurrentViewModel = _part1ViewModel;
+
         }
 
         private void OnConfirm(Window connectWindow)
@@ -71,7 +84,15 @@ namespace ImageResizingApp.ViewModels
                         {
                             filterCombo.AddFilter(filerViewModel.Filter);
                         }
-                        _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination);
+                        if (_isBatch)
+                        {
+                            _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination);
+                        }
+                        else
+                        {
+                            _image.Resize(filterCombo, _part1ViewModel.BackupDestination);
+                        }
+                        
                     }
                 }
             }

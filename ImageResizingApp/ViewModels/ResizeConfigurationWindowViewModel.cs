@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Linq;
+using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace ImageResizingApp.ViewModels
 {
@@ -13,8 +15,9 @@ namespace ImageResizingApp.ViewModels
     {
         private readonly IColumn? _column;
         private readonly Registry _registry;
-        public RelayCommand<Window> ConfirmCommand { get; }
+        public RelayCommand ConfirmCommand { get; }
         public RelayCommand PreviousCommand { get; }
+        public RelayCommand CancelCommand { get; }
 
         private ViewModelBase _currentViewModel;
         public ViewModelBase CurrentViewModel
@@ -28,6 +31,9 @@ namespace ImageResizingApp.ViewModels
 
         private ResizeConfigurationPart1ViewModel _part1ViewModel { get; }
         private ResizeConfigurationPart2ViewModel _part2ViewModel { get; }
+        private ResizeConfigurationPart3ViewModel _part3ViewModel { get; }
+
+        private BackgroundWorker _worker;
 
         private string _confirmButtonContent = "Next";
         public string ConfirmButtonContent
@@ -42,6 +48,7 @@ namespace ImageResizingApp.ViewModels
         public ResizeConfigurationWindowViewModel(IColumn column, Registry registry) : this(registry, true)
         {
             _column = column;
+            _column.ProgressChanged += myProgressChanged;
         }
 
         public ResizeConfigurationWindowViewModel(IImage image, Registry registry): this(registry, false)
@@ -54,16 +61,35 @@ namespace ImageResizingApp.ViewModels
             _registry = registry;
             _isBatch = isBatch;
 
-            ConfirmCommand = new RelayCommand<Window>(OnConfirm, CanConfirm);
+            _worker = new BackgroundWorker()
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
+            };
+            _worker.DoWork += worker_DoWork;
+
+            ConfirmCommand = new RelayCommand(OnConfirm, CanConfirm);
             PreviousCommand = new RelayCommand(OnPrevious, CanGoBack);
+            CancelCommand = new RelayCommand(OnCancel);
 
             _part1ViewModel = new ResizeConfigurationPart1ViewModel(isBatch);
             _part2ViewModel = new ResizeConfigurationPart2ViewModel(registry, ConfirmCommand);
+            _part3ViewModel = new ResizeConfigurationPart3ViewModel();
             CurrentViewModel = _part1ViewModel;
 
         }
 
-        private void OnConfirm(Window connectWindow)
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            OnConfirmResize();
+        }
+
+        void myProgressChanged(object sender, IColumn.ProgressChangedEventHandler e)
+        {
+            _part3ViewModel.ProgressBarValue = e.Progress;
+        }
+
+        private void OnConfirm()
         {
             CurrentViewModel.Validate();
             if (!CurrentViewModel.HasErrors)
@@ -79,21 +105,37 @@ namespace ImageResizingApp.ViewModels
                 {
                     if (ValidatePart2Filters())
                     {
-                        CompositeFilter filterCombo = new CompositeFilter();
-                        foreach (FilterViewModel filerViewModel in _part2ViewModel.SelectedFilters)
-                        {
-                            filterCombo.AddFilter(filerViewModel.Filter);
-                        }
-                        if (_isBatch)
-                        {
-                            _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination);
-                        }
-                        else
-                        {
-                            _image.Resize(filterCombo, _part1ViewModel.BackupDestination);
-                        }
-                        
+                        if(!_worker.IsBusy)
+                            _worker.RunWorkerAsync();
+                        CurrentViewModel = _part3ViewModel;
+                        PreviousCommand.NotifyCanExecuteChanged();
+                        ConfirmCommand.NotifyCanExecuteChanged();
                     }
+                }
+            }
+        }
+
+        private void OnConfirmResize()
+        {
+            CurrentViewModel.Validate();
+            if (!CurrentViewModel.HasErrors)
+            {
+                if (ValidatePart2Filters())
+                {
+                    CompositeFilter filterCombo = new CompositeFilter();
+                    foreach (FilterViewModel filerViewModel in _part2ViewModel.SelectedFilters)
+                    {
+                        filterCombo.AddFilter(filerViewModel.Filter);
+                    }
+                    if (_isBatch)
+                    {
+                        _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination);
+                    }
+                    else
+                    {
+                        _image.Resize(filterCombo, _part1ViewModel.BackupDestination);
+                    }
+
                 }
             }
         }
@@ -117,15 +159,24 @@ namespace ImageResizingApp.ViewModels
             ConfirmCommand.NotifyCanExecuteChanged();
         }
 
+        private void OnCancel()
+        {
+            if (CurrentViewModel == _part3ViewModel)
+            {
+                _worker.CancelAsync();
+            }
+        }
+
         private bool CanGoBack() => CurrentViewModel == _part2ViewModel;
 
-        private bool CanConfirm(Window connectWindow)
+        private bool CanConfirm()
         {
             if(CurrentViewModel == _part2ViewModel)
             {
                 return _part2ViewModel.SelectedFilters.Count() > 0;
-            }
-            return true;
+            } else if (CurrentViewModel == _part1ViewModel)
+                return true;
+            return false;
         }
     }
 

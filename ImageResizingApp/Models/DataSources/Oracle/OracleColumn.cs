@@ -9,6 +9,8 @@ using System.Data;
 using System.Windows.Media.Imaging;
 using System.IO;
 using ImageResizingApp.Helpers;
+using System.Threading.Tasks;
+using static ImageResizingApp.Models.Interfaces.IColumn;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -23,6 +25,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public bool Resizable { get; set; }
 
         private readonly OracleConnection _connection;
+
+        public event EventHandler<IColumn.ProgressChangedEventHandler> ProgressChanged;
 
         public OracleColumn(ITable table, OracleConnection connection)
         {
@@ -39,20 +43,33 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             try
             {
                 var finalFrom = from ?? 0;
+                string countSql = "SELECT COUNT(*) FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? "" : (" WHERE ROWNUM<=" + to)) + ")";
+                countSql += " WHERE RNUM>=" + finalFrom;
+
+                OracleCommand cmd = new OracleCommand(countSql, _connection);
+                decimal totalCount = (decimal)( cmd.ExecuteScalar());
+
                 string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? "" : (" WHERE ROWNUM<=" + to)) + ")";
                 sqlSelect += " WHERE RNUM>=" + finalFrom;
-                sqlSelect += " AND NIDOC=103896"; // to remove
+                //sqlSelect += " AND NIDOC=103896"; // to remove
 
-                OracleCommand cmd = new OracleCommand(sqlSelect, _connection);
-                OracleDataReader dr = cmd.ExecuteReader();
+                OracleCommand cmd1 = new OracleCommand(sqlSelect, _connection);
+                OracleDataReader dr = cmd1.ExecuteReader();
 
                 List<string> pKs = new List<string>();
                 int n = Table.PrimaryKeys.Count();
+                int counter = 0;
 
                 while (dr.Read())
                 {
                     try
                     {
+                        counter++;
+                        if (ProgressChanged != null)
+                        {
+                            int res = (int)(counter / totalCount * 100);
+                            ProgressChanged(this, new ProgressChangedEventHandler(res));
+                        }
                         pKs.Clear();
                         for (int i = 0; i < n; i++)
                         {
@@ -67,7 +84,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                             continue;
                         }
 
-                        MagickImage img;
+                        /*MagickImage img;
                         byte[] bytes = new byte[blobSize];
                         blob.Read(bytes, 0, (int)blobSize);
                         img = new MagickImage(bytes);
@@ -98,7 +115,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         updateCommand.Parameters.Add(param);
                         updateCommand.ExecuteNonQuery();
                         transaction.Rollback(); //to remove
-                        transaction.Commit();
+                        transaction.Commit();*/
                     }
                     catch (Exception ex)
                     {

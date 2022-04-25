@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.Interfaces
 {
@@ -11,6 +12,21 @@ namespace ImageResizingApp.Models.Interfaces
         public bool Resizable { get;set; }
         public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination);
         public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryKeysValues);
+
+        public event EventHandler<ProgressChangedEventHandler> ProgressChanged;
+        public class ProgressChangedEventHandler : EventArgs
+        {
+            public int Progress
+            {
+                get;
+                private set;
+            }
+
+            public ProgressChangedEventHandler(int progress)
+            {
+                Progress = progress;
+            }
+        }
 
     }
 }

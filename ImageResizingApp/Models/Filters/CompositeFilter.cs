@@ -20,7 +20,7 @@ namespace ImageResizingApp.Models.Filters
             foreach(IFilter filter in _filters)
             {
                 filter.Process(image);
-                image.Write("C:\\Users\\Paola\\Desktop\\" + filter.Name + ".png"); // to remove
+                //image.Write("C:\\Users\\Paola\\Desktop\\" + filter.Name + ".png"); // to remove
             }
         }
 

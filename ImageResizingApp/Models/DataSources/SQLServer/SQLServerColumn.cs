@@ -3,6 +3,7 @@ using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
@@ -16,6 +17,8 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public string ColumnType { get; set; }
 
         public bool Resizable { get; set; }
+
+        public event EventHandler<IColumn.ProgressChangedEventHandler> ProgressChanged;
 
         public BitmapImage GetBitmapImage(DataRowView row)
         {

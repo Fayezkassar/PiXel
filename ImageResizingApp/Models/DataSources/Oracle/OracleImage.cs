@@ -19,11 +19,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         private readonly OracleConnection _connection;
         public IEnumerable<string> PrimaryKeysValues { get; set; }
 
-        public OracleImage(IColumn column, OracleConnection connection, IEnumerable<string> primaryValues)
+        public OracleImage(IColumn column, OracleConnection connection, IEnumerable<string> primaryKeysValues)
         {
             _connection = connection;
             Column = column;
-            PrimaryKeysValues = primaryValues;
+            PrimaryKeysValues = primaryKeysValues;
         }
         public BitmapImage GetBitmapImage()
         {

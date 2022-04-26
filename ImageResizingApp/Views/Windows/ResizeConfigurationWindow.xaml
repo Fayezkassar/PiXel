@@ -24,6 +24,9 @@
             <DataTemplate DataType="{x:Type vms:ResizeConfigurationPart2ViewModel}">
                 <views:ResizeConfigurationPart2View></views:ResizeConfigurationPart2View>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:ResizeConfigurationPart3ViewModel}">
+                <views:ResizeConfigurationPart3View></views:ResizeConfigurationPart3View>
+            </DataTemplate>
         </Grid.Resources>
         <ContentControl  Grid.Row="0" Content="{Binding CurrentViewModel}">
             <Validation.ErrorTemplate>
@@ -33,7 +36,7 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="1" >
             <Button Name="previousButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" Command="{Binding PreviousCommand}">Previous</Button>
             <Button Name="nextButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding ConfirmCommand}" CommandParameter="{Binding ElementName=ConnectWindow}" Content="{Binding ConfirmButtonContent}"></Button>
-            <Button Name="cancelButton" Style="{StaticResource MainCancelButtonStyle}" IsCancel="True" Content="Cancel"/>
+            <Button Name="cancelButton" Style="{StaticResource MainCancelButtonStyle}" IsCancel="True" Command="{Binding CancelCommand}" Content="Cancel"/>
         </StackPanel>
     </Grid>
 </Window>

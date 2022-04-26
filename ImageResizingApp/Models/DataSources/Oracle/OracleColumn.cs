@@ -57,13 +57,25 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
             string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + " AND " + finalSizeCondition)) + ")";
             sqlSelect += " WHERE RNUM>=" + finalFrom;
-            OracleCommand cmd = new OracleCommand(sqlSelect, _connection);
+            OracleCommand selectCmd = new OracleCommand(sqlSelect, _connection);
+
+            string sqlCount = "SELECT COUNT(*) FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? "" : (" WHERE ROWNUM<=" + to)) + ")";
+            sqlCount += " WHERE RNUM>=" + finalFrom;
+            OracleCommand cmd = new OracleCommand(sqlCount, _connection);
 
             try
             {
-                OracleDataReader dr = cmd.ExecuteReader();
+                decimal totalCount = (decimal)(cmd.ExecuteScalar());
+                OracleDataReader dr = selectCmd.ExecuteReader();
+                int counter = 0;
                 while (dr.Read())
                 {
+                    counter++;
+                    if (ProgressChanged != null)
+                    {
+                        int res = (int)(counter / totalCount * 100);
+                        ProgressChanged(this, new ProgressChangedEventHandler(res));
+                    }
                     pKs.Clear();
                     for (int i = 0; i < n; i++)
                     {

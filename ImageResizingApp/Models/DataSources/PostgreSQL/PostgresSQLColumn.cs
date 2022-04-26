@@ -27,7 +27,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             throw new NotImplementedException();
         }
 
-        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
+        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
         {
             throw new NotImplementedException();
         }

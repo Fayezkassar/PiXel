@@ -29,19 +29,35 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             Table = table;
             _connection = connection;
         }
-        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
+        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
         {
 
-            OracleTransaction transaction = _connection.BeginTransaction();
+                OracleTransaction transaction = _connection.BeginTransaction();
 
             OracleCommand updateCommand = _connection.CreateCommand();
             updateCommand.Transaction = transaction;
             try
             {
                 var finalFrom = from ?? 0;
-                string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? "" : (" WHERE ROWNUM<=" + to)) + ")";
+                string minSizeCondition = minSize!=null ? ("dbms_lob.getlength(" + Name + ")>" + minSize) : "";
+                string finalSizeCondition = "";
+                string maxSizeCondition = maxSize != null ? ("dbms_lob.getlength(" + Name + ")<" + maxSize) : "";
+                if (minSizeCondition != "")
+                {
+                    finalSizeCondition+= minSizeCondition;
+                    if (maxSizeCondition != "")
+                    {
+                        finalSizeCondition += " AND " + maxSizeCondition;
+                    }
+                }
+                else if (maxSizeCondition != "")
+                {
+                    finalSizeCondition += maxSizeCondition;
+                }
+
+
+                string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition!="" ? (" WHERE " +finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + " AND "+ finalSizeCondition )) + ")";
                 sqlSelect += " WHERE RNUM>=" + finalFrom;
-                sqlSelect += " AND NIDOC=103896"; // to remove
 
                 OracleCommand cmd = new OracleCommand(sqlSelect, _connection);
                 OracleDataReader dr = cmd.ExecuteReader();
@@ -62,10 +78,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         OracleBlob blob = dr.GetOracleBlob(n);
 
                         long blobSize = blob.Length;
-                        if ((minSize != null && blobSize < minSize) || (maxSize != null && blobSize > maxSize))
-                        {
-                            continue;
-                        }
 
                         MagickImage img;
                         byte[] bytes = new byte[blobSize];
@@ -76,7 +88,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         {
                             try
                             {
-                                img.Write(backupDestination + "\\" + string.Join("-", pKs) + ".png"); //to remove
+                                img.Write(backupDestination + "\\" + string.Join("-", pKs));
                             }
                             catch
                             {
@@ -97,7 +109,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         updateCommand.CommandText = sqlUpdate;
                         updateCommand.Parameters.Add(param);
                         updateCommand.ExecuteNonQuery();
-                        transaction.Rollback(); //to remove
                         transaction.Commit();
                     }
                     catch (Exception ex)
@@ -115,7 +126,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             {
                 transaction.Dispose();
             }
-            return true; //temporary
         }
 
         public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryValues)

@@ -9,7 +9,7 @@ namespace ImageResizingApp.Models.Interfaces
         public string Name { get; set; }
         public string ColumnType { get; set; }
         public bool Resizable { get;set; }
-        public bool Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination);
+        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination);
         public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryKeysValues);
 
     }

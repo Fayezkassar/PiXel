@@ -11,6 +11,7 @@ using System.IO;
 using ImageResizingApp.Helpers;
 using System.Threading.Tasks;
 using static ImageResizingApp.Models.Interfaces.IColumn;
+using ImageResizingApp.Models.QualityAssessment;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -35,6 +36,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         }
         public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
         {
+            ImageQualityAssessment iqa = new HotelDieuIQA();
             var finalFrom = from ?? 0;
             string minSizeCondition = minSize != null ? ("dbms_lob.getlength(" + Name + ")>" + minSize) : "";
             string finalSizeCondition = "";
@@ -55,11 +57,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             List<string> pKs = new List<string>();
             int n = Table.PrimaryKeys.Count();
 
-            string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + " AND " + finalSizeCondition)) + ")";
+            string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + (finalSizeCondition!="" ? (" AND " + finalSizeCondition): "" ))) + ")";
             sqlSelect += " WHERE RNUM>=" + finalFrom;
             OracleCommand selectCmd = new OracleCommand(sqlSelect, _connection);
 
-            string sqlCount = "SELECT COUNT(*) FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? "" : (" WHERE ROWNUM<=" + to)) + ")";
+            string sqlCount = "SELECT COUNT(*) FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + (finalSizeCondition != "" ? (" AND " + finalSizeCondition) : ""))) + ")";
             sqlCount += " WHERE RNUM>=" + finalFrom;
             OracleCommand cmd = new OracleCommand(sqlCount, _connection);
 
@@ -87,15 +89,23 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     long blobSize = blob.Length;
 
                     MagickImage img;
+                    MagickImage originalImg;
                     byte[] bytes = new byte[blobSize];
                     blob.Read(bytes, 0, (int)blobSize);
-                    img = new MagickImage(bytes);
+                    try
+                    {
+                        img = new MagickImage(bytes);
+                        originalImg = new MagickImage(bytes);
+                    }catch
+                    {
+                        continue;
+                    }
 
                     if (backupDestination != null && backupDestination.Length > 0)
                     {
                         try
                         {
-                            img.Write(backupDestination + "\\" + string.Join("-", pKs));
+                            originalImg.Write(backupDestination + "\\" + string.Join("-", pKs));
                         }
                         catch
                         {
@@ -105,30 +115,31 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                     filter.Process(img);
                     byte[] finalBytes = img.ToByteArray();
+                    if (iqa.Compare(originalImg, img)){
+                        string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Table.PrimaryKeys, pKs);
+                        string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
+                        OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
+                        param.Direction = ParameterDirection.Input;
+                        param.Value = finalBytes;
 
-                    string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Table.PrimaryKeys, pKs);
-                    string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
-                    OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
-                    param.Direction = ParameterDirection.Input;
-                    param.Value = finalBytes;
-
-                    OracleTransaction transaction = _connection.BeginTransaction();
-                    OracleCommand updateCommand = _connection.CreateCommand();
-                    updateCommand.Transaction = transaction;
-                    updateCommand.CommandText = sqlUpdate;
-                    updateCommand.Parameters.Add(param);
-                    try
-                    {
-                        updateCommand.ExecuteNonQuery();
-                        transaction.Commit();
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                    }
-                    finally
-                    {
-                        transaction.Dispose();
+                        OracleTransaction transaction = _connection.BeginTransaction();
+                        OracleCommand updateCommand = _connection.CreateCommand();
+                        updateCommand.Transaction = transaction;
+                        updateCommand.CommandText = sqlUpdate;
+                        updateCommand.Parameters.Add(param);
+                        try
+                        {
+                            updateCommand.ExecuteNonQuery();
+                            transaction.Commit();
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                        }
+                        finally
+                        {
+                            transaction.Dispose();
+                        }
                     }
                 }
             }

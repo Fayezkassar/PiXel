@@ -11,6 +11,7 @@ using System.IO;
 using ImageResizingApp.Helpers;
 using System.Threading.Tasks;
 using static ImageResizingApp.Models.Interfaces.IColumn;
+using ImageResizingApp.Models.QualityAssessment;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -35,112 +36,116 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         }
         public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
         {
+            ImageQualityAssessment iqa = new HotelDieuIQA();
+            var finalFrom = from ?? 0;
+            string minSizeCondition = minSize != null ? ("dbms_lob.getlength(" + Name + ")>" + minSize) : "";
+            string finalSizeCondition = "";
+            string maxSizeCondition = maxSize != null ? ("dbms_lob.getlength(" + Name + ")<" + maxSize) : "";
+            if (minSizeCondition != "")
+            {
+                finalSizeCondition += minSizeCondition;
+                if (maxSizeCondition != "")
+                {
+                    finalSizeCondition += " AND " + maxSizeCondition;
+                }
+            }
+            else if (maxSizeCondition != "")
+            {
+                finalSizeCondition += maxSizeCondition;
+            }
 
-                OracleTransaction transaction = _connection.BeginTransaction();
+            List<string> pKs = new List<string>();
+            int n = Table.PrimaryKeys.Count();
 
-            OracleCommand updateCommand = _connection.CreateCommand();
-            updateCommand.Transaction = transaction;
+            string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + (finalSizeCondition!="" ? (" AND " + finalSizeCondition): "" ))) + ")";
+            sqlSelect += " WHERE RNUM>=" + finalFrom;
+            OracleCommand selectCmd = new OracleCommand(sqlSelect, _connection);
+
+            string sqlCount = "SELECT COUNT(*) FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + (finalSizeCondition != "" ? (" AND " + finalSizeCondition) : ""))) + ")";
+            sqlCount += " WHERE RNUM>=" + finalFrom;
+            OracleCommand cmd = new OracleCommand(sqlCount, _connection);
+
             try
             {
-                var finalFrom = from ?? 0;
-                string minSizeCondition = minSize!=null ? ("dbms_lob.getlength(" + Name + ")>" + minSize) : "";
-                string finalSizeCondition = "";
-                string maxSizeCondition = maxSize != null ? ("dbms_lob.getlength(" + Name + ")<" + maxSize) : "";
-                if (minSizeCondition != "")
-                {
-                    finalSizeCondition+= minSizeCondition;
-                    if (maxSizeCondition != "")
-                    {
-                        finalSizeCondition += " AND " + maxSizeCondition;
-                    }
-                }
-                else if (maxSizeCondition != "")
-                {
-                    finalSizeCondition += maxSizeCondition;
-                }
-                
-                string countSql = "SELECT COUNT(*) FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? "" : (" WHERE ROWNUM<=" + to)) + ")";
-                countSql += " WHERE RNUM>=" + finalFrom;
-
-                OracleCommand cmd = new OracleCommand(countSql, _connection);
-                decimal totalCount = (decimal)( cmd.ExecuteScalar());
-
-                string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition!="" ? (" WHERE " +finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + " AND "+ finalSizeCondition )) + ")";
-                sqlSelect += " WHERE RNUM>=" + finalFrom;
-
-                OracleCommand cmd1 = new OracleCommand(sqlSelect, _connection);
-                OracleDataReader dr = cmd1.ExecuteReader();
-
-                List<string> pKs = new List<string>();
-                int n = Table.PrimaryKeys.Count();
+                decimal totalCount = (decimal)(cmd.ExecuteScalar());
+                OracleDataReader dr = selectCmd.ExecuteReader();
                 int counter = 0;
-
                 while (dr.Read())
                 {
+                    counter++;
+                    if (ProgressChanged != null)
+                    {
+                        int res = (int)(counter / totalCount * 100);
+                        ProgressChanged(this, new ProgressChangedEventHandler(res));
+                    }
+                    pKs.Clear();
+                    for (int i = 0; i < n; i++)
+                    {
+                        pKs.Add(dr.GetString(i));
+                    }
+
+                    OracleBlob blob = dr.GetOracleBlob(n);
+
+                    long blobSize = blob.Length;
+
+                    MagickImage img;
+                    MagickImage originalImg;
+                    byte[] bytes = new byte[blobSize];
+                    blob.Read(bytes, 0, (int)blobSize);
                     try
                     {
-                        counter++;
-                        if (ProgressChanged != null)
-                        {
-                            int res = (int)(counter / totalCount * 100);
-                            ProgressChanged(this, new ProgressChangedEventHandler(res));
-                        }
-                        pKs.Clear();
-                        for (int i = 0; i < n; i++)
-                        {
-                            pKs.Add(dr.GetString(i));
-                        }
-
-                        OracleBlob blob = dr.GetOracleBlob(n);
-
-                        long blobSize = blob.Length;
-
-                        /*MagickImage img;
-                        byte[] bytes = new byte[blobSize];
-                        blob.Read(bytes, 0, (int)blobSize);
                         img = new MagickImage(bytes);
+                        originalImg = new MagickImage(bytes);
+                    }catch
+                    {
+                        continue;
+                    }
 
-                        if (backupDestination != null && backupDestination.Length > 0)
+                    if (backupDestination != null && backupDestination.Length > 0)
+                    {
+                        try
                         {
-                            try
-                            {
-                                img.Write(backupDestination + "\\" + string.Join("-", pKs));
-                            }
-                            catch
-                            {
-                                continue;
-                            }
+                            originalImg.Write(backupDestination + "\\" + string.Join("-", pKs));
                         }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
 
-                        filter.Process(img);
-                        byte[] finalBytes = img.ToByteArray();
-
+                    filter.Process(img);
+                    byte[] finalBytes = img.ToByteArray();
+                    if (iqa.Compare(originalImg, img)){
                         string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Table.PrimaryKeys, pKs);
                         string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
                         OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
                         param.Direction = ParameterDirection.Input;
                         param.Value = finalBytes;
 
-                        updateCommand.Parameters.Clear();
+                        OracleTransaction transaction = _connection.BeginTransaction();
+                        OracleCommand updateCommand = _connection.CreateCommand();
+                        updateCommand.Transaction = transaction;
                         updateCommand.CommandText = sqlUpdate;
                         updateCommand.Parameters.Add(param);
-                        updateCommand.ExecuteNonQuery();p
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        transaction.Rollback();
+                        try
+                        {
+                            updateCommand.ExecuteNonQuery();
+                            transaction.Commit();
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                        }
+                        finally
+                        {
+                            transaction.Dispose();
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                transaction.Dispose();
             }
         }
 

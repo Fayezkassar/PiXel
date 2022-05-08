@@ -12,6 +12,8 @@ using ImageResizingApp.Helpers;
 using System.Threading.Tasks;
 using static ImageResizingApp.Models.Interfaces.IColumn;
 using ImageResizingApp.Models.QualityAssessment;
+using static ImageResizingApp.Models.ResizeConfig;
+using System.ComponentModel;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -27,15 +29,17 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         private readonly OracleConnection _connection;
 
-        public event EventHandler<IColumn.ProgressChangedEventHandler> ProgressChanged;
+        public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
 
         public OracleColumn(ITable table, OracleConnection connection)
         {
             Table = table;
             _connection = connection;
         }
-        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination)
+        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e)
         {
+
+            BackgroundWorker bwAsync = sender as BackgroundWorker;
             ImageQualityAssessment iqa = new HotelDieuIQA();
             var finalFrom = from ?? 0;
             string minSizeCondition = minSize != null ? ("dbms_lob.getlength(" + Name + ")>" + minSize) : "";
@@ -65,19 +69,24 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             sqlCount += " WHERE RNUM>=" + finalFrom;
             OracleCommand cmd = new OracleCommand(sqlCount, _connection);
 
+
             try
             {
                 decimal totalCount = (decimal)(cmd.ExecuteScalar());
                 OracleDataReader dr = selectCmd.ExecuteReader();
                 int counter = 0;
+                double spaceGain = 0;
+                int totalSuccess = 0;
                 while (dr.Read())
                 {
-                    counter++;
-                    if (ProgressChanged != null)
+                    if (bwAsync.CancellationPending)
                     {
-                        int res = (int)(counter / totalCount * 100);
-                        ProgressChanged(this, new ProgressChangedEventHandler(res));
+                        e.Cancel = true;
+                        return;
                     }
+                    counter++;
+                    ResizeConfig config = new ResizeConfig();
+                    config.totalCount = totalCount;
                     pKs.Clear();
                     for (int i = 0; i < n; i++)
                     {
@@ -98,6 +107,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         originalImg = new MagickImage(bytes);
                     }catch
                     {
+                        if (ProgressChanged != null)
+                        {
+                            config.progressPercentage = (int)(counter / totalCount * 100);
+                            ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
+                        }
                         continue;
                     }
 
@@ -131,14 +145,23 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         {
                             updateCommand.ExecuteNonQuery();
                             transaction.Commit();
+                            totalSuccess++;
+                            config.successNumber = totalSuccess;
+                            spaceGain += (originalImg.Width * originalImg.Height * originalImg.BitDepth()) - (img.Width * img.Height*img.BitDepth());
+                            config.spaceGain = spaceGain;
                         }
                         catch
                         {
-                            transaction.Rollback();
+                             transaction.Rollback();
                         }
                         finally
                         {
                             transaction.Dispose();
+                            if (ProgressChanged != null)
+                            {
+                                config.progressPercentage = (int)(counter / totalCount * 100);
+                                ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
+                            }
                         }
                     }
                 }

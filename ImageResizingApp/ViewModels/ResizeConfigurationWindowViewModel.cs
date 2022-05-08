@@ -1,12 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using ImageResizingApp.Models.Interfaces;
 using ImageResizingApp.Models.Filters;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
 using System.Linq;
 using System.Threading.Tasks;
+using static ImageResizingApp.Models.ResizeConfig;
 using System.ComponentModel;
 
 namespace ImageResizingApp.ViewModels
@@ -81,12 +78,12 @@ namespace ImageResizingApp.ViewModels
 
         private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            OnConfirmResize();
+            OnConfirmResize(sender, e);
         }
 
-        void myProgressChanged(object sender, IColumn.ProgressChangedEventHandler e)
+        void myProgressChanged(object sender, Models.ResizeConfig.ProgressChangedEventHandler e)
         {
-            _part3ViewModel.ProgressBarValue = e.Progress;
+            _part3ViewModel.ProgressBarConfig = e.Config;
         }
 
         private void OnConfirm()
@@ -115,7 +112,7 @@ namespace ImageResizingApp.ViewModels
             }
         }
 
-        private void OnConfirmResize()
+        private void OnConfirmResize(object sender, DoWorkEventArgs e)
         {
             CurrentViewModel.Validate();
             if (!CurrentViewModel.HasErrors)
@@ -129,7 +126,7 @@ namespace ImageResizingApp.ViewModels
                     }
                     if (_isBatch)
                     {
-                        _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination);
+                        _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination,sender, e);
                     }
                     else
                     {

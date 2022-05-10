@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Media.Imaging;
 using System.Threading.Tasks;
 using ImageMagick;
+using static ImageResizingApp.Models.ResizeConfig;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -18,6 +19,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         private readonly OracleConnection _connection;
         public IEnumerable<string> PrimaryKeysValues { get; set; }
+
+        public event EventHandler<ProgressChangedEventHandler> ProgressChanged;
 
         public OracleImage(IColumn column, OracleConnection connection, IEnumerable<string> primaryKeysValues)
         {
@@ -75,20 +78,36 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     param.Direction = ParameterDirection.Input;
                     param.Value = finalBytes;
 
+                    ResizeConfig config = new ResizeConfig();
+                    config.totalCount = 1;
+                    config.progressPercentage = 100;
+
                     updateCommand.CommandText = sqlUpdate;
                     updateCommand.Parameters.Add(param);
-                    updateCommand.ExecuteNonQuery();
-                    transaction.Commit();
                     imageResized = true;
+                    try
+                    {
+                        updateCommand.ExecuteNonQuery();
+                        ransaction.Commit();
+                        config.successNumber = 1;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
+                    finally
+                    {
+                        transaction.Dispose();
+                        if (ProgressChanged != null)
+                        {
+                            ProgressChanged(this, new ProgressChangedEventHandler(config));
+                        }
+                    }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                transaction.Rollback();
-            }
-            finally
-            {
-                transaction.Dispose();
+                Console.WriteLine(ex.Message);
             }
 
             return imageResized;

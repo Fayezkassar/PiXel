@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImageResizingApp.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,8 +7,8 @@ namespace ImageResizingApp.ViewModels
 {
     public class ResizeConfigurationPart3ViewModel : ViewModelBase
     {
-        private int status = 10;
-        public int ProgressBarValue
+        private ResizeConfig status = new ResizeConfig();
+        public ResizeConfig ProgressBarConfig
         {
             get => status;
             set

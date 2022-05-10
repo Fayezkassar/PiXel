@@ -13,9 +13,9 @@ namespace ImageResizingApp.Models.QualityAssessment
             MagickImage orig2 = new MagickImage("C:\\Users\\Paola\\Desktop\\2817292.jpg");
             MagickImage res2 = new MagickImage("C:\\Users\\Paola\\Desktop\\2817292-resized.jpg");
             MagickImage orig3 = new MagickImage("C:\\Users\\Paola\\Desktop\\png.png");
-            MagickImage res3 = new MagickImage("C:\\Users\\Paola\\Desktop\\png-resizedd.png");
+            MagickImage res3 = new MagickImage("C:\\Users\\Paola\\Desktop\\png-resized.png");
             MagickImage orig1 = new MagickImage("C:\\Users\\Paola\\Desktop\\792735.png");
-            MagickImage res1 = new MagickImage("C:\\Users\\Paola\\Desktop\\792735-resizedd.png");
+            MagickImage res1 = new MagickImage("C:\\Users\\Paola\\Desktop\\792735-resized.png");
             orig1.CannyEdge();
             res1.CannyEdge();
             orig2.CannyEdge();

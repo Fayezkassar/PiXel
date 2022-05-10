@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31112.23
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageResizingApp", "ImageResizingApp\ImageResizingApp.csproj", "{A7B2C9E0-312F-464F-8235-884859C6DF19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageResizingApp", "ImageResizingApp\ImageResizingApp.csproj", "{A7B2C9E0-312F-464F-8235-884859C6DF19}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer", "Installer\Installer.vdproj", "{2EF6659D-C97C-429C-9723-243C30765D68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{7793176F-992B-422E-87C1-C76F2E9DE553}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,12 @@ Global
 		{A7B2C9E0-312F-464F-8235-884859C6DF19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7B2C9E0-312F-464F-8235-884859C6DF19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7B2C9E0-312F-464F-8235-884859C6DF19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EF6659D-C97C-429C-9723-243C30765D68}.Debug|Any CPU.ActiveCfg = Debug
+		{2EF6659D-C97C-429C-9723-243C30765D68}.Release|Any CPU.ActiveCfg = Release
+		{7793176F-992B-422E-87C1-C76F2E9DE553}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7793176F-992B-422E-87C1-C76F2E9DE553}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7793176F-992B-422E-87C1-C76F2E9DE553}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7793176F-992B-422E-87C1-C76F2E9DE553}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

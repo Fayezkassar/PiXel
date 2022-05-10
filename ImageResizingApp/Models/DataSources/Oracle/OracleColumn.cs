@@ -99,6 +99,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     }catch
                     {
                         continue;
+                        //originalImg = new MagickImage();
+                        //img = new MagickImage();
                     }
 
                     if (backupDestination != null && backupDestination.Length > 0)

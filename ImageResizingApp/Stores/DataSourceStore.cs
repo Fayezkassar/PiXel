@@ -32,7 +32,11 @@ namespace ImageResizingApp.Stores
         public bool OpenDataSourceConnection(IDataSource dataSource, Dictionary<string, string> connectionParametersMap)
         {
             bool connected = dataSource.Open(connectionParametersMap);
-            if (connected) DataSource = dataSource;
+            if (connected) { DataSource = dataSource; }
+            else
+            {
+                DataSource = null;
+            }
             return connected;
         }
 

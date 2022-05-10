@@ -38,7 +38,7 @@ namespace ImageResizingApp.Helpers
             return image;
         }
 
-        public static string GeneratePrimaryKeyValuePairs(IEnumerable<string> primaryKeys, IEnumerable<string> values)
+        public static string GeneratePrimaryKeyValuePairsString(IEnumerable<string> primaryKeys, IEnumerable<string> values)
         {
             string finalPks = "";
             int j = 0;

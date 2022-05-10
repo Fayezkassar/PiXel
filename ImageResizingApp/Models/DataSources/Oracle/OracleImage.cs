@@ -27,7 +27,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         }
         public BitmapImage GetBitmapImage()
         {
-            string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Column.Table.PrimaryKeys, PrimaryKeysValues);
+            string finalPks = Utilities.GeneratePrimaryKeyValuePairsString(Column.Table.PrimaryKeys, PrimaryKeysValues);
             string sql = "SELECT " + Column.Name + " FROM " + Column.Table.Name + " WHERE " + finalPks;
             OracleCommand cmd = new OracleCommand(sql, _connection);
             OracleDataReader dr = cmd.ExecuteReader();
@@ -47,7 +47,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             OracleCommand updateCommand = _connection.CreateCommand();
             updateCommand.Transaction = transaction;
 
-            string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Column.Table.PrimaryKeys, PrimaryKeysValues);
+            string finalPks = Utilities.GeneratePrimaryKeyValuePairsString(Column.Table.PrimaryKeys, PrimaryKeysValues);
             string sqlSelect = "SELECT " + Column.Name + " FROM " + Column.Table.Name + "  WHERE " + finalPks;
             OracleCommand cmd = new OracleCommand(sqlSelect, _connection);
             OracleDataReader dr = cmd.ExecuteReader();

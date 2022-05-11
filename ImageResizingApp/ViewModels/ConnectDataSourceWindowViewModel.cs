@@ -49,13 +49,12 @@ namespace ImageResizingApp.ViewModels
                 if (CurrentViewModel == _part1ViewModel)
                 {
                     ContinueButtonContent = "Finish";
-                    if(_selectedDataSourceType != _part1ViewModel.SelectedDataSourceType)
+                    if (_selectedDataSourceType != _part1ViewModel.SelectedDataSourceType)
                     {
                         _selectedDataSourceType = _part1ViewModel.SelectedDataSourceType;
                         _part2ViewModel.SetDataSourceFromKey(_part1ViewModel.SelectedDataSourceType);
                         _part2ViewModel.UpdateConnectionParameters();
                     }
-                    //_part2ViewModel.SetDataSourceName(_part1ViewModel.DataSourceName);
                     CurrentViewModel = _part2ViewModel;
                     PreviousCommand.NotifyCanExecuteChanged();
                 }
@@ -69,11 +68,14 @@ namespace ImageResizingApp.ViewModels
                 }
             }
         }
-        private void OnPrevious() {
+
+        private void OnPrevious()
+        {
             ContinueButtonContent = "Next";
             CurrentViewModel = _part1ViewModel;
             _part2ViewModel.SetPassword("");
         }
+
         private bool CanGoBack() => CurrentViewModel == _part2ViewModel;
 
         private bool ValidatePart2ConnectionParameters()
@@ -82,7 +84,7 @@ namespace ImageResizingApp.ViewModels
             foreach (ConnectionParameterViewModel param in _part2ViewModel.ConnectionParameters)
             {
                 param.Validate();
-                if (param.HasErrors) valid=false;
+                if (param.HasErrors) valid = false;
             }
             return valid;
         }

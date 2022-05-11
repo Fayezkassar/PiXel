@@ -20,19 +20,19 @@ namespace ImageResizingApp.Models.DataSources.Oracle
     internal class OracleColumn : IColumn
     {
         public ITable Table { get; set; }
-
         public string Name { get; set; }
-
         public string ColumnType { get; set; }
-
-        public bool Resizable { get; set; }
-
-        private readonly OracleConnection _connection;
+        public bool CanResize { get; set; }
 
         public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
 
-        public OracleColumn(ITable table, OracleConnection connection)
+        private readonly OracleConnection _connection;
+
+        public OracleColumn(ITable table, OracleConnection connection, string name, string columnType)
         {
+            Name = name;
+            ColumnType = columnType;
+            CanResize = columnType == "BLOB";
             Table = table;
             _connection = connection;
         }
@@ -68,7 +68,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             string sqlCount = "SELECT COUNT(*) FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + (finalSizeCondition != "" ? (" AND " + finalSizeCondition) : ""))) + ")";
             sqlCount += " WHERE RNUM>=" + finalFrom;
             OracleCommand cmd = new OracleCommand(sqlCount, _connection);
-
 
             try
             {
@@ -132,7 +131,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     filter.Process(img);
                     byte[] finalBytes = img.ToByteArray();
                     if (iqa.Compare(originalImg, img)){
-                        string finalPks = Utilities.GeneratePrimaryKeyValuePairs(Table.PrimaryKeys, pKs);
+                        string finalPks = Utilities.GeneratePrimaryKeyValuePairsString(Table.PrimaryKeys, pKs);
                         string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
                         OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
                         param.Direction = ParameterDirection.Input;
@@ -174,7 +173,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
         }
 
-        public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryValues)
+        public IImage GetImageForPrimaryKeysValues(IEnumerable<string> primaryValues)
         {
             return new OracleImage(this, _connection, primaryValues);
         }

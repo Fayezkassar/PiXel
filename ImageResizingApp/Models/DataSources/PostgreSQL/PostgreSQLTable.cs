@@ -14,8 +14,8 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
         public string SchemaName { get; set; }
         public string TableSize { get; set; }
         public string RecordsNumber { get; set; }
-        public string RecordSize { get; set; }
         public IEnumerable<string> PrimaryKeys { get; set; }
+        public IEnumerable<IColumn> Columns { get; set; }
 
         private readonly NpgsqlConnection _connection;
 
@@ -53,7 +53,6 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             }
             return columns;
         }
-
 
         public void SetStats()
         {
@@ -94,33 +93,29 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             }
 
             return dt;
-        }
+       }
 
-        public void SetPrimaryKeys()
+        public Task<IEnumerable<IColumn>> SetColumnsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public BitmapImage GetBitmapImage(DataRowView row) { 
-                throw new NotImplementedException();
-        }
-
-    Task<IEnumerable<IColumn>> ITable.GetColumnsAsync()
+        public Task SetStatsAsync()
         {
             throw new NotImplementedException();
         }
 
-        Task ITable.SetStatsAsync()
+        public Task SetPrimaryKeysAsync()
         {
             throw new NotImplementedException();
         }
 
-        Task ITable.SetPrimaryKeysAsync()
+        Task ITable.SetColumnsAsync()
         {
             throw new NotImplementedException();
         }
 
-        Task<DataTable> ITable.GetDataAsync(int start, int itemCount)
+        public Task<DataTable> GetDataAsync(int start, int itemCount)
         {
             throw new NotImplementedException();
         }

@@ -8,6 +8,8 @@ using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Linq;
+using System;
+
 namespace ImageResizingApp.ViewModels
 {
     public class TableListingViewModel : ViewModelBase
@@ -58,17 +60,33 @@ namespace ImageResizingApp.ViewModels
         }
 
         public RelayCommand<IColumn> ResizeColumnCommand { get; }
-
         public RelayCommand<DataGridCell> ViewImage { get; }
         public RelayCommand<string> TableSelectedCommand { get; }
 
         // FOR PAGINATION
 
         private int start = 0;
-        private ITable currentTable;
         private int itemCount = 15;
         private int end = 15;
         private int totalItems = 0;
+
+        public int Start
+        {
+            get { return start; }
+            set => SetProperty(ref start, value, false);
+        }
+
+        public int End
+        {
+            get { return end; }
+            set => SetProperty(ref end, value, false);
+        }
+
+        public int TotalItems
+        {
+            get { return totalItems; }
+            set => SetProperty(ref totalItems, value, false);
+        }
         public RelayCommand FirstCommand { get; }
         public RelayCommand PreviousCommand { get; }
         public RelayCommand NextCommand { get; }
@@ -78,9 +96,13 @@ namespace ImageResizingApp.ViewModels
         {
             _registry = registry;
             _dataSourceStore = dataSourceStore;
-            _tables = new ObservableCollection<ITable>(_dataSourceStore.GetTables());
+
+            _tables = new ObservableCollection<ITable>();
             _columns = new ObservableCollection<IColumn>();
-            _dataSourceStore.CurrentDataSourceChanged += UpdateTables;
+
+            _dataSourceStore.OnCurrentDataSourceChanged = UpdateTables;
+            _dataSourceStore.OnCurrentDataSourceChanged();
+
             ResizeColumnCommand = new RelayCommand<IColumn>(OnResizeColumn, CanResizeColumn);
             ViewImage = new RelayCommand<DataGridCell>(OnViewImage);
             FirstCommand = new RelayCommand(OnFirstCommand);
@@ -88,10 +110,10 @@ namespace ImageResizingApp.ViewModels
             NextCommand = new RelayCommand(OnNextCommand);
             LastCommand = new RelayCommand(OnLastCommandAsync);
         }
-        private void UpdateTables()
+        private async Task UpdateTables()
         {
             _tables.Clear();
-            IEnumerable<ITable> tables = _dataSourceStore.GetTables();
+            IEnumerable<ITable> tables = await _dataSourceStore.GetTablesAsync();
 
             foreach (ITable table in tables)
             {
@@ -99,10 +121,10 @@ namespace ImageResizingApp.ViewModels
             }
         }
 
-        private async Task UpdateColumnsAsync(ITable table)
+        private async Task UpdateColumnsAsync()
         {
             _columns.Clear();
-            IEnumerable<IColumn> columns = await _dataSourceStore.GetTableColumns(table);
+            IEnumerable<IColumn> columns = await _dataSourceStore.GetTableColumns(SelectedTable);
 
             foreach (IColumn column in columns)
             {
@@ -110,27 +132,26 @@ namespace ImageResizingApp.ViewModels
             }
         }
 
-        private async Task UpdateDataAsync(ITable table)
+        private async Task UpdateDataAsync()
         {
             Data?.Clear();
-            Data = await _dataSourceStore.GetTableDataAsync(table, start, itemCount);
+            Data = await _dataSourceStore.GetTableDataAsync(SelectedTable, start, itemCount);
         }
 
-        private async Task UpdateTableInfoAsync(ITable table)
+        private async Task UpdateTableInfoAsync()
         {
             RecordsNumber = null;
             TableSize = null;
-            await _dataSourceStore.UpdateTableInfoAsync(table);
-            RecordsNumber = table.RecordsNumber;
-            TableSize = table.TableSize;
+            await _dataSourceStore.UpdateTableInfoAsync(SelectedTable);
+            RecordsNumber = SelectedTable.RecordsNumber;
+            TableSize = SelectedTable.TableSize;
         }
 
-        public async Task UpdateTableAsync(ITable table)
+        public async Task UpdateSelectedTableAsync()
         {
-            currentTable = table;
-            await UpdateColumnsAsync(table);
-            await UpdateDataAsync(table);
-            await UpdateTableInfoAsync(table);
+            await UpdateColumnsAsync();
+            await UpdateDataAsync();
+            await UpdateTableInfoAsync();
             TotalItems = int.Parse(SelectedTable.RecordsNumber);
         }
 
@@ -152,7 +173,7 @@ namespace ImageResizingApp.ViewModels
                 pks.Add(value);
             }
             IColumn column = Columns.FirstOrDefault(x => x.Name == cell.Column.Header.ToString());
-            IImage image= column.GetImageWithPrimaryKeysValues(pks);
+            IImage image= column.GetImageForPrimaryKeysValues(pks);
             ViewImageWindow window = new ViewImageWindow();
             window.DataContext = new ViewImageWindowViewModel(image, _registry);
             window.ShowDialog();
@@ -160,26 +181,11 @@ namespace ImageResizingApp.ViewModels
 
         private bool CanResizeColumn(IColumn column)
         {
-            if (column != null) return column.Resizable;
+            if (column != null) return column.CanResize;
             return true;
         }
 
         // FOR PAGINATION
-
-        public int Start { 
-            get { return start; }
-            set => SetProperty(ref start, value, false);
-        }
-
-        public int End {
-            get { return end; }
-            set => SetProperty(ref end, value, false);
-        }
-
-        public int TotalItems { 
-            get { return totalItems; }
-            set => SetProperty(ref totalItems, value, false);
-        }
 
         private async void OnFirstCommand()
         {
@@ -187,7 +193,7 @@ namespace ImageResizingApp.ViewModels
             {
                 Start = 0;
                 End = start + itemCount < totalItems ? start + itemCount : totalItems;
-                await UpdateDataAsync(currentTable);
+                await UpdateDataAsync();
             }
         }
 
@@ -197,7 +203,7 @@ namespace ImageResizingApp.ViewModels
             {
                 Start -= itemCount;
                 End = start + itemCount < totalItems ? start + itemCount : totalItems;
-                await UpdateDataAsync(currentTable);
+                await UpdateDataAsync();
             }
         }
 
@@ -207,7 +213,7 @@ namespace ImageResizingApp.ViewModels
             {
                 Start += itemCount;
                 End = start + itemCount < totalItems ? start + itemCount : totalItems;
-                await UpdateDataAsync(currentTable);
+                await UpdateDataAsync();
             }
         }
 
@@ -217,7 +223,7 @@ namespace ImageResizingApp.ViewModels
             {
                 Start = totalItems - itemCount;
                 End = start + itemCount < totalItems ? start + itemCount : totalItems;
-                await UpdateDataAsync(currentTable);
+                await UpdateDataAsync();
             }
         }
 

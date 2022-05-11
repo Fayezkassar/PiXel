@@ -15,53 +15,34 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public string RecordsNumber { get; set; }
         public string RecordSize { get; set; }
         public IEnumerable<string> PrimaryKeys { get; set; }
-        public IEnumerable<IColumn> GetColumns()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IColumn> Columns { get; set; }
 
         public SQLServerTable(string name)
         {
             Name = name;
         }
 
-        public void SetStats()
+        public Task<IEnumerable<IColumn>> SetColumnsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public DataTable GetData(int start, int itemCount)
+        public Task SetStatsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public void SetPrimaryKeys()
+        public Task SetPrimaryKeysAsync()
         {
             throw new NotImplementedException();
         }
 
-
-        public BitmapImage GetBitmapImage(DataRowView row)
+        Task ITable.SetColumnsAsync()
         {
             throw new NotImplementedException();
         }
 
-        Task<IEnumerable<IColumn>> ITable.GetColumnsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task ITable.SetStatsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task ITable.SetPrimaryKeysAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<DataTable> ITable.GetDataAsync(int start, int itemCount)
+        public Task<DataTable> GetDataAsync(int start, int itemCount)
         {
             throw new NotImplementedException();
         }

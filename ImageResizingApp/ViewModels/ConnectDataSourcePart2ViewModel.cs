@@ -31,11 +31,6 @@ namespace ImageResizingApp.ViewModels
             _dataSource = _dataSourceRegistry.GetDataSourceFromKey(key);
         }
 
-        //public void SetDataSourceName(string name)
-        //{
-        //    _dataSource.Name = name;
-        //}
-
         public void UpdateConnectionParameters()
         {
             _connectionParameters.Clear();
@@ -50,7 +45,6 @@ namespace ImageResizingApp.ViewModels
             foreach (string paramName in _dataSource.ConnectionParameters)
             {
                 ConnectionParameterViewModel param = ConnectionParameters.First(e => e.DisplayName == paramName);
-                if (param == null) return false;
                 connectionParametersMap.Add(paramName, param.Value);
             }
 

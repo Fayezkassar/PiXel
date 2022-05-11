@@ -1,22 +1,17 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using Oracle.ManagedDataAccess.Client;
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
-    internal class OracleDataSource : IDataSource
+    public class OracleDataSource : DBDataSource
     {
-        public string Name { get; set; }
-
-        public IEnumerable<string> ConnectionParameters { get; }
-
-        public IEnumerable<ITable> Tables { get; set; }
-
-        private OracleConnection _connection;
-
         public OracleDataSource()
         {
+            Tables = new List<ITable>();
             List<string> connectionParameters = new List<string>();
             connectionParameters.Add("Host");
             connectionParameters.Add("Port");
@@ -27,62 +22,44 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         }
 
-        public IDataSource Clone()
+        public override IDataSource Clone()
         {
             return (IDataSource)MemberwiseClone();
         }
 
-        public bool Close()
+        protected override void SetConnection(Dictionary<string, string> connectionParametersMap)
         {
-            try
-            {
-                _connection.Close();
-                return true;
-
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private void SetConnection(Dictionary<string, string> connectionParametersMap)
-        {
-            string oradb = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = " 
-                + connectionParametersMap.GetValueOrDefault("Host") + ")(PORT = " + connectionParametersMap.GetValueOrDefault("Port") 
-                + "))(CONNECT_DATA = (SERVICE_NAME = " + connectionParametersMap.GetValueOrDefault("Service Name") + "))); User Id = " 
+            string oradb = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = "
+                + connectionParametersMap.GetValueOrDefault("Host") + ")(PORT = " + connectionParametersMap.GetValueOrDefault("Port")
+                + "))(CONNECT_DATA = (SERVICE_NAME = " + connectionParametersMap.GetValueOrDefault("Service Name") + "))); User Id = "
                 + connectionParametersMap.GetValueOrDefault("Username") + "; Password = " + connectionParametersMap.GetValueOrDefault("Password") + ";";
 
             _connection = new OracleConnection(oradb);
         }
 
-        public bool Open(Dictionary<string, string> connectionParametersMap)
+        public override async Task SetTablesAsync()
         {
             try
             {
-                SetConnection(connectionParametersMap);
-                _connection.Open();
-
-                OracleCommand cmd = new OracleCommand("select table_name from user_tables order by table_name", _connection);
+                OracleConnection connection = _connection as OracleConnection;
+                OracleCommand cmd = new OracleCommand("select table_name from user_tables order by table_name", connection);
                 OracleDataReader dr = cmd.ExecuteReader();
 
                 List<ITable> tables = new List<ITable>();
 
-                while (dr.Read())
+                while (await dr.ReadAsync())
                 {
-                    tables.Add(new OracleTable(_connection)
+                    tables.Add(new OracleTable(connection)
                     {
                         Name = dr.GetString(0)
                     });
                 }
 
                 Tables = tables;
-
-                return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                System.Console.WriteLine(ex.Message);
             }
         }
     }

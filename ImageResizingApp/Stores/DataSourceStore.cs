@@ -18,16 +18,14 @@ namespace ImageResizingApp.Stores
             {
                 _dataSource?.Close();
                 _dataSource = value;
-                OnCurrentDataSourceChanged();
+                if(OnCurrentDataSourceChanged != null)
+                {
+                    OnCurrentDataSourceChanged();
+                }
             }
         }
 
-        public event Action CurrentDataSourceChanged;
-
-        private void OnCurrentDataSourceChanged()
-        {
-            CurrentDataSourceChanged?.Invoke();
-        }
+        public Func<Task> OnCurrentDataSourceChanged;
 
         public bool OpenDataSourceConnection(IDataSource dataSource, Dictionary<string, string> connectionParametersMap)
         {
@@ -40,9 +38,14 @@ namespace ImageResizingApp.Stores
             return connected;
         }
 
-        public IEnumerable<ITable> GetTables()
+        public async Task<IEnumerable<ITable>> GetTablesAsync()
         {
-            return DataSource?.Tables ?? new List<ITable>();
+            if (DataSource?.Tables?.Count() == 0)
+            {
+                await DataSource.SetTablesAsync();
+                return DataSource.Tables;
+            }
+            return new List<ITable>();
         }
 
         public async Task UpdateTableInfoAsync(ITable table)
@@ -56,7 +59,11 @@ namespace ImageResizingApp.Stores
 
         public async Task<IEnumerable<IColumn>> GetTableColumns(ITable table)
         {
-            return await table.GetColumnsAsync();
+            if (table.Columns?.Count() == 0)
+            {
+                await table.SetColumnsAsync();
+            }
+            return table.Columns;
         }
 
         public void CloseDataSourceConnectionIfAny()
@@ -67,7 +74,6 @@ namespace ImageResizingApp.Stores
         public async Task<DataTable> GetTableDataAsync(ITable table, int start, int itemCount)
         {
             return await table.GetDataAsync(start, itemCount);
-
         }
     }
 }

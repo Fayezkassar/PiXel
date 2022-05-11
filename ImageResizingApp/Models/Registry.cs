@@ -1,5 +1,3 @@
-
-using ImageResizingApp.Exceptions;
 using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;

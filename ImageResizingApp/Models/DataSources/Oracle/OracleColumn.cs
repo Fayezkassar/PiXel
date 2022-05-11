@@ -17,19 +17,19 @@ namespace ImageResizingApp.Models.DataSources.Oracle
     internal class OracleColumn : IColumn
     {
         public ITable Table { get; set; }
-
         public string Name { get; set; }
-
         public string ColumnType { get; set; }
-
-        public bool Resizable { get; set; }
-
-        private readonly OracleConnection _connection;
+        public bool CanResize { get; set; }
 
         public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
 
-        public OracleColumn(ITable table, OracleConnection connection)
+        private readonly OracleConnection _connection;
+
+        public OracleColumn(ITable table, OracleConnection connection, string name, string columnType)
         {
+            Name = name;
+            ColumnType = columnType;
+            CanResize = columnType == "BLOB";
             Table = table;
             _connection = connection;
         }
@@ -145,7 +145,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             sqlCount += " WHERE RNUM>=" + finalFrom;
             OracleCommand cmd = new OracleCommand(sqlCount, _connection);
 
-
             try
             {
                 decimal totalCount = (decimal)(cmd.ExecuteScalar());
@@ -181,7 +180,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
         }
 
-        public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryValues)
+        public IImage GetImageForPrimaryKeysValues(IEnumerable<string> primaryValues)
         {
             return new OracleImage(this, _connection, primaryValues);
         }

@@ -1,23 +1,18 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
-    public class PostgreSQLDataSource : IDataSource
+    public class PostgreSQLDataSource : DBDataSource
     {
-        public string Name { get; set; }
-
-        public IEnumerable<ITable> Tables { get; set; }
-
-        public IEnumerable<string> ConnectionParameters { get; }
-
-        private NpgsqlConnection _connection;
-
         public PostgreSQLDataSource()
         {
+            Tables = new List<ITable>();
             List<string> connectionParameters = new List<string>();
             connectionParameters.Add("Database");
             connectionParameters.Add("Host");
@@ -27,43 +22,35 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         }
 
-        public IDataSource Clone()
+        public override IDataSource Clone()
         {
             return (IDataSource)MemberwiseClone();
         }
 
-        public bool Close()
+        protected override void SetConnection(Dictionary<string, string> connectionParametersMap)
         {
-            try
-            {
-                _connection.Close();
-                return true;
+            var items = from kvp in connectionParametersMap
+                        select kvp.Key + "=" + kvp.Value;
 
-            }
-            catch
-            {
-                return false;
-            }
+            _connection = new NpgsqlConnection(string.Join(";", items));
         }
 
-        public bool Open(Dictionary<string, string> connectionParametersMap)
+        public override async Task SetTablesAsync()
         {
             try
             {
-                SetConnection(connectionParametersMap);
-                _connection.Open();
-
+                NpgsqlConnection connection = _connection as NpgsqlConnection;
                 string sql = "SELECT table_name, table_schema FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name";
 
-                using var cmd = new NpgsqlCommand(sql, _connection);
+                using var cmd = new NpgsqlCommand(sql, connection);
 
-                using NpgsqlDataReader rdr = cmd.ExecuteReader();
+                NpgsqlDataReader rdr = await cmd.ExecuteReaderAsync();
 
                 List<ITable> tables = new List<ITable>();
 
-                while (rdr.Read())
+                while (await rdr.ReadAsync())
                 {
-                    tables.Add(new PostgreSQLTable(_connection)
+                    tables.Add(new PostgreSQLTable(connection)
                     {
                         Name = rdr.GetString(0),
                         SchemaName = rdr.GetString(1),
@@ -71,21 +58,12 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
                 }
 
                 Tables = tables;
-
-                return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                System.Console.WriteLine(ex.Message);
             }
-        }
 
-        private void SetConnection(Dictionary<string, string> connectionParametersMap)
-        {
-            var items = from kvp in connectionParametersMap
-                        select kvp.Key + "=" + kvp.Value;
-
-            _connection = new NpgsqlConnection(string.Join(";", items));
         }
     }
 }

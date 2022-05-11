@@ -19,7 +19,7 @@ namespace ImageResizingApp.Views
         {
             var item = (ListBox)sender;
             var table = (ITable)item.SelectedItem;
-            await ((TableListingViewModel)DataContext).UpdateTableAsync(table);
+            await ((TableListingViewModel)DataContext).UpdateSelectedTableAsync();
         }
 
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)

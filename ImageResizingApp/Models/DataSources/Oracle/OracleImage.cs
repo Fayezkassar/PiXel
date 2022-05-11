@@ -16,11 +16,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
     public class OracleImage : IImage
     {
         public IColumn Column { get; set; }
-
-        private readonly OracleConnection _connection;
         public IEnumerable<string> PrimaryKeysValues { get; set; }
 
         public event EventHandler<ProgressChangedEventHandler> ProgressChanged;
+
+        private readonly OracleConnection _connection;
 
         public OracleImage(IColumn column, OracleConnection connection, IEnumerable<string> primaryKeysValues)
         {
@@ -88,7 +88,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     try
                     {
                         updateCommand.ExecuteNonQuery();
-                        ransaction.Commit();
+                        transaction.Commit();
                         config.successNumber = 1;
                     }
                     catch

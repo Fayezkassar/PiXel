@@ -1,21 +1,17 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
 {
-    public class SQLServerDataSource : IDataSource
+    public class SQLServerDataSource : DBDataSource
     {
-        public string Name { get; set; }
-
-        public IEnumerable<string> ConnectionParameters { get; }
-
-        private SqlConnection _connection;
-
-        public IEnumerable<ITable> Tables { get; set; }
-
         public SQLServerDataSource()
         {
+            Tables = new List<ITable>();
             List<string> connectionParameters = new List<string>();
             connectionParameters.Add("Username");
             connectionParameters.Add("Password");
@@ -24,26 +20,13 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             ConnectionParameters = connectionParameters;
 
         }
-        public IDataSource Clone()
+
+        public override IDataSource Clone()
         {
             return (IDataSource)MemberwiseClone();
         }
 
-        public bool Close()
-        {
-            try
-            {
-                _connection.Close();
-                return true;
-
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private void SetConnection(Dictionary<string, string> connectionParametersMap)
+        protected override void SetConnection(Dictionary<string, string> connectionParametersMap)
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.DataSource = connectionParametersMap.GetValueOrDefault("Data Source");
@@ -53,32 +36,29 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             _connection = new SqlConnection(builder.ConnectionString);
         }
 
-        public bool Open(Dictionary<string, string> connectionParametersMap)
+        public override async Task SetTablesAsync()
         {
             try
             {
-                SetConnection(connectionParametersMap);
-                _connection.Open();
+                SqlConnection connection = _connection as SqlConnection;
                 string sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME";
                 List<ITable> tables = new List<ITable>();
-                using (SqlCommand command = new SqlCommand(sql, _connection))
+                using (SqlCommand command = new SqlCommand(sql, connection))
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
                             tables.Add(new SQLServerTable(reader.GetString(0)));
                         }
                     }
                 }
                 Tables = tables;
-                return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                System.Console.WriteLine(ex.Message);
             }
-
         }
     }
 }

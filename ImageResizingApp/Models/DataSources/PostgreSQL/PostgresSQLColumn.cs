@@ -16,7 +16,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         public string ColumnType { get; set; }
 
-        public bool Resizable { get; set; }
+        public bool CanResize { get; set; }
 
         public ITable Table { get; set; }
 
@@ -27,7 +27,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             throw new NotImplementedException();
         }
 
-        public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryKeysValues)
+        public IImage GetImageForPrimaryKeysValues(IEnumerable<string> primaryKeysValues)
         {
             throw new NotImplementedException();
         }

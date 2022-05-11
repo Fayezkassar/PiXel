@@ -37,7 +37,7 @@ namespace UnitTests.Stores
         }
 
         [Test]
-        public void OpenDataSourceConnection_WithInCorrectConnectionParameters_ReturnsFalseAndClearsDataSource()
+        public void OpenDataSourceConnection_WithIncorrectConnectionParameters_ReturnsFalseAndClearsDataSource()
         {
             Dictionary<string, string> invalidConnectionParametersMap = new Dictionary<string, string>();
             invalidConnectionParametersMap.Add("host", "192.168.222.1");

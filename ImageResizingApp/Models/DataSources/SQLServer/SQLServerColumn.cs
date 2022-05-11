@@ -13,12 +13,9 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
     public class SQLServerColumn : IColumn
     {
         public ITable Table { get; set; }
-
         public string Name { get; set; }
-
         public string ColumnType { get; set; }
-
-        public bool Resizable { get; set; }
+        public bool CanResize { get; set; }
 
         public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
 
@@ -27,7 +24,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             throw new NotImplementedException();
         }
 
-        public IImage GetImageWithPrimaryKeysValues(IEnumerable<string> primaryKeysValues)
+        public IImage GetImageForPrimaryKeysValues(IEnumerable<string> primaryKeysValues)
         {
             throw new NotImplementedException();
         }

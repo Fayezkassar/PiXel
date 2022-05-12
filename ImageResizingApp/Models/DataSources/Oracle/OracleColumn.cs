@@ -21,6 +21,10 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public string ColumnType { get; set; }
         public bool CanResize { get; set; }
 
+        ResizeConfig config = new ResizeConfig(0,0,0,0);
+
+        private int counter = 0;
+
         public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
 
         private readonly OracleConnection _connection;
@@ -46,6 +50,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             IFilter filter = (IFilter)array[1];
             List<string> pKs = (List<string>)array[2];
 
+            counter++;
             long blobSize = blob.Length;
 
             ImageQualityAssessment iqa = new HotelDieuIQA();
@@ -61,12 +66,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
             catch
             {
-                //if (ProgressChanged != null)
-                //{
-                //  config.progressPercentage = (int)(counter / totalCount * 100);
-                //ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
-                //}
-                //continue;
+                if (ProgressChanged != null)
+                {
+                  config.progressPercentage = (int)(counter / config.totalCount * 100);
+                    ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
+                }
                 return;
                 //originalImg = new MagickImage();
                 //img = new MagickImage();
@@ -93,8 +97,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 {
                     updateCommand.ExecuteNonQuery();
                     transaction.Commit();
-                    //totalSuccess++;
-                    //config.successNumber = totalSuccess;
+                    config.successNumber ++;
                     //spaceGain += (originalImg.Width * originalImg.Height * originalImg.BitDepth()) - (img.Width * img.Height * img.BitDepth());
                     //config.spaceGain = spaceGain;
                 }
@@ -105,11 +108,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 finally
                 {
                     transaction.Dispose();
-                    //if (ProgressChanged != null)
-                    //{
-                    //config.progressPercentage = (int)(counter / totalCount * 100);
-                    //ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
-                    //}
+                    if (ProgressChanged != null)
+                    {
+                        config.progressPercentage = (int)(counter / config.totalCount * 100);
+                        ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
+                    }
                 }
             }
         }
@@ -147,11 +150,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
             try
             {
-                decimal totalCount = (decimal)(cmd.ExecuteScalar());
+                config.totalCount = (decimal)(cmd.ExecuteScalar());
                 OracleDataReader dr = selectCmd.ExecuteReader();
-                int counter = 0;
-                double spaceGain = 0;
-                int totalSuccess = 0;
                 while (dr.Read())
                 {
                     if (bwAsync.CancellationPending)
@@ -159,9 +159,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         e.Cancel = true;
                         return;
                     }
-                    counter++;
-                    ResizeConfig config = new ResizeConfig();
-                    config.totalCount = totalCount;
                     pKs.Clear();
                     for (int i = 0; i < n; i++)
                     {

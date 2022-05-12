@@ -13,7 +13,7 @@ namespace ImageResizingApp.ViewModels
             get => status;
             set
             {
-                SetProperty(ref status, value, false);
+                SetProperty(ref status, value);
             }
         }
 

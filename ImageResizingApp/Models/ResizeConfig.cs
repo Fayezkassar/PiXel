@@ -14,12 +14,12 @@ namespace ImageResizingApp.Models
 
         public double spaceGain { get; set; }
 
-        public ResizeConfig(int v1, int v2, decimal v3, double v4)
+        public ResizeConfig(int progressPercentage, int successNumber, decimal totalCount, double spaceGain)
         {
-            this.progressPercentage = v1;
-            this.successNumber = v2;
-            this.totalCount = v3;
-            this.spaceGain = v4;
+            this.progressPercentage = progressPercentage;
+            this.successNumber = successNumber;
+            this.totalCount = totalCount;
+            this.spaceGain = spaceGain;
         }
 
         public ResizeConfig()

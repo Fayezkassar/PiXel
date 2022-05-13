@@ -21,9 +21,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public string ColumnType { get; set; }
         public bool CanResize { get; set; }
 
-        ResizeConfig config = new ResizeConfig(0,0,0,0);
-
         private int counter = 0;
+
+        private int successNumber = 0;
+
+        private decimal totalCount = 0;
 
         public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
 
@@ -49,8 +51,17 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             OracleBlob blob = (OracleBlob) array[0];
             IFilter filter = (IFilter)array[1];
             List<string> pKs = (List<string>)array[2];
+            BackgroundWorker bwAsync = array[3] as BackgroundWorker;
+            DoWorkEventArgs e = (DoWorkEventArgs)array[4];
+
+            if (bwAsync.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
 
             counter++;
+            ResizeConfig config = new ResizeConfig(0, 0, totalCount, 0);
             long blobSize = blob.Length;
 
             ImageQualityAssessment iqa = new HotelDieuIQA();
@@ -69,7 +80,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 if (ProgressChanged != null)
                 {
                   config.progressPercentage = (int)(counter / config.totalCount * 100);
-                    ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
+                  ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
                 }
                 return;
                 //originalImg = new MagickImage();
@@ -97,7 +108,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 {
                     updateCommand.ExecuteNonQuery();
                     transaction.Commit();
-                    config.successNumber ++;
+                    successNumber++;
+                    config.successNumber = successNumber;
                     //spaceGain += (originalImg.Width * originalImg.Height * originalImg.BitDepth()) - (img.Width * img.Height * img.BitDepth());
                     //config.spaceGain = spaceGain;
                 }
@@ -150,7 +162,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
             try
             {
-                config.totalCount = (decimal)(cmd.ExecuteScalar());
+                totalCount = (decimal)(cmd.ExecuteScalar());
                 OracleDataReader dr = selectCmd.ExecuteReader();
                 while (dr.Read())
                 {
@@ -167,7 +179,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                     OracleBlob blob = dr.GetOracleBlob(n);
 
-                    ThreadPool.QueueUserWorkItem(ResizeIamge, new object[] { blob, filter, pKs });
+                    ThreadPool.QueueUserWorkItem(ResizeIamge, new object[] { blob, filter, pKs, sender, e });
 
                 }
             }

@@ -3,38 +3,74 @@ using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace ImageResizingApp.Models.QualityAssessment
 {
-    public class HotelDieuIQA: ImageQualityAssessment
+    public class HotelDieuIQA: IQualityAssessment
     {
-        public bool Compare(MagickImage originalImage, MagickImage resultingImage)
+        public double[] Compare(MagickImage originalImage, MagickImage resultingImage)
         {
-            MagickImage orig2 = new MagickImage("C:\\Users\\Paola\\Desktop\\2817292.jpg");
-            MagickImage res2 = new MagickImage("C:\\Users\\Paola\\Desktop\\2817292-resized.jpg");
-            MagickImage orig3 = new MagickImage("C:\\Users\\Paola\\Desktop\\png.png");
-            MagickImage res3 = new MagickImage("C:\\Users\\Paola\\Desktop\\png-resized.png");
-            MagickImage orig1 = new MagickImage("C:\\Users\\Paola\\Desktop\\792735.png");
-            MagickImage res1 = new MagickImage("C:\\Users\\Paola\\Desktop\\792735-resized.png");
-            orig1.CannyEdge();
-            res1.CannyEdge();
-            orig2.CannyEdge();
-            res2.CannyEdge();
-            orig3.CannyEdge();
-            res3.CannyEdge();
-
-            orig1.Write("C:\\Users\\Paola\\Desktop\\2817292-canny.png");
-            res1.Write("C:\\Users\\Paola\\Desktop\\2817292-resized-canny.png");
-            orig3.Write("C:\\Users\\Paola\\Desktop\\png-canny.png");
-            res3.Write("C:\\Users\\Paola\\Desktop\\png-resized-canny.png");
-            orig1.Write("C:\\Users\\Paola\\Desktop\\792735-canny.png");
-            res2.Write("C:\\Users\\Paola\\Desktop\\792735-resized-canny.png");
-
-            if ((resultingImage.BaseWidth * resultingImage.BaseHeight)* resultingImage.BitDepth()  > 100000)
+            if (resultingImage.Width * resultingImage.Height * resultingImage.Depth < 300000 * 8)
             {
-                return true;
+                double[] b = new double[4];
+                return b;
             }
-            return true;
+            MagickImage resultingGreyscaleImage = new MagickImage(resultingImage);
+            resultingGreyscaleImage.Grayscale();
+            MagickImage originalGreyScaleImage = new MagickImage(originalImage);
+            originalGreyScaleImage.Grayscale();
+
+            MagickImage resultingImageForGradient = new MagickImage(resultingImage);
+            MagickImage resultingImageForEdgeScore = new MagickImage(resultingImage);
+
+            double edgeBasedScore = GetEdgeScore(originalImage, resultingImageForEdgeScore);
+
+            double rmsContrast = GetRmsContrastScore(originalGreyScaleImage, resultingGreyscaleImage);
+
+            double gradientSharpness = GetGradient(resultingImageForGradient);
+
+            double score = gradientSharpness * rmsContrast * Math.Pow(edgeBasedScore, 4.0);
+
+            //if ((resultingImage.BaseWidth * resultingImage.BaseHeight)* resultingImage.BitDepth()  > 100000)
+            //{
+            //    return true;
+
+            //}
+            double[] a = new double[4];
+                a[0] = edgeBasedScore;
+            a[1] = rmsContrast;
+            a[2] = gradientSharpness;
+            a[3] = score;
+            return a;
+        }
+
+        private double GetEdgeScore(MagickImage originalImage, MagickImage resultingImage)
+        {
+            originalImage.CannyEdge();
+            resultingImage.CannyEdge();
+
+            var pixels = originalImage.GetPixels().GetValues();
+            var pixels2 = resultingImage.GetPixels().GetValues();
+
+            double totalOriginalEdgePixels = originalImage.GetPixels().GetValues().Count(x => x !=0 );
+            double totalResultingEdgePixels = resultingImage.GetPixels().GetValues().Count(x => x !=0 );
+
+            return Math.Abs(totalOriginalEdgePixels - totalResultingEdgePixels) / totalOriginalEdgePixels;
+        }
+
+        private double GetRmsContrastScore(MagickImage originalImage, MagickImage resultingImage)
+        {
+            double rmsContrastResulting = resultingImage.Statistics().Composite().StandardDeviation / Quantum.Max * 1.0;
+            double rmsContrastOriginal = originalImage.Statistics().Composite().StandardDeviation / Quantum.Max * 1.0;
+            double a = Math.Abs(rmsContrastOriginal - rmsContrastResulting) / rmsContrastOriginal;
+            return rmsContrastResulting;
+        }
+
+        private double GetGradient(MagickImage image)
+        {
+            image.Statistic(StatisticType.Gradient, 10, 10);
+            return image.Statistics().Composite().Mean;
         }
     }
 }

@@ -36,11 +36,10 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             Table = table;
             _connection = connection;
         }
-        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e)
+        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e, IQualityAssessment iqa)
         {
 
             BackgroundWorker bwAsync = sender as BackgroundWorker;
-            ImageQualityAssessment iqa = new HotelDieuIQA();
             var finalFrom = from ?? 0;
             string minSizeCondition = minSize != null ? ("dbms_lob.getlength(" + Name + ")>" + minSize) : "";
             string finalSizeCondition = "";
@@ -102,9 +101,10 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     blob.Read(bytes, 0, (int)blobSize);
                     try
                     {
-                        img = new MagickImage(bytes);
-                        originalImg = new MagickImage(bytes);
-                    }catch
+                        img = new MagickImage("C:\\Users\\Paola\\Desktop\\2817292.jpg");
+                        originalImg = new MagickImage("C:\\Users\\Paola\\Desktop\\2817292.jpg");
+                    }
+                    catch
                     {
                         if (ProgressChanged != null)
                         {
@@ -130,7 +130,24 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                     filter.Process(img);
                     byte[] finalBytes = img.ToByteArray();
-                    if (iqa.Compare(originalImg, img)){
+                    double[] a = new double[100];
+                    MagickImage img1 = new MagickImage("C:\\Users\\Paola\\Desktop\\scale\\original.png");
+                    MagickImage img2;
+                    int x = 0;
+                    string[] b = { "C:\\Users\\Paola\\Desktop\\scale\\original.png", "C:\\Users\\Paola\\Desktop\\scale\\300x412.png", "C:\\Users\\Paola\\Desktop\\scale\\400x550.png", "C:\\Users\\Paola\\Desktop\\scale\\473x650.png", "C:\\Users\\Paola\\Desktop\\scale\\509x700.png", "C:\\Users\\Paola\\Desktop\\scale\\545x749.png", "C:\\Users\\Paola\\Desktop\\scale\\582x800.png", "C:\\Users\\Paola\\Desktop\\scale\\900x1237.png", "C:\\Users\\Paola\\Desktop\\scale\\946x1300.png", "C:\\Users\\Paola\\Desktop\\scale\\1164x1600.png", "C:\\Users\\Paola\\Desktop\\scale\\1455x2000.png", "C:\\Users\\Paola\\Desktop\\scale\\2000x2750.png" };
+                    for (int i= 0;i < b.Length*4; i=i+4)
+                    {
+                        //create a bad quality image fhigh resolution and check it's score
+                        
+                        img2 = new MagickImage(b[x]);
+                        double[] res = iqa.Compare(img1, img2);
+                        a[i] = res[0];
+                        a[i+1]= res[1];
+                        a[i + 2] = res[2];
+                        a[i + 3] = res[3];
+                        ++x;
+                    }
+                    if (iqa.Compare(originalImg, img)[0] > 0){
                         string finalPks = Utilities.GeneratePrimaryKeyValuePairsString(Table.PrimaryKeys, pKs);
                         string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
                         OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
@@ -138,14 +155,14 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         param.Value = finalBytes;
 
                         OracleTransaction transaction = _connection.BeginTransaction();
-                        OracleCommand updateCommand = _connection.CreateCommand();
-                        updateCommand.Transaction = transaction;
-                        updateCommand.CommandText = sqlUpdate;
-                        updateCommand.Parameters.Add(param);
+                        //OracleCommand updateCommand = _connection.CreateCommand();
+                        //updateCommand.Transaction = transaction;
+                        //updateCommand.CommandText = sqlUpdate;
+                        //updateCommand.Parameters.Add(param);
                         try
                         {
-                            updateCommand.ExecuteNonQuery();
-                            transaction.Commit();
+                            //updateCommand.ExecuteNonQuery();
+                            //transaction.Commit();
                             totalSuccess++;
                             config.successNumber = totalSuccess;
                             spaceGain += (originalImg.Width * originalImg.Height * originalImg.BitDepth()) - (img.Width * img.Height*img.BitDepth());

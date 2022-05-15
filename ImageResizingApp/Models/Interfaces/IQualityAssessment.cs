@@ -5,8 +5,8 @@ using System.Text;
 
 namespace ImageResizingApp.Models.Interfaces
 {
-    interface ImageQualityAssessment
+    public interface IQualityAssessment
     {
-        public bool Compare(MagickImage originalImage, MagickImage resultingImage);
+        public double[] Compare(MagickImage originalImage, MagickImage resultingImage);
     }
 }

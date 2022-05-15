@@ -10,7 +10,6 @@ namespace ImageResizingApp.ViewModels
 {
     public class ResizeConfigurationWindowViewModel : ViewModelBase
     {
-        private readonly IColumn? _column;
         private readonly Registry _registry;
         public RelayCommand ConfirmCommand { get; }
         public RelayCommand PreviousCommand { get; }
@@ -26,12 +25,6 @@ namespace ImageResizingApp.ViewModels
             }
         }
 
-        private ResizeConfigurationPart1ViewModel _part1ViewModel { get; }
-        private ResizeConfigurationPart2ViewModel _part2ViewModel { get; }
-        private ResizeConfigurationPart3ViewModel _part3ViewModel { get; }
-
-        private BackgroundWorker _worker;
-
         private string _confirmButtonContent = "Next";
         public string ConfirmButtonContent
         {
@@ -39,16 +32,22 @@ namespace ImageResizingApp.ViewModels
             set { SetProperty(ref _confirmButtonContent, value, false); }
         }
 
-        private IImage? _image;
-        private bool _isBatch;
+        private ResizeConfigurationPart1ViewModel _part1ViewModel { get; }
+        private ResizeConfigurationPart2ViewModel _part2ViewModel { get; }
+        private ResizeConfigurationPart3ViewModel _part3ViewModel { get; }
+
+        private readonly IImage? _image;
+        private readonly bool _isBatch;
+        private readonly IColumn? _column;
+        private BackgroundWorker _worker;
 
         public ResizeConfigurationWindowViewModel(IColumn column, Registry registry) : this(registry, true)
         {
             _column = column;
-            _column.ProgressChanged += myProgressChanged;
+            _column.ProgressChanged += MyProgressChanged;
         }
 
-        public ResizeConfigurationWindowViewModel(IImage image, Registry registry): this(registry, false)
+        public ResizeConfigurationWindowViewModel(IImage image, Registry registry) : this(registry, false)
         {
             _image = image;
         }
@@ -63,25 +62,25 @@ namespace ImageResizingApp.ViewModels
                 WorkerReportsProgress = true,
                 WorkerSupportsCancellation = true
             };
-            _worker.DoWork += worker_DoWork;
+            _worker.DoWork += Worker_DoWork;
 
             ConfirmCommand = new RelayCommand(OnConfirm, CanConfirm);
             PreviousCommand = new RelayCommand(OnPrevious, CanGoBack);
             CancelCommand = new RelayCommand(OnCancel);
 
-            _part1ViewModel = new ResizeConfigurationPart1ViewModel(isBatch);
+            _part1ViewModel = new ResizeConfigurationPart1ViewModel(registry, isBatch);
             _part2ViewModel = new ResizeConfigurationPart2ViewModel(registry, ConfirmCommand);
             _part3ViewModel = new ResizeConfigurationPart3ViewModel();
             CurrentViewModel = _part1ViewModel;
 
         }
 
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
-            OnConfirmResize(sender, e);
+            Resize(sender, e);
         }
 
-        void myProgressChanged(object sender, Models.ResizeConfig.ProgressChangedEventHandler e)
+        void MyProgressChanged(object sender, Models.ResizeConfig.ProgressChangedEventHandler e)
         {
             _part3ViewModel.ProgressBarConfig = e.Config;
         }
@@ -102,7 +101,7 @@ namespace ImageResizingApp.ViewModels
                 {
                     if (ValidatePart2Filters())
                     {
-                        if(!_worker.IsBusy)
+                        if (!_worker.IsBusy)
                             _worker.RunWorkerAsync();
                         CurrentViewModel = _part3ViewModel;
                         PreviousCommand.NotifyCanExecuteChanged();
@@ -112,28 +111,21 @@ namespace ImageResizingApp.ViewModels
             }
         }
 
-        private void OnConfirmResize(object sender, DoWorkEventArgs e)
+        private void Resize(object sender, DoWorkEventArgs e)
         {
-            CurrentViewModel.Validate();
-            if (!CurrentViewModel.HasErrors)
+            IQualityAssessment iqa = _registry.GetIQAFromKey(_part1ViewModel.SelectedIQA);
+            CompositeFilter filterCombo = new CompositeFilter();
+            foreach (FilterViewModel filerViewModel in _part2ViewModel.SelectedFilters)
             {
-                if (ValidatePart2Filters())
-                {
-                    CompositeFilter filterCombo = new CompositeFilter();
-                    foreach (FilterViewModel filerViewModel in _part2ViewModel.SelectedFilters)
-                    {
-                        filterCombo.AddFilter(filerViewModel.Filter);
-                    }
-                    if (_isBatch)
-                    {
-                        _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination,sender, e);
-                    }
-                    else
-                    {
-                        _image.Resize(filterCombo, _part1ViewModel.BackupDestination);
-                    }
-
-                }
+                filterCombo.AddFilter(filerViewModel.Filter);
+            }
+            if (_isBatch)
+            {
+                _column.Resize(_part1ViewModel.From, _part1ViewModel.To, _part1ViewModel.MinSize, _part1ViewModel.MaxSize, filterCombo, _part1ViewModel.BackupDestination, sender, e, iqa);
+            }
+            else
+            {
+                _image.Resize(filterCombo, iqa,_part1ViewModel.BackupDestination);
             }
         }
 
@@ -168,12 +160,13 @@ namespace ImageResizingApp.ViewModels
 
         private bool CanConfirm()
         {
-            if(CurrentViewModel == _part2ViewModel)
+            if (CurrentViewModel == _part2ViewModel)
             {
                 return _part2ViewModel.SelectedFilters.Count() > 0;
-            } else if (CurrentViewModel == _part1ViewModel)
+            }
+            else if (CurrentViewModel == _part1ViewModel)
                 return true;
-            return false;
+            else return false;
         }
     }
 

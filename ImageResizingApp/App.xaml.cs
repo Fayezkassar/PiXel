@@ -3,6 +3,7 @@ using ImageResizingApp.Models.DataSources.Oracle;
 using ImageResizingApp.Models.DataSources.PostgreSQL;
 using ImageResizingApp.Models.DataSources.SQLServer;
 using ImageResizingApp.Models.Filters;
+using ImageResizingApp.Models.QualityAssessment;
 using ImageResizingApp.Stores;
 using ImageResizingApp.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,10 +41,15 @@ namespace ImageResizingApp
             _host.Services.GetRequiredService<Registry>().AddFilter("Resize", new ResizeFilter("Resize"));
             _host.Services.GetRequiredService<Registry>().AddFilter("Sample", new SampleFilter("Sample"));
             _host.Services.GetRequiredService<Registry>().AddFilter("Liquid Rescale", new LiquidRescaleFilter("Liquid Rescale"));
+            _host.Services.GetRequiredService<Registry>().AddFilter("Adaptive Resize", new SampleFilter("Adaptive Resize"));
+            _host.Services.GetRequiredService<Registry>().AddFilter("Spline Interpolation", new LiquidRescaleFilter("Spline Interpolation"));
 
             _host.Services.GetRequiredService<Registry>().AddDataSource("SQL Server", new SQLServerDataSource());
             _host.Services.GetRequiredService<Registry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());
             _host.Services.GetRequiredService<Registry>().AddDataSource("Oracle", new OracleDataSource());
+
+            _host.Services.GetRequiredService<Registry>().AddIQA("HDF IQA", new HotelDieuIQA());
+
             _host.Services.GetRequiredService<MainWindow>().Show();
 
             base.OnStartup(e);

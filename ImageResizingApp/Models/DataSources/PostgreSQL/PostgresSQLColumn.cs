@@ -32,7 +32,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             throw new NotImplementedException();
         }
 
-        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e)
+        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e, IQualityAssessment iqa)
         {
             throw new NotImplementedException();
         }

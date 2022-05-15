@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using ImageResizingApp.Models.Interfaces;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -35,6 +36,11 @@ namespace ImageResizingApp.ViewModels
         private void OnDeleteFilter(FilterViewModel filter)
         {
             _selectedFilters.Remove(filter);
+        }
+
+        public void SelectFilter(FilterViewModel filter)
+        {
+            _selectedFilters.Add(filter);
         }
 
         void OnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

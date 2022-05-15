@@ -43,7 +43,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
             return null;
         }
-        public bool Resize(IFilter filter, string backupDestination)
+        public bool Resize(IFilter filter, IQualityAssessment iqa, string backupDestination)
         {
             bool imageResized = false;
             OracleTransaction transaction = _connection.BeginTransaction();
@@ -59,11 +59,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 while (dr.Read())
                 {
                     OracleBlob blob = dr.GetOracleBlob(0);
-                    MagickImage img;
                     byte[] bytes = new byte[blob.Length];
                     blob.Read(bytes, 0, (int)blob.Length);
 
-                    img = new MagickImage(bytes);
+                    MagickImage originalImg = new MagickImage(bytes);
+                    MagickImage img = new MagickImage(bytes);
 
                     if (backupDestination != null && backupDestination.Length > 0)
                     {
@@ -71,36 +71,39 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     }
 
                     filter.Process(img);
-                    byte[] finalBytes = img.ToByteArray();
-
-                    string sqlUpdate = "UPDATE " + Column.Table.Name + " SET " + Column.Name + " = :pBlob" + " WHERE " + finalPks;
-                    OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
-                    param.Direction = ParameterDirection.Input;
-                    param.Value = finalBytes;
-
-                    ResizeConfig config = new ResizeConfig();
-                    config.totalCount = 1;
-                    config.progressPercentage = 100;
-
-                    updateCommand.CommandText = sqlUpdate;
-                    updateCommand.Parameters.Add(param);
-                    imageResized = true;
-                    try
+                    if (iqa.Compare(originalImg, img)[0]>0)
                     {
-                        updateCommand.ExecuteNonQuery();
-                        transaction.Commit();
-                        config.successNumber = 1;
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                    }
-                    finally
-                    {
-                        transaction.Dispose();
-                        if (ProgressChanged != null)
+                        byte[] finalBytes = img.ToByteArray();
+
+                        string sqlUpdate = "UPDATE " + Column.Table.Name + " SET " + Column.Name + " = :pBlob" + " WHERE " + finalPks;
+                        OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
+                        param.Direction = ParameterDirection.Input;
+                        param.Value = finalBytes;
+
+                        ResizeConfig config = new ResizeConfig();
+                        config.totalCount = 1;
+                        config.progressPercentage = 100;
+
+                        updateCommand.CommandText = sqlUpdate;
+                        updateCommand.Parameters.Add(param);
+                        imageResized = true;
+                        try
                         {
-                            ProgressChanged(this, new ProgressChangedEventHandler(config));
+                            updateCommand.ExecuteNonQuery();
+                            transaction.Commit();
+                            config.successNumber = 1;
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                        }
+                        finally
+                        {
+                            transaction.Dispose();
+                            if (ProgressChanged != null)
+                            {
+                                ProgressChanged(this, new ProgressChangedEventHandler(config));
+                            }
                         }
                     }
                 }

@@ -17,7 +17,7 @@ namespace ImageResizingApp.ViewModels
         private readonly ObservableCollection<ConnectionParameterViewModel> _connectionParameters;
         public IEnumerable<ConnectionParameterViewModel> ConnectionParameters => _connectionParameters;
         
-        public IDataSource _dataSource { get; set; }
+        public IDataSource DataSource { get; set; }
 
         public ConnectDataSourcePart2ViewModel(Registry dataSourceRegistry, DataSourceStore dataSourceStore)
         {
@@ -28,13 +28,13 @@ namespace ImageResizingApp.ViewModels
 
         public void SetDataSourceFromKey(string key)
         {
-            _dataSource = _dataSourceRegistry.GetDataSourceFromKey(key);
+            DataSource = _dataSourceRegistry.GetDataSourceFromKey(key);
         }
 
         public void UpdateConnectionParameters()
         {
             _connectionParameters.Clear();
-            foreach (string param in _dataSource.ConnectionParameters)
+            foreach (string param in DataSource.ConnectionParameters)
             {
                 _connectionParameters.Add(new ConnectionParameterViewModel(param));
             }
@@ -42,13 +42,13 @@ namespace ImageResizingApp.ViewModels
         public bool ConnectAndStoreDataSource()
         {
             Dictionary<string, string> connectionParametersMap = new Dictionary<string, string>();
-            foreach (string paramName in _dataSource.ConnectionParameters)
+            foreach (string paramName in DataSource.ConnectionParameters)
             {
                 ConnectionParameterViewModel param = ConnectionParameters.First(e => e.DisplayName == paramName);
                 connectionParametersMap.Add(paramName, param.Value);
             }
 
-            return _dataSourceStore.OpenDataSourceConnection(_dataSource, connectionParametersMap);
+            return _dataSourceStore.OpenDataSourceConnection(DataSource, connectionParametersMap);
         }
         public void SetPassword(string password)
         {

@@ -7,6 +7,7 @@ using System.Text;
 public class Registry
 {
     private Dictionary<string, IFilter> _filters = new Dictionary<string, IFilter>();
+    private Dictionary<string, IQualityAssessment> _imageQualityAssessments = new Dictionary<string, IQualityAssessment>();
     private Dictionary<string, IDataSource> _dataSources = new Dictionary<string, IDataSource>();
 
     public IEnumerable<string> GetDataSourceKeys()
@@ -41,5 +42,22 @@ public class Registry
         IFilter filter;
         _filters.TryGetValue(key, out filter);
         return filter?.Clone();
+    }
+
+    public IEnumerable<string> GetIQAKeys()
+    {
+        return _imageQualityAssessments.Keys;
+    }
+
+    public void AddIQA(string key, IQualityAssessment iqa)
+    {
+        _imageQualityAssessments.Add(key, iqa);
+    }
+
+    public IQualityAssessment GetIQAFromKey(string key)
+    {
+        IQualityAssessment iqa;
+        _imageQualityAssessments.TryGetValue(key, out iqa);
+        return iqa;
     }
 }

@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ImageResizingApp.ViewModels
 {
@@ -6,6 +8,26 @@ namespace ImageResizingApp.ViewModels
     {
         public RelayCommand ChooseDestinationCommand { get; }
         public bool IsBatch { get; }
+
+        public readonly Registry Registry;
+
+        public IEnumerable<string> IQAs
+        {
+            get
+            {
+                return Registry.GetIQAKeys();
+            }
+        }
+
+        private string _selectedIQA;
+
+        [Required]
+        [DisplayAttribute(Name ="Image Quality Assessment")]
+        public string SelectedIQA
+        {
+            get { return _selectedIQA; }
+            set { SetProperty(ref _selectedIQA, value, true); }
+        }
 
         private int? _from;
         public int? From
@@ -73,8 +95,9 @@ namespace ImageResizingApp.ViewModels
             }
         }
 
-        public ResizeConfigurationPart1ViewModel(bool isBatch)
+        public ResizeConfigurationPart1ViewModel(Registry registry, bool isBatch)
         {
+            Registry = registry;
             ChooseDestinationCommand = new RelayCommand(OnChooseDestination);
             IsBatch = isBatch;
         }

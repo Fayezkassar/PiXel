@@ -2,9 +2,7 @@
 using ImageResizingApp.Stores;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace UnitTests.Stores
 {
@@ -43,7 +41,7 @@ namespace UnitTests.Stores
             invalidConnectionParametersMap.Add("host", "192.168.222.1");
             invalidConnectionParametersMap.Add("username", "inv");
             _mockDataSource.Setup(s => s.Open(invalidConnectionParametersMap)).Returns(false);
-            Assert.False(_dataSourceStore.OpenDataSourceConnection(_mockDataSource.Object, invalidConnectionParametersMap));
+            Assert.IsFalse(_dataSourceStore.OpenDataSourceConnection(_mockDataSource.Object, invalidConnectionParametersMap));
             Assert.IsNull(_dataSourceStore.DataSource);
         }
     }

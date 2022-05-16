@@ -25,7 +25,13 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         private int successNumber = 0;
 
+        private double spaceGain = 0;
+
         private decimal totalCount = 0;
+
+        private static Mutex counterMutex = new Mutex();
+        private static Mutex spaceMutex = new Mutex();
+        private static Mutex successMutex = new Mutex();
 
         public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
 
@@ -42,9 +48,9 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public void ResizeImage(object obj)
         {
-            Thread thread = Thread.CurrentThread;
-            string message = $"Background: {thread.IsBackground}, Thread Pool: {thread.IsThreadPoolThread}, Thread ID: {thread.ManagedThreadId}";
-            Console.WriteLine(message);
+            //Thread thread = Thread.CurrentThread;
+            //string message = $"Background: {thread.IsBackground}, Thread Pool: {thread.IsThreadPoolThread}, Thread ID: {thread.ManagedThreadId}";
+            //Console.WriteLine(message);
 
 
             object[] array = obj as object[];
@@ -60,9 +66,10 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 e.Cancel = true;
                 return;
             }
-
+            counterMutex.WaitOne();
             counter++;
-            ResizeConfig config = new ResizeConfig(0, 0, totalCount, 0);
+            counterMutex.ReleaseMutex();
+            ResizeConfig config = new ResizeConfig(0, successNumber, totalCount, spaceGain);
             long blobSize = blob.Length;
 
 
@@ -83,11 +90,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
                 }
                 return;
-                //originalImg = new MagickImage();
-                //img = new MagickImage();
             }
-
-
 
             filter.Process(img);
             byte[] finalBytes = img.ToByteArray();
@@ -108,10 +111,14 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 {
                     updateCommand.ExecuteNonQuery();
                     transaction.Commit();
+                    successMutex.WaitOne();
                     successNumber++;
+                    successMutex.ReleaseMutex();
                     config.successNumber = successNumber;
-                    //spaceGain += (originalImg.Width * originalImg.Height * originalImg.BitDepth()) - (img.Width * img.Height * img.BitDepth());
-                    //config.spaceGain = spaceGain;
+                    spaceMutex.WaitOne();
+                    spaceGain += (originalImg.Width * originalImg.Height * originalImg.BitDepth()) - (img.Width * img.Height * img.BitDepth());
+                    spaceMutex.ReleaseMutex();
+                    config.spaceGain = spaceGain;
                 }
                 catch
                 {

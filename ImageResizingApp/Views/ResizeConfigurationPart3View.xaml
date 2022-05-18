@@ -25,7 +25,7 @@
               <LineBreak/>
               <LineBreak/>
               <Run Text="{Binding ProgressBarConfig.spaceGain}"/>
-              <Run Text="bytes saved"/>
+              <Run Text=" saved"/>
         </TextBlock>
     </Grid>
 </UserControl>

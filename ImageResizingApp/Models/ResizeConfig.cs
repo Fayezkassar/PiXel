@@ -12,9 +12,9 @@ namespace ImageResizingApp.Models
 
         public decimal totalCount { get; set; }
 
-        public double spaceGain { get; set; }
+        public string spaceGain { get; set; }
 
-        public ResizeConfig(int progressPercentage, int successNumber, decimal totalCount, double spaceGain)
+        public ResizeConfig(int progressPercentage, int successNumber, decimal totalCount, string spaceGain)
         {
             this.progressPercentage = progressPercentage;
             this.successNumber = successNumber;
@@ -24,7 +24,7 @@ namespace ImageResizingApp.Models
 
         public ResizeConfig()
         {
-            
+            this.spaceGain = "0B";
         }
 
         public class ProgressChangedEventHandler : EventArgs

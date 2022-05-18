@@ -5,6 +5,7 @@ using System;
 
 namespace ImageResizingApp.Models.Interfaces
 {
+    /*! ITable Interface */
     public interface ITable
     {
         public string Name { get; set; }

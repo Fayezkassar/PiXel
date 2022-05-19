@@ -155,8 +155,8 @@ namespace ImageResizingApp.ViewModels
             if (CurrentViewModel == _part3ViewModel)
             {
                 _worker.CancelAsync();
-                window.Close();
             }
+            window.Close();
         }
 
         private bool CanGoBack() => CurrentViewModel == _part2ViewModel;

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Linq;
 using System;
+using System.ComponentModel;
 
 namespace ImageResizingApp.ViewModels
 {
@@ -159,7 +160,14 @@ namespace ImageResizingApp.ViewModels
         {
             ResizeConfigurationWindow window = new ResizeConfigurationWindow();
             window.DataContext = new ResizeConfigurationWindowViewModel(column, _registry);
+            window.Closed += OnWindowClosed;
             window.ShowDialog();
+
+        }
+
+        private async void OnWindowClosed(object sender, EventArgs e)
+        {
+            await UpdateTableInfoAsync();
         }
 
         private void OnViewImage(DataGridCell cell)

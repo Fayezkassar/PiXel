@@ -27,16 +27,6 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             return (IDataSource)MemberwiseClone();
         }
 
-        protected override void SetConnection()
-        {
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-            builder.DataSource = _connectionParametersMap.GetValueOrDefault("Data Source");
-            builder.InitialCatalog = _connectionParametersMap.GetValueOrDefault("Initial Catalog");
-            builder.UserID = _connectionParametersMap.GetValueOrDefault("Username");
-            builder.Password = _connectionParametersMap.GetValueOrDefault("Password");
-            Connection = new SqlConnection(builder.ConnectionString);
-        }
-
         public override async Task SetTablesAsync()
         {
             try
@@ -62,9 +52,14 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             }
         }
 
-        public override DbConnection CreateTemporaryConnection()
+        public override DbConnection CreateConnection()
         {
-            throw new NotImplementedException();
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+            builder.DataSource = _connectionParametersMap.GetValueOrDefault("Data Source");
+            builder.InitialCatalog = _connectionParametersMap.GetValueOrDefault("Initial Catalog");
+            builder.UserID = _connectionParametersMap.GetValueOrDefault("Username");
+            builder.Password = _connectionParametersMap.GetValueOrDefault("Password");
+            return new SqlConnection(builder.ConnectionString);
         }
     }
 }

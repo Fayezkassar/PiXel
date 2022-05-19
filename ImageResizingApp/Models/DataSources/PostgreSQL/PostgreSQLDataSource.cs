@@ -28,14 +28,6 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
             return (IDataSource)MemberwiseClone();
         }
 
-        protected override void SetConnection()
-        {
-            var items = from kvp in _connectionParametersMap
-                        select kvp.Key + "=" + kvp.Value;
-
-            Connection = new NpgsqlConnection(string.Join(";", items));
-        }
-
         public override async Task SetTablesAsync()
         {
             try
@@ -67,9 +59,12 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         }
 
-        public override DbConnection CreateTemporaryConnection()
+        public override DbConnection CreateConnection()
         {
-            throw new NotImplementedException();
+            var items = from kvp in _connectionParametersMap
+                        select kvp.Key + "=" + kvp.Value;
+
+            return new NpgsqlConnection(string.Join(";", items));
         }
     }
 }

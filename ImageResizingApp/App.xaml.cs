@@ -44,8 +44,8 @@ namespace ImageResizingApp
             _host.Services.GetRequiredService<Registry>().AddFilter("Adaptive Resize", new SampleFilter("Adaptive Resize"));
             _host.Services.GetRequiredService<Registry>().AddFilter("Spline Interpolation", new LiquidRescaleFilter("Spline Interpolation"));
 
-            _host.Services.GetRequiredService<Registry>().AddDataSource("SQL Server", new SQLServerDataSource());
-            _host.Services.GetRequiredService<Registry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());
+            //_host.Services.GetRequiredService<Registry>().AddDataSource("SQL Server", new SQLServerDataSource());
+            //_host.Services.GetRequiredService<Registry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());
             _host.Services.GetRequiredService<Registry>().AddDataSource("Oracle", new OracleDataSource());
 
             _host.Services.GetRequiredService<Registry>().AddIQA("HDF", new HotelDieuIQA());

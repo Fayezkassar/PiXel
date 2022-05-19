@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
 using System.Linq;
+using ImageMagick;
 
 namespace ImageResizingApp.Helpers
 {
     public class Utilities
     {
-        public static string GetFormatedSize(decimal value, int decimalPlaces = 1)
+        public static string GetFormatedSize(double value, int decimalPlaces = 1)
         {
-            string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+            string[] SizeSuffixes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
             int i = 0;
             while (Math.Round(value, decimalPlaces) >= 1024)
             {
@@ -49,6 +50,11 @@ namespace ImageResizingApp.Helpers
                 ++j;
             }
             return finalPks;
+        }
+
+        public static double GetSpaceGain(MagickImage originalImg, MagickImage img)
+        {
+            return ((originalImg.Width * originalImg.Height * originalImg.BitDepth()) - (img.Width * img.Height * img.BitDepth())) / 12;
         }
     }
 }

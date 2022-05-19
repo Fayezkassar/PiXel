@@ -12,11 +12,6 @@ namespace ImageResizingApp.Models.Filters
         public int Width { get; set; }
         public int Height { get; set; }
         public string Name { get; set; }
-
-        public int Counter { get; set; }
-        public int SuccessNumber { get; set; }
-        public decimal SpaceGain { get; set; }
-        public decimal TotalCount { get; set; }
         public ScaleFilter(string name)
         {
             Name = name;

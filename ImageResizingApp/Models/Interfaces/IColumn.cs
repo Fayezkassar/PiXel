@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
-using static ImageResizingApp.Models.ResizeConfig;
+using static ImageResizingApp.Models.ResizingProgress;
 using System.ComponentModel;
 
 namespace ImageResizingApp.Models.Interfaces
@@ -15,7 +15,7 @@ namespace ImageResizingApp.Models.Interfaces
         public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e, IQualityAssessment iqa);
         public IImage GetImageForPrimaryKeysValues(IEnumerable<string> primaryKeysValues);
 
-        public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
+        public event EventHandler<ResizingProgress.ProgressChangedEventHandler> ProgressChanged;
         
 
     }

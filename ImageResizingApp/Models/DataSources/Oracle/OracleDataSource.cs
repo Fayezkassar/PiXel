@@ -28,11 +28,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             return (IDataSource)MemberwiseClone();
         }
 
-        protected override void SetConnection()
-        {
-            Connection = this.CreateTemporaryConnection();
-        }
-
         public override async Task SetTablesAsync()
         {
             try
@@ -45,7 +40,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
                 while (await dr.ReadAsync())
                 {
-                    tables.Add(new OracleTable(this, connection)
+                    tables.Add(new OracleTable(this)
                     {
                         Name = dr.GetString(0)
                     });
@@ -59,7 +54,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
         }
 
-        public override DbConnection CreateTemporaryConnection()
+        public override DbConnection CreateConnection()
         {
             string oradb = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = "
                 + _connectionParametersMap.GetValueOrDefault("Host") + ")(PORT = " + _connectionParametersMap.GetValueOrDefault("Port")

@@ -8,7 +8,7 @@ namespace ImageResizingApp.Models.Interfaces
     {
         public IColumn Column { get; set; }
         public IEnumerable<string> PrimaryKeysValues { get; set; }
-        public bool Resize(IFilter filter, IQualityAssessment iqa, string backupDestination);
+        public bool Resize(ImageResizeParameters irp);
         public BitmapImage GetBitmapImage();
     }
 }

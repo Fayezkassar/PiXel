@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using static ImageResizingApp.Models.ResizeConfig;
+using static ImageResizingApp.Models.ResizingProgress;
 
 namespace ImageResizingApp.Models.DataSources.PostgreSQL
 {
@@ -20,7 +20,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
 
         public ITable Table { get; set; }
 
-        public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
+        public event EventHandler<ResizingProgress.ProgressChangedEventHandler> ProgressChanged;
 
         public BitmapImage GetBitmapImage(DataRowView row)
         {

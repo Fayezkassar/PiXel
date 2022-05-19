@@ -19,50 +19,53 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public string ColumnType { get; set; }
         public bool CanResize { get; set; }
 
-        private static Mutex counterMutex = new Mutex();
-        private static Mutex spaceMutex = new Mutex();
-        private static Mutex successMutex = new Mutex();
-
-        public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
+        public event EventHandler<ResizingProgress.ProgressChangedEventHandler> ProgressChanged;
 
         private readonly OracleConnection _connection;
+        private readonly OracleDataSource _dataSource;
 
-        private OracleDataSource _dataSources;
+        private static Mutex _imageCountMutex = new Mutex();
+        private static Mutex _spaceGainCountMutex = new Mutex();
+        private static Mutex _successCountMutex = new Mutex();
 
-        public OracleColumn(ITable table, OracleConnection connection, string name, string columnType, OracleDataSource oracleDataSource)
+        public OracleColumn(OracleTable table, string name, string columnType)
         {
             Name = name;
             ColumnType = columnType;
             CanResize = columnType == "BLOB";
             Table = table;
-            _connection = connection;
-            _dataSources = oracleDataSource;
+            _dataSource = (OracleDataSource)table.DataSource;
+            _connection = (OracleConnection)_dataSource.Connection;
         }
 
         public void ResizeImage(object obj)
         {
+
             object[] array = obj as object[];
+
             OracleBlob blob = (OracleBlob)array[0];
-            IFilter filter = (IFilter)array[1];
+            ImageResizeParameters irp = (ImageResizeParameters)array[1];
             List<string> pKs = (List<string>)array[2];
-            IQualityAssessment iqa = (IQualityAssessment)array[5];
-            BackgroundWorker bwAsync = array[3] as BackgroundWorker;
-            DoWorkEventArgs e = (DoWorkEventArgs)array[4];
-            string backupDestination = (string)array[6];
+            BackgroundWorker bwAsync = array[4] as BackgroundWorker;
+            DoWorkEventArgs e = (DoWorkEventArgs)array[3];
+            ResizingProgress progress = (ResizingProgress)array[5];
 
             if (bwAsync.CancellationPending)
             {
                 e.Cancel = true;
                 return;
             }
-            ResizeConfig config = new ResizeConfig(0, filter.SuccessNumber, filter.TotalCount, Utilities.GetFormatedSize(filter.SpaceGain));
-            long blobSize = blob.Length;
 
+            _imageCountMutex.WaitOne();
+            progress.ImageCount++;
+            _imageCountMutex.ReleaseMutex();
+
+            long blobSize = blob.Length;
+            byte[] bytes = new byte[blobSize];
+            blob.Read(bytes, 0, (int)blobSize);
 
             MagickImage img;
             MagickImage originalImg;
-            byte[] bytes = new byte[blobSize];
-            blob.Read(bytes, 0, (int)blobSize);
             try
             {
                 img = new MagickImage(bytes);
@@ -70,40 +73,26 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
             catch
             {
-                counterMutex.WaitOne();
-                filter.Counter++;
-                counterMutex.ReleaseMutex();
-                if (ProgressChanged != null)
-                {
-                    config.progressPercentage = (int)(filter.Counter / filter.TotalCount * 100);
-                    ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
-                }
+                TriggerProgressChangedEvent(progress);
                 return;
             }
 
-            if (backupDestination != null && backupDestination.Length > 0)
+            if (irp.BackupDestination != null && irp.BackupDestination.Length > 0)
             {
                 try
                 {
-                    originalImg.Write(backupDestination + "\\" + string.Join("-", pKs));
+                    originalImg.Write(irp.BackupDestination + "\\" + string.Join("-", pKs));
                 }
                 catch
                 {
-                    counterMutex.WaitOne();
-                    filter.Counter++;
-                    counterMutex.ReleaseMutex();
-                    if (ProgressChanged != null)
-                    {
-                        config.progressPercentage = (int)(filter.Counter / filter.TotalCount * 100);
-                        ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
-                    }
+                    TriggerProgressChangedEvent(progress);
                     return;
                 }
             }
 
-            filter.Process(img);
+            irp.Filter.Process(img);
             byte[] finalBytes = img.ToByteArray();
-            if (iqa.Compare(originalImg, img)
+            if (irp.IQA.Compare(originalImg, img))
             {
                 string finalPks = Utilities.GeneratePrimaryKeyValuePairsString(Table.PrimaryKeys, pKs);
                 string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;
@@ -111,7 +100,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 param.Direction = ParameterDirection.Input;
                 param.Value = finalBytes;
 
-                OracleConnection tmpConnection = (OracleConnection)_dataSources.CreateTemporaryConnection();
+                OracleConnection tmpConnection = (OracleConnection)_dataSource.CreateConnection();
 
                 tmpConnection.Open();
 
@@ -124,14 +113,15 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 {
                     updateCommand.ExecuteNonQuery();
                     transaction.Commit();
-                    successMutex.WaitOne();
-                    filter.SuccessNumber++;
-                    successMutex.ReleaseMutex();
-                    config.successNumber = filter.SuccessNumber;
-                    spaceMutex.WaitOne();
-                    filter.SpaceGain += ((originalImg.Width * originalImg.Height * originalImg.BitDepth()) - (img.Width * img.Height * img.BitDepth())) / 12;
-                    spaceMutex.ReleaseMutex();
-                    config.spaceGain = Utilities.GetFormatedSize(filter.SpaceGain);
+
+                    _successCountMutex.WaitOne();
+                    progress.SuccessCount++;
+                    _successCountMutex.ReleaseMutex();
+
+                    _spaceGainCountMutex.WaitOne();
+                    progress.SpaceGain += Utilities.GetSpaceGain(originalImg, img);
+                    _spaceGainCountMutex.ReleaseMutex();
+
                 }
                 catch
                 {
@@ -141,23 +131,15 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 {
                     transaction.Dispose();
                     tmpConnection.Close();
-                    counterMutex.WaitOne();
-                    filter.Counter++;
-                    counterMutex.ReleaseMutex();
-                    if (ProgressChanged != null)
-                    {
-                        config.progressPercentage = (int)(filter.Counter / config.totalCount * 100);
-                        ProgressChanged(this, new ResizeConfig.ProgressChangedEventHandler(config));
-                    }
+                    TriggerProgressChangedEvent(progress);
                 }
             }
         }
-        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e, IQualityAssessment iqa)
+
+        private string GetSizeConditionString(int? minSize, int? maxSize)
         {
-            BackgroundWorker bwAsync = sender as BackgroundWorker;
-            var finalFrom = from ?? 0;
-            string minSizeCondition = minSize != null ? ("dbms_lob.getlength(" + Name + ")>" + minSize) : "";
             string finalSizeCondition = "";
+            string minSizeCondition = minSize != null ? ("dbms_lob.getlength(" + Name + ")>" + minSize) : "";
             string maxSizeCondition = maxSize != null ? ("dbms_lob.getlength(" + Name + ")<" + maxSize) : "";
             if (minSizeCondition != "")
             {
@@ -171,24 +153,32 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             {
                 finalSizeCondition += maxSizeCondition;
             }
+            return finalSizeCondition;
+        }
 
-            int n = Table.PrimaryKeys.Count();
+        public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e, IQualityAssessment iqa)
+        {
+            BackgroundWorker bwAsync = sender as BackgroundWorker;
 
-            string sqlSelect = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + (finalSizeCondition != "" ? (" AND " + finalSizeCondition) : ""))) + ")";
-            sqlSelect += " WHERE RNUM>=" + finalFrom;
-            OracleCommand selectCmd = new OracleCommand(sqlSelect, _connection);
+            string finalSizeCondition = this.GetSizeConditionString(minSize, maxSize);
+            var finalFrom = from ?? 0;
+            string finalFromCondition = " WHERE RNUM>=" + finalFrom;
 
-            string sqlCount = "SELECT COUNT(*) FROM (SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + (finalSizeCondition != "" ? (" AND " + finalSizeCondition) : ""))) + ")";
-            sqlCount += " WHERE RNUM>=" + finalFrom;
-            OracleCommand cmd = new OracleCommand(sqlCount, _connection);
+            string sqlSelectAllData = "SELECT ROWNUM RNUM, a.* FROM " + Table.Name + " a" + (to == null ? (finalSizeCondition != "" ? (" WHERE " + finalSizeCondition) : "") : (" WHERE ROWNUM<=" + to + (finalSizeCondition != "" ? (" AND " + finalSizeCondition) : ""))) + ")";
 
+            string sqlSelectBlobAndPrimaryKeys = "SELECT " + String.Join(",", Table.PrimaryKeys) + ", " + Name + " FROM (" + sqlSelectAllData;
+            sqlSelectBlobAndPrimaryKeys += finalFromCondition;
+            OracleCommand selectCmd = new OracleCommand(sqlSelectBlobAndPrimaryKeys, _connection);
+
+            string sqlSelectCount = "SELECT COUNT(*) FROM (" + sqlSelectAllData;
+            sqlSelectCount += finalFromCondition;
+            OracleCommand cmd = new OracleCommand(sqlSelectCount, _connection);
+
+            int primaryKeysCount = Table.PrimaryKeys.Count();
             try
             {
-                filter.TotalCount = (decimal)(cmd.ExecuteScalar());
-                filter.Counter = 0;
-                filter.SuccessNumber = 0;
-                filter.SpaceGain = 0;
                 OracleDataReader dr = selectCmd.ExecuteReader();
+                ResizingProgress progress = new ResizingProgress(0, 0, Convert.ToInt32((cmd.ExecuteScalar())), 0);
                 while (dr.Read())
                 {
                     if (bwAsync.CancellationPending)
@@ -197,20 +187,28 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                         return;
                     }
                     List<string> pKs = new List<string>();
-                    for (int i = 0; i < n; i++)
+                    for (int i = 0; i < primaryKeysCount; i++)
                     {
                         pKs.Add(dr.GetString(i));
                     }
 
-                    OracleBlob blob = dr.GetOracleBlob(n);
+                    OracleBlob blob = dr.GetOracleBlob(primaryKeysCount);
 
-                    ThreadPool.QueueUserWorkItem(ResizeImage, new object[] { blob, filter, pKs, sender, e, iqa, backupDestination });
+                    ThreadPool.QueueUserWorkItem(ResizeImage, new object[] { blob, new ImageResizeParameters(filter,iqa,backupDestination), pKs, e, bwAsync, progress });
 
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void TriggerProgressChangedEvent(ResizingProgress progress)
+        {
+            if (ProgressChanged != null)
+            {
+                ProgressChanged(this, new ResizingProgress.ProgressChangedEventHandler(progress));
             }
         }
 

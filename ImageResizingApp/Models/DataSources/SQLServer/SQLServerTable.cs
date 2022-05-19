@@ -16,6 +16,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public string RecordSize { get; set; }
         public IEnumerable<string> PrimaryKeys { get; set; }
         public IEnumerable<IColumn> Columns { get; set; }
+        public IDataSource DataSource { get; set; }
 
         public SQLServerTable(string name)
         {

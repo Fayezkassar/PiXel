@@ -3,8 +3,10 @@ using ImageResizingApp.Models.Interfaces;
 using ImageResizingApp.Models.Filters;
 using System.Linq;
 using System.Threading.Tasks;
-using static ImageResizingApp.Models.ResizeConfig;
+using static ImageResizingApp.Models.ResizingProgress;
 using System.ComponentModel;
+using ImageResizingApp.Models;
+using System.Windows;
 
 namespace ImageResizingApp.ViewModels
 {
@@ -13,7 +15,7 @@ namespace ImageResizingApp.ViewModels
         private readonly Registry _registry;
         public RelayCommand ConfirmCommand { get; }
         public RelayCommand PreviousCommand { get; }
-        public RelayCommand CancelCommand { get; }
+        public RelayCommand<Window> CancelCommand { get; }
 
         private ViewModelBase _currentViewModel;
         public ViewModelBase CurrentViewModel
@@ -44,7 +46,7 @@ namespace ImageResizingApp.ViewModels
         public ResizeConfigurationWindowViewModel(IColumn column, Registry registry) : this(registry, true)
         {
             _column = column;
-            _column.ProgressChanged += MyProgressChanged;
+            _column.ProgressChanged += OnResizingProgressChanged;
         }
 
         public ResizeConfigurationWindowViewModel(IImage image, Registry registry) : this(registry, false)
@@ -66,7 +68,7 @@ namespace ImageResizingApp.ViewModels
 
             ConfirmCommand = new RelayCommand(OnConfirm, CanConfirm);
             PreviousCommand = new RelayCommand(OnPrevious, CanGoBack);
-            CancelCommand = new RelayCommand(OnCancel);
+            CancelCommand = new RelayCommand<Window>(OnCancel);
 
             _part1ViewModel = new ResizeConfigurationPart1ViewModel(registry, isBatch);
             _part2ViewModel = new ResizeConfigurationPart2ViewModel(registry, ConfirmCommand);
@@ -80,7 +82,7 @@ namespace ImageResizingApp.ViewModels
             Resize(sender, e);
         }
 
-        void MyProgressChanged(object sender, Models.ResizeConfig.ProgressChangedEventHandler e)
+        private void OnResizingProgressChanged(object sender, Models.ResizingProgress.ProgressChangedEventHandler e)
         {
             _part3ViewModel.ProgressBarConfig = e.Config;
         }
@@ -125,7 +127,7 @@ namespace ImageResizingApp.ViewModels
             }
             else
             {
-                _image.Resize(filterCombo, iqa,_part1ViewModel.BackupDestination);
+                _image.Resize(new ImageResizeParameters(filterCombo, iqa,_part1ViewModel.BackupDestination));
             }
         }
 
@@ -148,11 +150,12 @@ namespace ImageResizingApp.ViewModels
             ConfirmCommand.NotifyCanExecuteChanged();
         }
 
-        private void OnCancel()
+        private void OnCancel(Window window)
         {
             if (CurrentViewModel == _part3ViewModel)
             {
                 _worker.CancelAsync();
+                window.Close();
             }
         }
 

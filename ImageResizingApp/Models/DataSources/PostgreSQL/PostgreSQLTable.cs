@@ -16,6 +16,7 @@ namespace ImageResizingApp.Models.DataSources.PostgreSQL
         public string RecordsNumber { get; set; }
         public IEnumerable<string> PrimaryKeys { get; set; }
         public IEnumerable<IColumn> Columns { get; set; }
+        public IDataSource DataSource { get; set; }
 
         private readonly NpgsqlConnection _connection;
 

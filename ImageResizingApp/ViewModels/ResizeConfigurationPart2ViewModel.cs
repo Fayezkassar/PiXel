@@ -27,9 +27,9 @@ namespace ImageResizingApp.ViewModels
         public ResizeConfigurationPart2ViewModel(Registry registry, RelayCommand confirmCommand)
         {
             Registry = registry;
-            ConfirmCommand = confirmCommand;
             _selectedFilters = new ObservableCollection<FilterViewModel>();
             _selectedFilters.CollectionChanged += OnCollectionChanged;
+            ConfirmCommand = confirmCommand;
             DeleteFilterCommand = new RelayCommand<FilterViewModel>(OnDeleteFilter);
         }
 

@@ -16,16 +16,15 @@ namespace ImageResizingApp.Models.DataSources.Oracle
         public string RecordsNumber { get; set; }
         public IEnumerable<string> PrimaryKeys { get; set; }
         public IEnumerable<IColumn> Columns { get; set; }
+        public IDataSource DataSource { get; set; }
 
         private readonly OracleConnection _connection;
 
-        private OracleDataSource _dataSource;
-
-        public OracleTable(OracleDataSource oracleDataSource, OracleConnection connection)
+        public OracleTable(OracleDataSource oracleDataSource)
         {
             Columns = new List<IColumn>();
-            _connection = connection;
-            _dataSource = oracleDataSource;
+            DataSource = oracleDataSource;
+            _connection = (OracleConnection)oracleDataSource.Connection;
         }
 
         public async Task SetColumnsAsync()
@@ -34,14 +33,14 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             {
                 string sql = "SELECT COLUMN_NAME, DATA_TYPE FROM USER_TAB_COLUMNS WHERE TABLE_NAME = '" + Name + "'";
 
-                using var cmd = new OracleCommand(sql, _connection);
+                using var cmd = new OracleCommand(sql,_connection);
 
                 using OracleDataReader rdr = cmd.ExecuteReader();
 
                 List<IColumn> columns = new List<IColumn>();
                 while (await rdr.ReadAsync())
                 {
-                    columns.Add(new OracleColumn(this, _connection, rdr.GetString(0), rdr.GetString(1), _dataSource));
+                    columns.Add(new OracleColumn(this, rdr.GetString(0), rdr.GetString(1)));
                 }
                 Columns = columns;
 
@@ -57,7 +56,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             try
             {
                 string sql = "SELECT cols.column_name FROM all_constraints cons, all_cons_columns cols WHERE cols.table_name = '" + Name + "' AND cons.constraint_type = 'P' AND cons.constraint_name = cols.constraint_name AND cons.owner = cols.owner ORDER BY cols.table_name, cols.position";
-                OracleCommand cmd = new OracleCommand(sql, _connection);
+                OracleCommand cmd = new OracleCommand(sql,  _connection);
                 OracleDataReader dr = cmd.ExecuteReader();
 
                 List<string> keys = new List<string>();
@@ -87,7 +86,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                                 + " ( SELECT L.SEGMENT_NAME FROM USER_LOBS L WHERE L.TABLE_NAME = '" + Name + "'))";
 
                 OracleCommand cmd = new OracleCommand(sql, _connection);
-                decimal tableSize = (decimal)(await cmd.ExecuteScalarAsync());
+                double tableSize = Convert.ToDouble(await cmd.ExecuteScalarAsync());
                 TableSize = Utilities.GetFormatedSize(tableSize);
 
                 OracleCommand cmd1 = new OracleCommand("SELECT COUNT(*) FROM " + Name, _connection);

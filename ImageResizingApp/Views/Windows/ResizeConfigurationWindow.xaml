@@ -34,9 +34,9 @@
             </Validation.ErrorTemplate>
         </ContentControl>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="1" >
-            <Button Name="previousButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" Command="{Binding PreviousCommand}">Previous</Button>
-            <Button Name="nextButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding ConfirmCommand}" CommandParameter="{Binding ElementName=ConnectWindow}" Content="{Binding ConfirmButtonContent}"></Button>
-            <Button Name="cancelButton" Style="{StaticResource MainCancelButtonStyle}" IsCancel="True" Command="{Binding CancelCommand}" Content="Cancel"/>
+            <Button  Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" Command="{Binding PreviousCommand}">Previous</Button>
+            <Button  Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding ConfirmCommand}" CommandParameter="{Binding ElementName=ConnectWindow}" Content="{Binding ConfirmButtonContent}"></Button>
+            <Button  Style="{StaticResource MainCancelButtonStyle}" CommandParameter="{Binding ElementName=ConfigureResizeWindow}" Command="{Binding CancelCommand}" Content="Cancel"/>
         </StackPanel>
     </Grid>
 </Window>

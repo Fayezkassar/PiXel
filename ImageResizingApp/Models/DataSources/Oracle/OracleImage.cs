@@ -9,7 +9,7 @@ using System.Text;
 using System.Windows.Media.Imaging;
 using System.Threading.Tasks;
 using ImageMagick;
-using static ImageResizingApp.Models.ResizeConfig;
+using static ImageResizingApp.Models.ResizingProgress;
 
 namespace ImageResizingApp.Models.DataSources.Oracle
 {
@@ -43,7 +43,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
             return null;
         }
-        public bool Resize(IFilter filter, IQualityAssessment iqa, string backupDestination)
+        public bool Resize(ImageResizeParameters irp)
         {
             bool imageResized = false;
             OracleTransaction transaction = _connection.BeginTransaction();
@@ -54,6 +54,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             string sqlSelect = "SELECT " + Column.Name + " FROM " + Column.Table.Name + "  WHERE " + finalPks;
             OracleCommand cmd = new OracleCommand(sqlSelect, _connection);
             OracleDataReader dr = cmd.ExecuteReader();
+
+            ResizingProgress progress = new ResizingProgress(0, 0, 1, 0);
             try
             {
                 while (dr.Read())
@@ -65,52 +67,67 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     MagickImage originalImg = new MagickImage(bytes);
                     MagickImage img = new MagickImage(bytes);
 
-                    if (backupDestination != null && backupDestination.Length > 0)
+                    if (irp.BackupDestination != null && irp.BackupDestination.Length > 0)
                     {
-                        img.Write(backupDestination + "\\" + string.Join("-", PrimaryKeysValues));
-                    }
-
-                    filter.Process(img);
-                    if (iqa.Compare(originalImg, img))
-                    {
-                        byte[] finalBytes = img.ToByteArray();
-
-                        string sqlUpdate = "UPDATE " + Column.Table.Name + " SET " + Column.Name + " = :pBlob" + " WHERE " + finalPks;
-                        OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
-                        param.Direction = ParameterDirection.Input;
-                        param.Value = finalBytes;
-
-                        ResizeConfig config = new ResizeConfig();
-                        config.totalCount = 1;
-                        config.progressPercentage = 100;
-
-                        updateCommand.CommandText = sqlUpdate;
-                        updateCommand.Parameters.Add(param);
-                        imageResized = true;
                         try
                         {
-                            updateCommand.ExecuteNonQuery();
-                            transaction.Commit();
-                            config.successNumber = 1;
+                            img.Write(irp.BackupDestination + "\\" + string.Join("-", PrimaryKeysValues));
                         }
                         catch
                         {
-                            transaction.Rollback();
-                        }
-                        finally
+                            break;
+                        } 
+                    }
+                    try
+                    {
+                        irp.Filter.Process(img);
+                        if (irp.IQA.Compare(originalImg, img))
                         {
-                            transaction.Dispose();
-                            if (ProgressChanged != null)
+                            byte[] finalBytes = img.ToByteArray();
+
+                            string sqlUpdate = "UPDATE " + Column.Table.Name + " SET " + Column.Name + " = :pBlob" + " WHERE " + finalPks;
+                            OracleParameter param = new OracleParameter("pBlob", OracleDbType.Blob);
+                            param.Direction = ParameterDirection.Input;
+                            param.Value = finalBytes;
+
+                            updateCommand.CommandText = sqlUpdate;
+                            updateCommand.Parameters.Add(param);
+
+                            try
                             {
-                                ProgressChanged(this, new ProgressChangedEventHandler(config));
+                                updateCommand.ExecuteNonQuery();
+                                transaction.Commit();
+                                progress.SpaceGain = Utilities.GetSpaceGain(originalImg, img);
+                                progress.SuccessCount = 1;
+                                imageResized = true;
+                            }
+                            catch
+                            {
+                                transaction.Rollback();
+                            }
+                            finally
+                            {
+                                transaction.Dispose();
                             }
                         }
+                    }
+                    catch
+                    {
+                        break;
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                ++progress.ImageCount;
+                if (ProgressChanged != null)
+                {
+                    ProgressChanged(this, new ProgressChangedEventHandler(progress));
+                }
             }
 
             return imageResized;

@@ -15,16 +15,16 @@
             <RowDefinition Height="60*"></RowDefinition>
             <RowDefinition Height="125*"></RowDefinition>
         </Grid.RowDefinitions>
-        <ProgressBar Grid.Column="0" Margin="50,115,50,40" Value="{Binding ProgressBarConfig.progressPercentage}"/>
-        <TextBlock Grid.Column="0" Grid.Row="1" TextAlignment="Center" FontSize="16" Text='{Binding ProgressBarConfig.progressPercentage, StringFormat={}{0}%}'></TextBlock>
+        <ProgressBar Grid.Column="0" Margin="50,115,50,40" Value="{Binding ProgressBarConfig.ProgressPercentage, Mode=OneWay}"/>
+        <TextBlock Grid.Column="0" Grid.Row="1" TextAlignment="Center" FontSize="16" Text='{Binding ProgressBarConfig.ProgressPercentage, Mode=OneWay, StringFormat={}{0}%}'></TextBlock>
         <TextBlock Grid.Column="0" Grid.Row="2" TextAlignment="Center" FontSize="16">
-              <Run Text="{Binding ProgressBarConfig.successNumber}"/>
+              <Run Text="{Binding ProgressBarConfig.SuccessCount}"/>
               <Run Text="/"/>
-              <Run Text="{Binding ProgressBarConfig.totalCount}"/>
+              <Run Text="{Binding ProgressBarConfig.TotalImageCount}"/>
               <Run Text="success"/>
               <LineBreak/>
               <LineBreak/>
-              <Run Text="{Binding ProgressBarConfig.spaceGain}"/>
+              <Run Text="{Binding SpaceGain, Mode=OneWay}"/>
               <Run Text=" saved"/>
         </TextBlock>
     </Grid>

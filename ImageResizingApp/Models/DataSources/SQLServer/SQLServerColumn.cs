@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using static ImageResizingApp.Models.ResizeConfig;
+using static ImageResizingApp.Models.ResizingProgress;
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
 {
@@ -17,7 +17,7 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
         public string ColumnType { get; set; }
         public bool CanResize { get; set; }
 
-        public event EventHandler<ResizeConfig.ProgressChangedEventHandler> ProgressChanged;
+        public event EventHandler<ResizingProgress.ProgressChangedEventHandler> ProgressChanged;
 
         public BitmapImage GetBitmapImage(DataRowView row)
         {

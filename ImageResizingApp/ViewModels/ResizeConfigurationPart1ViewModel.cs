@@ -9,13 +9,13 @@ namespace ImageResizingApp.ViewModels
         public RelayCommand ChooseDestinationCommand { get; }
         public bool IsBatch { get; }
 
-        public readonly Registry Registry;
+        private readonly Registry _registry;
 
         public IEnumerable<string> IQAs
         {
             get
             {
-                return Registry.GetIQAKeys();
+                return _registry.GetIQAKeys();
             }
         }
 
@@ -97,7 +97,7 @@ namespace ImageResizingApp.ViewModels
 
         public ResizeConfigurationPart1ViewModel(Registry registry, bool isBatch)
         {
-            Registry = registry;
+            _registry = registry;
             ChooseDestinationCommand = new RelayCommand(OnChooseDestination);
             IsBatch = isBatch;
         }

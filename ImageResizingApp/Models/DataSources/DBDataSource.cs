@@ -14,7 +14,7 @@ namespace ImageResizingApp.Models.DataSources
         public IEnumerable<ITable> Tables { get; set; }
 
         public DbConnection Connection { get; set; }
-        protected abstract void SetConnection();
+
         protected Dictionary<string, string> _connectionParametersMap;
 
         public bool Open(Dictionary<string, string> connectionParametersMap)
@@ -22,7 +22,7 @@ namespace ImageResizingApp.Models.DataSources
             try
             {
                 _connectionParametersMap = connectionParametersMap;
-                SetConnection();
+                Connection = CreateConnection();
                 Connection.Open();
 
                 return true;
@@ -32,7 +32,8 @@ namespace ImageResizingApp.Models.DataSources
                 return false;
             }
         }
-        public abstract DbConnection CreateTemporaryConnection();
+
+        public abstract DbConnection CreateConnection();
 
         public bool Close()
         {

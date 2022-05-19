@@ -7,6 +7,6 @@ namespace ImageResizingApp.Models.Interfaces
 {
     public interface IQualityAssessment
     {
-        public double[] Compare(MagickImage originalImage, MagickImage resultingImage);
+        public bool Compare(MagickImage originalImage, MagickImage resultingImage);
     }
 }

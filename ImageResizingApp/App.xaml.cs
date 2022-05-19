@@ -48,7 +48,8 @@ namespace ImageResizingApp
             _host.Services.GetRequiredService<Registry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());
             _host.Services.GetRequiredService<Registry>().AddDataSource("Oracle", new OracleDataSource());
 
-            _host.Services.GetRequiredService<Registry>().AddIQA("HDF IQA", new HotelDieuIQA());
+            _host.Services.GetRequiredService<Registry>().AddIQA("HDF", new HotelDieuIQA());
+            _host.Services.GetRequiredService<Registry>().AddIQA("PSQ", new PSQIQA());
 
             _host.Services.GetRequiredService<MainWindow>().Show();
 

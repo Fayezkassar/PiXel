@@ -71,7 +71,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     }
 
                     filter.Process(img);
-                    if (iqa.Compare(originalImg, img)[0]>0)
+                    if (iqa.Compare(originalImg, img))
                     {
                         byte[] finalBytes = img.ToByteArray();
 

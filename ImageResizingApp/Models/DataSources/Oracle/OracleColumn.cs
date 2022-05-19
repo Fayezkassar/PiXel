@@ -85,7 +85,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             {
                 try
                 {
-                    originalImg.Write(backupDestination + "\\" + string.Join("-", pKs) + ".png");
+                    originalImg.Write(backupDestination + "\\" + string.Join("-", pKs));
                 }
                 catch
                 {
@@ -103,7 +103,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
             filter.Process(img);
             byte[] finalBytes = img.ToByteArray();
-            if (true)
+            if (iqa.Compare(originalImg, img)
             {
                 string finalPks = Utilities.GeneratePrimaryKeyValuePairsString(Table.PrimaryKeys, pKs);
                 string sqlUpdate = "UPDATE " + Table.Name + " SET " + Name + " = :pBlob" + " WHERE " + finalPks;

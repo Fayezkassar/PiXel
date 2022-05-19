@@ -19,7 +19,7 @@ namespace ImageResizingApp.Models.Filters
         public void Process(MagickImage image)
         {
             image.LiquidRescale(Width, Height);
-        }
+         }
         public IFilter Clone()
         {
             return (IFilter)MemberwiseClone();

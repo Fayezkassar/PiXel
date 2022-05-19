@@ -11,26 +11,25 @@ namespace ImageResizingApp.Models.QualityAssessment
     {
         public double[] Compare(MagickImage originalImage, MagickImage resultingImage)
         {
-            if (resultingImage.Width * resultingImage.Height * resultingImage.Depth < 300000 * 8)
-            {
-                double[] b = new double[4];
-                return b;
-            }
+            //if (resultingImage.Width * resultingImage.Height * resultingImage.Depth < 300000 * 8)
+            //{
+            //    double[] b = new double[4];
+            //    return b;
+            //}
             MagickImage resultingGreyscaleImage = new MagickImage(resultingImage);
             resultingGreyscaleImage.Grayscale();
-            MagickImage originalGreyScaleImage = new MagickImage(originalImage);
-            originalGreyScaleImage.Grayscale();
 
             MagickImage resultingImageForGradient = new MagickImage(resultingImage);
             MagickImage resultingImageForEdgeScore = new MagickImage(resultingImage);
+            MagickImage o = new MagickImage(originalImage);
 
             double edgeBasedScore = GetEdgeScore(originalImage, resultingImageForEdgeScore);
 
-            double rmsContrast = GetRmsContrastScore(originalGreyScaleImage, resultingGreyscaleImage);
+            double rmsContrast = GetRmsContrastScore(resultingGreyscaleImage);
 
-            double gradientSharpness = GetGradient(resultingImageForGradient);
+            double gradientSharpness = GetGradient(o, resultingImageForGradient);
 
-            double score = gradientSharpness * rmsContrast * Math.Pow(edgeBasedScore, 4.0);
+            double score =  rmsContrast * gradientSharpness * Math.Pow(edgeBasedScore, 4.0);
 
             //if ((resultingImage.BaseWidth * resultingImage.BaseHeight)* resultingImage.BitDepth()  > 100000)
             //{
@@ -38,9 +37,8 @@ namespace ImageResizingApp.Models.QualityAssessment
 
             //}
             double[] a = new double[4];
-                a[0] = edgeBasedScore;
+            a[0] = edgeBasedScore;
             a[1] = rmsContrast;
-            a[2] = gradientSharpness;
             a[3] = score;
             return a;
         }
@@ -59,18 +57,19 @@ namespace ImageResizingApp.Models.QualityAssessment
             return Math.Abs(totalOriginalEdgePixels - totalResultingEdgePixels) / totalOriginalEdgePixels;
         }
 
-        private double GetRmsContrastScore(MagickImage originalImage, MagickImage resultingImage)
+        private double GetRmsContrastScore(MagickImage resultingImage)
         {
             double rmsContrastResulting = resultingImage.Statistics().Composite().StandardDeviation / Quantum.Max * 1.0;
-            double rmsContrastOriginal = originalImage.Statistics().Composite().StandardDeviation / Quantum.Max * 1.0;
-            double a = Math.Abs(rmsContrastOriginal - rmsContrastResulting) / rmsContrastOriginal;
             return rmsContrastResulting;
         }
 
-        private double GetGradient(MagickImage image)
+        private double GetGradient(MagickImage originalImage, MagickImage resultingImage)
         {
-            image.Statistic(StatisticType.Gradient, 10, 10);
-            return image.Statistics().Composite().Mean;
+            resultingImage.Grayscale();
+            resultingImage.Statistic(StatisticType.Gradient,4, 4);
+            //originalImage.Statistic(StatisticType.Gradient, 10, 10);
+            double a = resultingImage.Statistics().Composite().Maximum;
+            return a;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ImageResizingApp.Helpers
         {
             string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
             int i = 0;
-            while (Math.Round(value, decimalPlaces) >= 1000)
+            while (Math.Round(value, decimalPlaces) >= 1024)
             {
                 value /= 1024;
                 i++;

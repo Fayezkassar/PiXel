@@ -19,10 +19,13 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         private readonly OracleConnection _connection;
 
-        public OracleTable(OracleConnection connection)
+        private OracleDataSource _dataSource;
+
+        public OracleTable(OracleDataSource oracleDataSource, OracleConnection connection)
         {
             Columns = new List<IColumn>();
             _connection = connection;
+            _dataSource = oracleDataSource;
         }
 
         public async Task SetColumnsAsync()
@@ -38,7 +41,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 List<IColumn> columns = new List<IColumn>();
                 while (await rdr.ReadAsync())
                 {
-                    columns.Add(new OracleColumn(this, _connection, rdr.GetString(0), rdr.GetString(1)));
+                    columns.Add(new OracleColumn(this, _connection, rdr.GetString(0), rdr.GetString(1), _dataSource));
                 }
                 Columns = columns;
 

@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
+using System.Data.Common;
 
 namespace ImageResizingApp.Models.DataSources.SQLServer
 {
@@ -26,21 +27,21 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             return (IDataSource)MemberwiseClone();
         }
 
-        protected override void SetConnection(Dictionary<string, string> connectionParametersMap)
+        protected override void SetConnection()
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-            builder.DataSource = connectionParametersMap.GetValueOrDefault("Data Source");
-            builder.InitialCatalog = connectionParametersMap.GetValueOrDefault("Initial Catalog");
-            builder.UserID = connectionParametersMap.GetValueOrDefault("Username");
-            builder.Password = connectionParametersMap.GetValueOrDefault("Password");
-            _connection = new SqlConnection(builder.ConnectionString);
+            builder.DataSource = _connectionParametersMap.GetValueOrDefault("Data Source");
+            builder.InitialCatalog = _connectionParametersMap.GetValueOrDefault("Initial Catalog");
+            builder.UserID = _connectionParametersMap.GetValueOrDefault("Username");
+            builder.Password = _connectionParametersMap.GetValueOrDefault("Password");
+            Connection = new SqlConnection(builder.ConnectionString);
         }
 
         public override async Task SetTablesAsync()
         {
             try
             {
-                SqlConnection connection = _connection as SqlConnection;
+                SqlConnection connection = Connection as SqlConnection;
                 string sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME";
                 List<ITable> tables = new List<ITable>();
                 using (SqlCommand command = new SqlCommand(sql, connection))
@@ -59,6 +60,11 @@ namespace ImageResizingApp.Models.DataSources.SQLServer
             {
                 System.Console.WriteLine(ex.Message);
             }
+        }
+
+        public override DbConnection CreateTemporaryConnection()
+        {
+            throw new NotImplementedException();
         }
     }
 }

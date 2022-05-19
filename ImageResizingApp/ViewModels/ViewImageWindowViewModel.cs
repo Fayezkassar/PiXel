@@ -25,6 +25,12 @@ namespace ImageResizingApp.ViewModels
         }
         private IImage _image;
 
+        public string Size
+        {
+            get { return (int)DisplayedImage.Height +"x"+ (int)DisplayedImage.Width;}
+           
+        }
+
         public RelayCommand ResizeImageCommand { get; }
         public ViewImageWindowViewModel(IImage image, Registry registry)
         {

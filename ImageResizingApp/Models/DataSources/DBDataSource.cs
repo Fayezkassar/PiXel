@@ -13,15 +13,17 @@ namespace ImageResizingApp.Models.DataSources
         public IEnumerable<string> ConnectionParameters { get; set; }
         public IEnumerable<ITable> Tables { get; set; }
 
-        protected DbConnection _connection;
-        protected abstract void SetConnection(Dictionary<string, string> connectionParametersMap);
+        public DbConnection Connection { get; set; }
+        protected abstract void SetConnection();
+        protected Dictionary<string, string> _connectionParametersMap;
 
         public bool Open(Dictionary<string, string> connectionParametersMap)
         {
             try
             {
-                SetConnection(connectionParametersMap);
-                _connection.Open();
+                _connectionParametersMap = connectionParametersMap;
+                SetConnection();
+                Connection.Open();
 
                 return true;
             }
@@ -30,12 +32,13 @@ namespace ImageResizingApp.Models.DataSources
                 return false;
             }
         }
+        public abstract DbConnection CreateTemporaryConnection();
 
         public bool Close()
         {
             try
             {
-                _connection?.Close();
+                Connection?.Close();
                 return true;
             }
             catch

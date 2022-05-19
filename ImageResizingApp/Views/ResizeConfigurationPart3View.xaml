@@ -11,17 +11,21 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="200"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="159"></RowDefinition>
+            <RowDefinition Height="60*"></RowDefinition>
+            <RowDefinition Height="125*"></RowDefinition>
         </Grid.RowDefinitions>
-        <ProgressBar Grid.Column="0" Grid.Row="0" Margin="50,163,50,33" Value="{Binding ProgressBarConfig.progressPercentage}"></ProgressBar>
+        <ProgressBar Grid.Column="0" Margin="50,115,50,40" Value="{Binding ProgressBarConfig.progressPercentage}"/>
         <TextBlock Grid.Column="0" Grid.Row="1" TextAlignment="Center" FontSize="16" Text='{Binding ProgressBarConfig.progressPercentage, StringFormat={}{0}%}'></TextBlock>
         <TextBlock Grid.Column="0" Grid.Row="2" TextAlignment="Center" FontSize="16">
               <Run Text="{Binding ProgressBarConfig.successNumber}"/>
               <Run Text="/"/>
               <Run Text="{Binding ProgressBarConfig.totalCount}"/>
               <Run Text="success"/>
+              <LineBreak/>
+              <LineBreak/>
+              <Run Text="{Binding ProgressBarConfig.spaceGain}"/>
+              <Run Text=" saved"/>
         </TextBlock>
-</Grid>
+    </Grid>
 </UserControl>

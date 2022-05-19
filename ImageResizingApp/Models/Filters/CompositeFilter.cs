@@ -14,6 +14,11 @@ namespace ImageResizingApp.Models.Filters
         public int Height { get; set; }
         public string Name { get; set; }
 
+        public int Counter { get; set; }
+        public int SuccessNumber { get; set; }
+        public decimal SpaceGain { get; set; }
+        public decimal TotalCount { get; set; }
+
         private List<IFilter> _filters = new List<IFilter>();
         public void Process(MagickImage image)
         {

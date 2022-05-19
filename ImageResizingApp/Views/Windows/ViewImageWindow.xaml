@@ -9,12 +9,14 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <StackPanel >
             <Image Source="{Binding DisplayedImage}" Height="400" Width="400" />
         </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="1" >
+        <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontSize="14" Text="{Binding Size}"></TextBlock>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"  Grid.Row="2" >
             <Button Name="resizeButton" Style="{StaticResource MainButtonStyle}" Margin="0 0 5 0" IsDefault="True" Command="{Binding ResizeImageCommand}" Content="Resize"></Button>
             <Button Name="cancelButton" Style="{StaticResource MainCancelButtonStyle}" IsCancel="True" Content="Cancel"/>
         </StackPanel>

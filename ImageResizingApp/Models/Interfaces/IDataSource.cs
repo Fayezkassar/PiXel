@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.Interfaces
 {
+    /*! IDataSource Interface */
     public interface IDataSource
     {
         public IEnumerable<string> ConnectionParameters { get; set; }

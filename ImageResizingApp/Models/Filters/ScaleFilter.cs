@@ -9,16 +9,22 @@ namespace ImageResizingApp.Models.Filters
 {
     public class ScaleFilter : IFilter
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public Dictionary<string, int> Parameters { get; set; }
         public string Name { get; set; }
         public ScaleFilter(string name)
         {
             Name = name;
+            Parameters = new Dictionary<string, int>();
+            Parameters.Add("Width", 0);
+            Parameters.Add("Height", 0);
         }
         public void Process(MagickImage image)
         {
-            image.Scale(Width, Height);
+            int width, height;
+            if (Parameters.TryGetValue("Width", out width) && Parameters.TryGetValue("Height", out height))
+            {
+                image.Scale(width, height);
+            }
         }
         public IFilter Clone()
         {

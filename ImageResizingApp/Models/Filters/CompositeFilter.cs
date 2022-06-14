@@ -10,8 +10,7 @@ namespace ImageResizingApp.Models.Filters
 {
     public class CompositeFilter : IFilter
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public Dictionary<string, int> Parameters { get; set; }
         public string Name { get; set; }
 
         private List<IFilter> _filters = new List<IFilter>();

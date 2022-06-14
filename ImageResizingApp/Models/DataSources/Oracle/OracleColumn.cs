@@ -40,7 +40,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public void ResizeImage(object obj)
         {
-
             object[] array = obj as object[];
 
             OracleBlob blob = (OracleBlob)array[0];
@@ -73,7 +72,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
             catch
             {
-                TriggerProgressChangedEvent(progress);
+                TriggerProgressChangedEvent(bwAsync, progress);
                 return;
             }
 
@@ -85,7 +84,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 }
                 catch
                 {
-                    TriggerProgressChangedEvent(progress);
+                    TriggerProgressChangedEvent(bwAsync, progress);
                     return;
                 }
             }
@@ -131,7 +130,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                 {
                     transaction.Dispose();
                     tmpConnection.Close();
-                    TriggerProgressChangedEvent(progress);
+                    TriggerProgressChangedEvent(bwAsync, progress);
                 }
             }
         }
@@ -158,6 +157,8 @@ namespace ImageResizingApp.Models.DataSources.Oracle
 
         public void Resize(int? from, int? to, int? minSize, int? maxSize, IFilter filter, string backupDestination, object sender, DoWorkEventArgs e, IQualityAssessment iqa)
         {
+
+
             BackgroundWorker bwAsync = sender as BackgroundWorker;
 
             string finalSizeCondition = this.GetSizeConditionString(minSize, maxSize);
@@ -179,6 +180,7 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             {
                 OracleDataReader dr = selectCmd.ExecuteReader();
                 ResizingProgress progress = new ResizingProgress(0, 0, Convert.ToInt32((cmd.ExecuteScalar())), 0);
+                TriggerProgressChangedEvent(bwAsync, progress);
                 while (dr.Read())
                 {
                     if (bwAsync.CancellationPending)
@@ -195,7 +197,6 @@ namespace ImageResizingApp.Models.DataSources.Oracle
                     OracleBlob blob = dr.GetOracleBlob(primaryKeysCount);
 
                     ThreadPool.QueueUserWorkItem(ResizeImage, new object[] { blob, new ImageResizeParameters(filter,iqa,backupDestination), pKs, e, bwAsync, progress });
-
                 }
             }
             catch (Exception ex)
@@ -204,11 +205,11 @@ namespace ImageResizingApp.Models.DataSources.Oracle
             }
         }
 
-        private void TriggerProgressChangedEvent(ResizingProgress progress)
+        private void TriggerProgressChangedEvent(BackgroundWorker bw, ResizingProgress progress)
         {
             if (ProgressChanged != null)
             {
-                ProgressChanged(this, new ResizingProgress.ProgressChangedEventHandler(progress));
+                ProgressChanged(this, new ResizingProgress.ProgressChangedEventHandler(new ResizingProgress(progress.ImageCount, progress.SuccessCount, progress.TotalImageCount, progress.SpaceGain)));
             }
         }
 

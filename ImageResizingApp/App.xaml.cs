@@ -43,6 +43,9 @@ namespace ImageResizingApp
             _host.Services.GetRequiredService<Registry>().AddFilter("Liquid Rescale", new LiquidRescaleFilter("Liquid Rescale"));
             _host.Services.GetRequiredService<Registry>().AddFilter("Adaptive Resize", new SampleFilter("Adaptive Resize"));
             _host.Services.GetRequiredService<Registry>().AddFilter("Spline Interpolation", new LiquidRescaleFilter("Spline Interpolation"));
+            _host.Services.GetRequiredService<Registry>().AddFilter("Blur", new BlurFilter("Blur"));
+            _host.Services.GetRequiredService<Registry>().AddFilter("Greyscale", new GreyscaleFilter("Greyscale"));
+            _host.Services.GetRequiredService<Registry>().AddFilter("NoiseReducer", new ReduceNoiseFilter("NoiseReducer"));
 
             //_host.Services.GetRequiredService<Registry>().AddDataSource("SQL Server", new SQLServerDataSource());
             //_host.Services.GetRequiredService<Registry>().AddDataSource("PostgreSQL", new PostgreSQLDataSource());

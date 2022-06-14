@@ -1,6 +1,7 @@
 ﻿using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -12,41 +13,17 @@ namespace ImageResizingApp.ViewModels
 
         public string Name => Filter.Name;
 
-        private int? _width;
-        [Required]
-        [DisplayAttribute(Name = "Width")]
-        public int? Width
-        {
-            get
-            {
-                return _width;
-            }
-            set
-            {
-                Filter.Width = value ?? 0;
-                SetProperty(ref _width, value, true);
-            }
-        }
-
-        private int? _height;
-        [Required]
-        [DisplayAttribute(Name = "Height")]
-        public int? Height
-        {
-            get
-            {
-                return _height;
-            }
-            set
-            {
-                Filter.Height = value ?? 0;
-                SetProperty(ref _height, value, true);
-            }
-        }
+        private readonly ObservableCollection<FilterParameterViewModel> _parameters;
+        public IEnumerable<FilterParameterViewModel> Parameters => _parameters;
 
         public FilterViewModel(IFilter filter)
         {
             Filter = filter;
+            _parameters = new ObservableCollection<FilterParameterViewModel>();
+            foreach (string param in Filter.Parameters?.Keys)
+            {
+                _parameters.Add(new FilterParameterViewModel(param, Filter));
+            }
         }
     }
 }

@@ -2,29 +2,21 @@
 using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
 
 namespace ImageResizingApp.Models.Filters
 {
-    public class SampleFilter : IFilter
+    public class BlurFilter : IFilter
     {
         public Dictionary<string, int> Parameters { get; set; }
         public string Name { get; set; }
-        public SampleFilter(string name)
+        public BlurFilter(string name)
         {
             Name = name;
-            Parameters = new Dictionary<string, int>();
-            Parameters.Add("Width", 0);
-            Parameters.Add("Height", 0);
         }
         public void Process(MagickImage image)
         {
-            int width, height;
-            if (Parameters.TryGetValue("Width", out width) && Parameters.TryGetValue("Height", out height))
-            {
-                image.Sample(width, height);
-            }
+            image.Blur();
         }
         public IFilter Clone()
         {

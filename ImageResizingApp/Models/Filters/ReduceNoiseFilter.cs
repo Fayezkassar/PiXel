@@ -2,28 +2,26 @@
 using ImageResizingApp.Models.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
 
 namespace ImageResizingApp.Models.Filters
 {
-    public class SampleFilter : IFilter
+    public class ReduceNoiseFilter : IFilter
     {
         public Dictionary<string, int> Parameters { get; set; }
         public string Name { get; set; }
-        public SampleFilter(string name)
+        public ReduceNoiseFilter(string name)
         {
             Name = name;
             Parameters = new Dictionary<string, int>();
-            Parameters.Add("Width", 0);
-            Parameters.Add("Height", 0);
+            Parameters.Add("Order", 0);
         }
         public void Process(MagickImage image)
         {
-            int width, height;
-            if (Parameters.TryGetValue("Width", out width) && Parameters.TryGetValue("Height", out height))
+            int order;
+            if (Parameters.TryGetValue("Order", out order))
             {
-                image.Sample(width, height);
+                image.ReduceNoise(order);
             }
         }
         public IFilter Clone()

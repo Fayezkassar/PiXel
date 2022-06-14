@@ -7,7 +7,7 @@ namespace ImageResizingApp.Models
     public class ResizingProgress
     {
 
-        public int ProgressPercentage => (ImageCount / TotalImageCount) * 100;
+        public int ProgressPercentage { get; }
         public int SuccessCount { get; set; }
         public int TotalImageCount { get; set; }
         public int ImageCount { get; set; }
@@ -19,6 +19,7 @@ namespace ImageResizingApp.Models
             SuccessCount = successCount;
             TotalImageCount = totalImageCount;
             SpaceGain = spaceGain;
+            ProgressPercentage = (ImageCount / TotalImageCount) * 100;
         }
 
         public ResizingProgress()

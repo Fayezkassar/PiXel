@@ -81,12 +81,10 @@ namespace ImageResizingApp.ViewModels
         {
             Resize(sender, e);
         }
-
         private void OnResizingProgressChanged(object sender, Models.ResizingProgress.ProgressChangedEventHandler e)
         {
             _part3ViewModel.ProgressBarConfig = e.Config;
         }
-
         private void OnConfirm()
         {
             CurrentViewModel.Validate();

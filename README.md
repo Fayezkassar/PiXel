@@ -1,5 +1,5 @@
 # PiXel
-A generic image resizer built with WPF that can: connect to any data source, backup original images, scale down large images, check image quality and replace original images if the quality is good
+A generic image resizer built with WPF that can: connect to any data source, backup original images, scale down large images, check image quality and replace original images if the quality is good.
 
 # Required Ressources
 •	Windows operation system

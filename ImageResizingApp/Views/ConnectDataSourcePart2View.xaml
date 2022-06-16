@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="ImageResizingApp.Views.ConnectDataSourcePart2View"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <DataTemplate x:Key="textBox">
+            <TextBox Margin="0 0 0 20"
+                                materialDesign:HintAssist.Hint="{Binding Path=DisplayName}"
+                                Text="{Binding Path=Value, UpdateSourceTrigger=PropertyChanged}"
+                                Style="{StaticResource MaterialDesignFloatingHintTextBox}">
+            </TextBox>
+        </DataTemplate>
+        <DataTemplate x:Key="passwordBox">
+            <PasswordBox x:Name="passwordBox" Margin="0 0 0 20"
+                                PasswordChanged="PasswordChangedHandler"
+                                materialDesign:HintAssist.Hint="{Binding Path=DisplayName}"
+                                Style="{StaticResource MaterialDesignFloatingHintPasswordBox}">
+            </PasswordBox>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ItemsControl Margin="10" ItemsSource="{Binding ConnectionParameters}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Content="{Binding}">
+                            <Validation.ErrorTemplate>
+                                <ControlTemplate />
+                            </Validation.ErrorTemplate>
+                            <ContentControl.Style>
+                                <Style TargetType="ContentControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsPassword}" Value="true">
+                                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource passwordBox}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsPassword}" Value="false">
+                                            <Setter Property="ContentTemplate"
+                                    Value="{StaticResource textBox}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ContentControl.Style>
+                        </ContentControl>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

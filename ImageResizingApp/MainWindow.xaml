@@ -4,15 +4,24 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:ImageResizingApp.Views"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" 
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        ResizeMode="NoResize"
-        Title="Welcome to the Image Resizer"
-        Height="500" Width="820"
-        Background="{DynamicResource MaterialDesignPaper}">
+        Title="PiXel"
+        WindowState="Maximized"
+        Style="{StaticResource MaterialDesignWindow}">
     <Grid>
-        <views:GetStartedView></views:GetStartedView>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Height="30" Header="_File">
+                    <MenuItem Header="_Connect" Click="menuConnect_Click" />
+                </MenuItem>
+            </Menu>
+            <TextBox AcceptsReturn="True" />
+        </DockPanel>
+        <views:TableListingView Grid.Row="1" DataContext="{Binding CurrentViewModel}" />
     </Grid>
 
 </Window>

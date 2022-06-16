@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="ImageResizingApp.Views.TableListingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <DataTemplate x:Key="blobTemplate">
+            <Button Style="{StaticResource MainButtonStyle}" Content="View" Command="{Binding DataContext.ViewImage,RelativeSource={RelativeSource AncestorType=DataGrid}}"  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=DataGridCell}}"/>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox SelectionChanged="ListBox_SelectionChanged" ItemsSource="{Binding Tables}" SelectedItem="{Binding SelectedTable}" Style="{StaticResource MaterialDesignListBox}" DisplayMemberPath="Name" >
+        </ListBox>
+        <TabControl Grid.Column="1" Style="{StaticResource MaterialDesignNavigatilRailTabControl}" TabStripPlacement="Top">
+            <TabItem Header="Columns">
+                <DataGrid x:Name="columnGrid" VerticalAlignment="Top" IsReadOnly="True" ItemsSource="{Binding Path=Columns}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="COLUMN NAME" Binding="{Binding Name}"/>
+                        <DataGridTextColumn Header="COLUMN TYPE" Binding="{Binding ColumnType}"/>
+                        <DataGridTemplateColumn Header="">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button 
+                                        CommandParameter="{Binding }" 
+                                        Style="{StaticResource MainButtonStyle}" 
+                                        Command="{Binding DataContext.ResizeColumnCommand, IsAsync=True,RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        Content="Resize"
+                                        Visibility="{Binding Resizable, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Data">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Margin="4" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Margin="4,0" Content="&lt;&lt;" Style="{StaticResource MainButtonStyle}" Command="{Binding FirstCommand}"/>
+                        <Button Margin="4,0" Content="&lt;"  Style="{StaticResource MainButtonStyle}" Command="{Binding PreviousCommand}"/>
+                        <StackPanel VerticalAlignment="Center"  Orientation="Horizontal">
+                            <TextBlock Text="{Binding Start}"/>
+                            <TextBlock Text=" to "/>
+                            <TextBlock Text="{Binding End}"/>
+                            <TextBlock Text=" of "/>
+                            <TextBlock Text="{Binding TotalItems}"/>
+                        </StackPanel>
+                        <Button Margin="4,0" Content=">" Style="{StaticResource MainButtonStyle}" Command="{Binding NextCommand}"/>
+                        <Button Margin="4,0" Content=">>" Style="{StaticResource MainButtonStyle}" Command="{Binding LastCommand}"/>
+                    </StackPanel>
+                    <DataGrid AutoGenerateColumns="True" AutoGeneratingColumn="DataGrid_AutoGeneratingColumn" ItemsSource="{Binding Path=Data}" IsReadOnly="True" Grid.Row="0">
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Stats">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Margin="5" Text='{Binding TableSize,  StringFormat="Table Approx Size: {0}"}' />
+                    <TextBlock Margin="5" Grid.Row="1" Text='{Binding RecordsNumber, StringFormat="Number of Records: {0}"}' />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

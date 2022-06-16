@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace ImageResizingApp.Views
 {
     /// <summary>
-    /// Interaction logic for GetStartedView.xaml
+    /// Interaction logic for ResizeConfigurationPart3View.xaml
     /// </summary>
-    public partial class GetStartedView : UserControl
+    public partial class ResizeConfigurationPart3View : UserControl
     {
-        public GetStartedView()
+        public ResizeConfigurationPart3View()
         {
             InitializeComponent();
         }

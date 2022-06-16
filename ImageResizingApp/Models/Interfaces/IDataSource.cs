@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
 
 namespace ImageResizingApp.Models.Interfaces
 {
+    /*! IDataSource Interface */
     public interface IDataSource
     {
-        public String Name { get; set; }
-
-        public List<String> ConnectionParameters { get; set; }
-
-        public List<ITable> Tables { get; set; }
-
-        public bool open(Dictionary<String,String> connectionParametersMap);
-
-        public bool close();
-        public IDataSource clone();
+        public IEnumerable<string> ConnectionParameters { get; set; }
+        public IEnumerable<ITable> Tables { get; set; }
+        public bool Open(Dictionary<string,string> connectionParametersMap);
+        public bool Close();
+        public IDataSource Clone();
+        public Task SetTablesAsync();
     }
 }

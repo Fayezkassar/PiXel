@@ -1,5 +1,10 @@
-﻿using System;
+﻿using ImageResizingApp.Stores;
+using ImageResizingApp.ViewModels;
+using ImageResizingApp.Views.Windows;
+using Npgsql;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,37 +25,27 @@ namespace ImageResizingApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly Registry _registry;
+        private readonly DataSourceStore _dataSourceStore;
+        public MainWindow(Registry registry, DataSourceStore dataSourceStore)
         {
             InitializeComponent();
-            this.MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
+            _dataSourceStore = dataSourceStore;
+            _registry = registry;
+            OpenConnectToDataSourceDialog();
         }
 
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        private void OpenConnectToDataSourceDialog()
         {
-            this.DragMove();
+            ConnectDataSourceWindow connectDialog = new ConnectDataSourceWindow();
+            connectDialog.DataContext = new ConnectDataSourceWindowViewModel(_registry, _dataSourceStore);
+            connectDialog.ShowDialog();
         }
 
-        private void closeApp(object sender, RoutedEventArgs e)
+        private void menuConnect_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            OpenConnectToDataSourceDialog();
         }
 
-        private void Maximize_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Normal)
-            {
-                this.WindowState = WindowState.Maximized;
-            }
-            else if (this.WindowState == WindowState.Maximized)
-            {
-                this.WindowState = WindowState.Normal;
-            }
-        }
-
-        private void Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
-        }
     }
 }
